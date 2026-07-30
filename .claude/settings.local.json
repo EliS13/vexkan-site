@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/eliseeliger/Documents/**)",
+      "Read(//Users/eliseeliger/.claude/projects/-Users-eliseeliger-Documents-VexKanApp/**)",
+      "Bash(ls -la /Users/eliseeliger/.claude/projects/ 2>&1)",
+      "Bash(python3 -c ' *)",
+      "Bash(pip3 install *)",
+      "Bash(npx --yes create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(npm -v)",
+      "Bash(brew --version)",
+      "Bash(brew install *)",
+      "Read(//private/tmp/**)",
+      "Bash(npx --yes create-next-app@latest vex-field-guide --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-npm --no-turbopack)"
+    ]
+  }
+}

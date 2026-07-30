@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+/*
+ * Workshop.
+ *
+ * The palette comes out of the pit rather than a book jacket: putty paper the
+ * colour of a well-used bench, graphite for ink, and safety orange for the
+ * things that matter. Pine and brass carry the other two meanings. Every solid
+ * fill here clears AA against white text, which matters on a site written for
+ * eleven year olds.
+ */
+:root {
+  --background: #f4f2ef;
+  --surface: #ffffff;
+  --foreground: #221f1c;
+  --ink-body: #3d3835;
+  --muted: #635d57;
+  --line: #e3ded7;
+  --neutral-bg: #f1eee9;
+  --neutral-text: #5a544d;
+
+  /* Design and decisions, and the brand */
+  --purple: #cc4a16;
+  --purple-bg: #fdece3;
+  --purple-text: #9c3410;
+
+  /* Building and testing */
+  --teal: #1f7a4c;
+  --teal-bg: #e0f0e7;
+  --teal-text: #145433;
+
+  /* Anything time-bound */
+  --amber: #8a6508;
+  --amber-bg: #f8efd8;
+  --amber-text: #6f5205;
+
+  /*
+   * Lifted variants for the few dark graphite panels. The base accents are
+   * tuned for white surfaces and only reach about 3:1 against graphite, which
+   * is not readable.
+   */
+  --purple-on-dark: #f0844e;
+  --teal-on-dark: #4fbf85;
+  --amber-on-dark: #e0a93b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+
+  --color-purple: var(--purple);
+  --color-purple-bg: var(--purple-bg);
+  --color-purple-text: var(--purple-text);
+
+  --color-teal: var(--teal);
+  --color-teal-bg: var(--teal-bg);
+  --color-teal-text: var(--teal-text);
+
+  --color-amber: var(--amber);
+  --color-amber-bg: var(--amber-bg);
+  --color-amber-text: var(--amber-text);
+
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+.text-muted {
+  color: var(--muted);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/*
+ * Direct children only. A descendant selector here outranks Tailwind's own
+ * colour utilities, so it would repaint text inside nested components like the
+ * dark takeaway panel and leave it unreadable.
+ */
+.prose-chapter > p {
+  margin-bottom: 1.1em;
+  line-height: 1.78;
+  color: var(--ink-body);
+}
+
+.prose-chapter > ul > li {
+  color: var(--ink-body);
+}
+
+/*
+ * The signature: a 2ft field tile grid, at the scale of graph paper. Used
+ * behind the hero and nowhere else, so it reads as the drafting surface the
+ * whole guide sits on rather than as wallpaper.
+ */
+.tile-grid {
+  background-image:
+    linear-gradient(to right, rgba(34, 31, 28, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 31, 28, 0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(34, 31, 28, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(34, 31, 28, 0.1) 1px, transparent 1px);
+  background-size:
+    28px 28px,
+    28px 28px,
+    140px 140px,
+    140px 140px;
+}
+
+/* Small caps labels, set in the utility face. Used for eyebrows and readouts. */
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+/* Numbers the tools report. Tabular so they stop jittering as values change. */
+.readout {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
