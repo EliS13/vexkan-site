@@ -18,6 +18,7 @@ export default function ProgramsPage() {
         eyebrow="Programs"
         title="What we run"
         lead="Foundation classes are where most clubbers start and are open to any student in the grade range. Competition teams are selected from those classes."
+        titleAs="h1"
       />
       {TRACK_ORDER.map((track, i) => (
         <Section key={track} tone={i % 2 === 0 ? "surface" : "default"} title={TRACK_LABELS[track]}>
