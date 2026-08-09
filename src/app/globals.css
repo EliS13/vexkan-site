@@ -140,3 +140,27 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+ * The club site is read by parents deciding where to send a seven year old,
+ * not by a builder at a bench. Same palette and same fonts as the guide, set
+ * larger and looser so it reads as an invitation rather than an instrument.
+ */
+.club {
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.club h1,
+.club h2,
+.club h3 {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.club-lead {
+  font-size: 1.125rem;
+  line-height: 1.65;
+  color: var(--ink-body);
+}
