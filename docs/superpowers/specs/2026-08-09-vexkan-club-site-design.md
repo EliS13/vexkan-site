@@ -150,14 +150,29 @@ from previous competitive teams or the IQ Competition Teams.
 Summer Camp runs a customised curriculum with morning snack, lunch, work
 materials and prizes included.
 
+### Teams
+
+The club competes under four numbers:
+
+| Team | Program | Status |
+| --- | --- | --- |
+| 595C | VEX IQ | Active — 7th in Division at Worlds, Dallas TX |
+| 595Y | VEX IQ | Active — qualified for Worlds this season |
+| 16688A | V5RC | Active — also the byline on the field guide |
+| 36467E | V5RC | Past |
+
 ### Events and achievements
 
 - VEX VRC Regional Competition 2025
 - VEX IQ Regional Competition 2025
 - Team 595C, 7th in Division, World Championship, Dallas TX
+- Team 595Y qualified for the World Championship this season
 - Tournament Championships and Excellence Awards
-- Two World Championship invitations
 - Invitations to the U.S. Open
+
+The current site says "two invitations" to Worlds. With 595Y since qualifying,
+that count is likely stale, so the site says "multiple" and `TODO.md` asks the
+club to confirm the real figure rather than guessing at a new one.
 
 ### Unknown values
 
