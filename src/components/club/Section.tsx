@@ -5,10 +5,21 @@ type Props = {
   lead?: string;
   tone?: "default" | "surface";
   id?: string;
+  titleAs?: "h1" | "h2";
 };
 
 /** One vertical band of a club page, with optional heading block. */
-export function Section({ children, eyebrow, title, lead, tone = "default", id }: Props) {
+export function Section({
+  children,
+  eyebrow,
+  title,
+  lead,
+  tone = "default",
+  id,
+  titleAs = "h2",
+}: Props) {
+  const TitleTag = titleAs;
+
   return (
     <section
       id={id}
@@ -19,7 +30,7 @@ export function Section({ children, eyebrow, title, lead, tone = "default", id }
         {(eyebrow || title || lead) && (
           <div className="mb-10 max-w-2xl">
             {eyebrow && <p className="eyebrow text-[var(--muted)]">{eyebrow}</p>}
-            {title && <h2 className="mt-2 text-3xl font-semibold sm:text-4xl">{title}</h2>}
+            {title && <TitleTag className="mt-2 text-3xl font-semibold sm:text-4xl">{title}</TitleTag>}
             {lead && <p className="club-lead mt-4">{lead}</p>}
           </div>
         )}

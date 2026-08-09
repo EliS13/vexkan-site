@@ -24,7 +24,8 @@ export default function AboutPage() {
     <>
       <Section
         eyebrow="About us"
-        title={`A robotics club that started at a kitchen table`}
+        title="A robotics club that started at home"
+        titleAs="h1"
         lead={`${org.name} was founded in ${org.foundedYear} by ${org.foundedBy} and a group of enthusiasts, after he started experimenting with robotics at home. It has grown to around ${org.studentCount} students across ${org.gradesLabel.toLowerCase()}.`}
       >
         <Card>
