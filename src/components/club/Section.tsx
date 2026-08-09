@@ -1,5 +1,5 @@
 type Props = {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   eyebrow?: string;
   title?: string;
   lead?: string;
