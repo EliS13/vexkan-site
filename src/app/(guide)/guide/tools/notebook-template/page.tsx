@@ -12,7 +12,7 @@ export default function NotebookTemplatePage() {
       </h1>
       <p className="mt-3 max-w-2xl text-muted">
         Builds on{" "}
-        <Link href="/chapters/the-engineering-notebook" className="underline">
+        <Link href="/guide/chapters/the-engineering-notebook" className="underline">
           Chapter 11
         </Link>
         , structured around what the VEX notebook rubric actually scores: the design process from

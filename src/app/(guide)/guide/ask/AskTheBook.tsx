@@ -193,7 +193,7 @@ export function AskTheBook() {
       {submitted && !hasAnswer && (
         <p className="mt-8 text-sm text-muted">
           Nothing matched that closely. Try different words, or browse the{" "}
-          <Link href="/chapters" className="underline">
+          <Link href="/guide/chapters" className="underline">
             table of contents
           </Link>
           .
@@ -255,7 +255,7 @@ export function AskTheBook() {
                 return (
                   <li key={slug}>
                     <Link
-                      href={`/chapters/${slug}`}
+                      href={`/guide/chapters/${slug}`}
                       className="text-sm font-semibold underline"
                       style={{ color: "var(--purple-text)" }}
                     >
@@ -395,7 +395,7 @@ export function AskTheBook() {
                 </p>
                 <p className="mt-1.5 text-sm leading-relaxed text-[var(--ink-body)]">{p.text}</p>
                 <Link
-                  href={`/chapters/${p.chapterSlug}`}
+                  href={`/guide/chapters/${p.chapterSlug}`}
                   className="mt-2 inline-block text-xs font-semibold underline"
                   style={{ color: "var(--amber-text)" }}
                 >

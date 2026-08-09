@@ -109,7 +109,7 @@ export function AccountMenu() {
                 </button>
                 <Link
                   role="menuitem"
-                  href="/account"
+                  href="/guide/account"
                   onClick={() => setOpen(false)}
                   className="block rounded-lg px-3 py-2 text-[13px] font-medium text-[var(--ink-body)] transition-colors hover:bg-[#eae6e0]"
                 >
@@ -130,7 +130,7 @@ export function AccountMenu() {
             ) : (
               <Link
                 role="menuitem"
-                href="/account"
+                href="/guide/account"
                 onClick={() => setOpen(false)}
                 className="block rounded-lg px-3 py-2 text-[13px] font-medium transition-colors hover:bg-[#eae6e0]"
                 style={{ color: "var(--purple-text)" }}

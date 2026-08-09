@@ -58,21 +58,21 @@ export default function Home() {
 
           <div className="mt-8 flex flex-wrap gap-2.5">
             <Link
-              href="/chapters/welcome-to-vex-iq"
+              href="/guide/chapters/welcome-to-vex-iq"
               className="rounded-lg px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
               style={{ background: "var(--purple)" }}
             >
               Start with VEX IQ
             </Link>
             <Link
-              href="/chapters/advanced-drivetrains"
+              href="/guide/chapters/advanced-drivetrains"
               className="rounded-lg border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-[#efece7]"
               style={{ borderColor: "var(--line)" }}
             >
               Jump to V5RC
             </Link>
             <Link
-              href="/ask"
+              href="/guide/ask"
               className="rounded-lg border bg-surface px-5 py-3 text-sm font-semibold transition-colors hover:bg-[#efece7]"
               style={{ borderColor: "var(--line)" }}
             >
@@ -89,7 +89,7 @@ export default function Home() {
               {SEASONS.map((season) => (
                 <Link
                   key={season.id}
-                  href="/seasons"
+                  href="/guide/seasons"
                   className="group flex items-baseline gap-1.5 rounded-lg border bg-surface px-2.5 py-1.5 transition-colors hover:border-[#b8b0a7]"
                   style={{ borderColor: "var(--line)" }}
                 >
@@ -131,7 +131,7 @@ export default function Home() {
           <h2 className="font-serif text-2xl font-semibold tracking-[-0.02em] text-foreground">
             Part I — VEX IQ Fundamentals
           </h2>
-          <Link href="/chapters" className="text-sm font-medium" style={{ color: "var(--purple-text)" }}>
+          <Link href="/guide/chapters" className="text-sm font-medium" style={{ color: "var(--purple-text)" }}>
             See all chapters →
           </Link>
         </div>
@@ -147,7 +147,7 @@ export default function Home() {
           <h2 className="font-serif text-2xl font-semibold tracking-[-0.02em] text-foreground">
             Part II — V5RC Advanced
           </h2>
-          <Link href="/chapters" className="text-sm font-medium" style={{ color: "var(--purple-text)" }}>
+          <Link href="/guide/chapters" className="text-sm font-medium" style={{ color: "var(--purple-text)" }}>
             See all chapters →
           </Link>
         </div>

@@ -40,7 +40,7 @@ export function ChapterCard({ chapter }: { chapter: Chapter }) {
   }
 
   return (
-    <Link href={`/chapters/${chapter.slug}`} className="block h-full">
+    <Link href={`/guide/chapters/${chapter.slug}`} className="block h-full">
       {content}
     </Link>
   );

@@ -16,7 +16,7 @@ export default function ChaptersPage() {
       </p>
 
       <Link
-        href="/seasons"
+        href="/guide/seasons"
         className="mt-6 flex items-center justify-between gap-4 rounded-xl border p-4 transition-colors hover:border-[#cdc6bf]"
         style={{ borderColor: "var(--line)", background: "var(--teal-bg)" }}
       >

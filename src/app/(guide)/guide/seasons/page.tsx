@@ -62,7 +62,7 @@ export default function SeasonsPage() {
                     </p>
                     <p className="mt-1 text-[13.5px] leading-relaxed text-[var(--ink-body)]">{m.detail}</p>
                     <Link
-                      href={`/chapters/${m.slug}`}
+                      href={`/guide/chapters/${m.slug}`}
                       className="mt-1.5 inline-block text-[11.5px] font-semibold underline"
                       style={{ color: c.text }}
                     >

@@ -12,15 +12,15 @@ export default function MechanismPickerPage() {
       </h1>
       <p className="mt-3 max-w-2xl text-muted">
         A shortlist to prototype, not a single answer. Ties into{" "}
-        <Link href="/chapters/intakes" className="underline">
+        <Link href="/guide/chapters/intakes" className="underline">
           Chapter 6
         </Link>
         ,{" "}
-        <Link href="/chapters/outtake-and-scoring" className="underline">
+        <Link href="/guide/chapters/outtake-and-scoring" className="underline">
           Chapter 7
         </Link>
         , and{" "}
-        <Link href="/chapters/combining-mechanisms" className="underline">
+        <Link href="/guide/chapters/combining-mechanisms" className="underline">
           Chapter 8
         </Link>
         .

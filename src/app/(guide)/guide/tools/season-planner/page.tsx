@@ -11,7 +11,7 @@ export default function SeasonPlannerPage() {
       <p className="mt-3 max-w-2xl text-muted">
         Competitions, deadlines, and build sessions in one place, with a countdown to the next one.
         Ties into{" "}
-        <Link href="/chapters/season-starts-before-you-touch-a-robot" className="underline">
+        <Link href="/guide/chapters/season-starts-before-you-touch-a-robot" className="underline">
           Chapter 2
         </Link>
         , which is about treating the season as something you plan rather than something that

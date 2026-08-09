@@ -384,7 +384,7 @@ export const chapters: Chapter[] = [
       {
         type: "link",
         label: "Try the gear ratio calculator",
-        href: "/tools/gear-ratio",
+        href: "/guide/tools/gear-ratio",
         description: "Play with ratio and motor count yourself and see the speed/torque tradeoff instantly.",
       },
     ],
@@ -697,7 +697,7 @@ export const chapters: Chapter[] = [
       {
         type: "link",
         label: "Try the notebook template",
-        href: "/tools/notebook-template",
+        href: "/guide/tools/notebook-template",
         description: "A fillable, exportable version of the notebook structure described here.",
       },
     ],
@@ -812,7 +812,7 @@ export const chapters: Chapter[] = [
       {
         type: "link",
         label: "Try the gear ratio calculator",
-        href: "/tools/gear-ratio",
+        href: "/guide/tools/gear-ratio",
         description: "Model wheel size, gear ratio, and motor count together and see the tradeoff.",
       },
     ],

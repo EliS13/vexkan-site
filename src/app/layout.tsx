@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
-import { SiteHeader } from "@/components/SiteHeader";
-import { SiteFooter } from "@/components/SiteFooter";
 import "./globals.css";
 
 const body = Inter({
@@ -24,16 +22,18 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Built From the Ground Up — A VEX Robotics Field Guide",
+  metadataBase: new URL("https://vexkan.ca"),
+  title: "VexKan Robotics Club",
   description:
-    "An interactive companion to Built From the Ground Up: navigate VEX IQ and V5RC with chapter guides, calculators, and an assistant that gives you the next steps.",
+    "A nonprofit robotics club in Calgary teaching VEX IQ and V5RC to students in Grades 1 to 12.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+/**
+ * Header and footer live in the route group layouts, because the club site and
+ * the field guide have different chrome. This file owns only the document
+ * shell, the fonts, and the skip link.
+ */
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${body.variable} ${display.variable} ${mono.variable} h-full`}>
       <body className="min-h-full flex flex-col font-sans antialiased">
@@ -43,11 +43,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <SiteHeader />
-        <main id="main" className="flex-1">
-          {children}
-        </main>
-        <SiteFooter />
+        {children}
       </body>
     </html>
   );

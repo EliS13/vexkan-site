@@ -41,7 +41,7 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
           once the manuscript catches up, or browse what&apos;s already written.
         </p>
         <Link
-          href="/chapters"
+          href="/guide/chapters"
           className="mt-6 inline-block rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
           style={{ background: "var(--purple)" }}
         >
@@ -96,14 +96,14 @@ export default async function ChapterPage({ params }: { params: Promise<{ slug: 
 
           <div className="mt-12 flex items-center justify-between border-t pt-6" style={{ borderColor: "var(--line)" }}>
             {prev && prev.status === "ready" ? (
-              <Link href={`/chapters/${prev.slug}`} className="text-sm font-medium text-muted hover:text-foreground">
+              <Link href={`/guide/chapters/${prev.slug}`} className="text-sm font-medium text-muted hover:text-foreground">
                 ← Ch {prev.number}: {prev.title}
               </Link>
             ) : (
               <span />
             )}
             {next && next.status === "ready" ? (
-              <Link href={`/chapters/${next.slug}`} className="text-sm font-medium text-muted hover:text-foreground">
+              <Link href={`/guide/chapters/${next.slug}`} className="text-sm font-medium text-muted hover:text-foreground">
                 Ch {next.number}: {next.title} →
               </Link>
             ) : (

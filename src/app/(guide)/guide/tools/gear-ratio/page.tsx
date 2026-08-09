@@ -12,11 +12,11 @@ export default function GearRatioPage() {
       </h1>
       <p className="mt-3 max-w-2xl text-muted">
         Ties into{" "}
-        <Link href="/chapters/building-the-drivetrain" className="underline">
+        <Link href="/guide/chapters/building-the-drivetrain" className="underline">
           Chapter 5, Building the Drivetrain
         </Link>{" "}
         and{" "}
-        <Link href="/chapters/advanced-drivetrains" className="underline">
+        <Link href="/guide/chapters/advanced-drivetrains" className="underline">
           Chapter 15, Advanced Drivetrains
         </Link>
         . Pick your ratio for the robot&apos;s final weight, then pick your motor count to support
