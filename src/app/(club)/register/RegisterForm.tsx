@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, cloneElement, type ReactElement } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { programs, getProgram } from "@/content/club/programs";
@@ -21,22 +21,30 @@ const FIELD_CLASS =
 
 function Field({
   label,
+  name,
   error,
   children,
   hint,
 }: {
   label: string;
+  name: string;
   error?: string;
-  children: React.ReactNode;
+  children: ReactElement;
   hint?: string;
 }) {
+  const errorId = `${name}-error`;
+  const control = cloneElement(children, {
+    "aria-invalid": error ? true : undefined,
+    "aria-describedby": error ? errorId : undefined,
+  } as Record<string, unknown>);
+
   return (
     <label className="block">
       <span className="text-sm font-medium text-[var(--ink-body)]">{label}</span>
-      {children}
+      {control}
       {hint && !error && <span className="mt-1 block text-xs text-muted">{hint}</span>}
       {error && (
-        <span role="alert" className="mt-1 block text-xs font-medium text-[var(--purple-text)]">
+        <span id={errorId} role="alert" className="mt-1 block text-xs font-medium text-[var(--purple-text)]">
           {error}
         </span>
       )}
@@ -57,7 +65,6 @@ export function RegisterForm() {
 
   /* Bots fill hidden fields; parents do not. */
   const [honeypot, setHoneypot] = useState("");
-  const [openedAt] = useState(() => Date.now());
 
   function set<K extends keyof RegistrationInput>(key: K, value: RegistrationInput[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -67,8 +74,14 @@ export function RegisterForm() {
     e.preventDefault();
     setFailure(null);
 
-    if (honeypot || Date.now() - openedAt < 2000) {
-      setDone(true);
+    if (honeypot) {
+      // Never claim success here: a false positive would be a real parent
+      // whose autofill touched the hidden field, and telling them their
+      // child is registered when nothing was sent is worse than a bot
+      // getting through. Give them a real way to reach the club instead.
+      setFailure(
+        `We couldn't process that submission. Please email ${org.email} or call ${org.phone} and we'll sign your child up directly.`
+      );
       return;
     }
 
@@ -104,7 +117,9 @@ export function RegisterForm() {
   }
 
   if (!isCloudConfigured) {
-    const fallback = getProgram(form.programSlug)?.legacyFormUrl;
+    const selectedFallback = getProgram(form.programSlug)?.legacyFormUrl;
+    const programsWithForms = programs.filter((p) => p.legacyFormUrl);
+
     return (
       <div className="rounded-2xl p-8" style={{ background: "var(--amber-bg)", border: "1px solid var(--amber)" }}>
         <h2 className="text-xl font-semibold text-[var(--amber-text)]">
@@ -115,14 +130,35 @@ export function RegisterForm() {
           <a className="underline" href={org.phoneHref}>{org.phone}</a> and we&apos;ll sign your
           child up.
         </p>
-        {fallback && (
+        {form.programSlug && selectedFallback ? (
           <p className="mt-3 text-[var(--ink-body)]">
             You can also use{" "}
-            <a className="underline" href={fallback} target="_blank" rel="noopener noreferrer">
+            <a className="underline" href={selectedFallback} target="_blank" rel="noopener noreferrer">
               our registration form
             </a>
             .
           </p>
+        ) : (
+          !form.programSlug &&
+          programsWithForms.length > 0 && (
+            <div className="mt-3 text-[var(--ink-body)]">
+              <p>You can also use one of our existing registration forms:</p>
+              <ul className="mt-2 list-disc pl-5">
+                {programsWithForms.map((p) => (
+                  <li key={p.slug}>
+                    <a
+                      className="underline"
+                      href={p.legacyFormUrl as string}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {p.shortTitle}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
         )}
       </div>
     );
@@ -131,7 +167,7 @@ export function RegisterForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="max-w-2xl">
       <div className="grid gap-5">
-        <Field label="Program" error={errors.programSlug}>
+        <Field label="Program" name="programSlug" error={errors.programSlug}>
           <select
             className={FIELD_CLASS}
             style={{ borderColor: "var(--line)" }}
@@ -148,7 +184,7 @@ export function RegisterForm() {
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Student's first name" error={errors.studentFirst}>
+          <Field label="Student's first name" name="studentFirst" error={errors.studentFirst}>
             <input
               className={FIELD_CLASS}
               style={{ borderColor: "var(--line)" }}
@@ -157,7 +193,7 @@ export function RegisterForm() {
               onChange={(e) => set("studentFirst", e.target.value)}
             />
           </Field>
-          <Field label="Student's last name" error={errors.studentLast}>
+          <Field label="Student's last name" name="studentLast" error={errors.studentLast}>
             <input
               className={FIELD_CLASS}
               style={{ borderColor: "var(--line)" }}
@@ -168,7 +204,7 @@ export function RegisterForm() {
           </Field>
         </div>
 
-        <Field label="Student's grade" error={errors.studentGrade}>
+        <Field label="Student's grade" name="studentGrade" error={errors.studentGrade}>
           <select
             className={FIELD_CLASS}
             style={{ borderColor: "var(--line)" }}
@@ -182,7 +218,7 @@ export function RegisterForm() {
           </select>
         </Field>
 
-        <Field label="Parent or guardian's name" error={errors.guardianName}>
+        <Field label="Parent or guardian's name" name="guardianName" error={errors.guardianName}>
           <input
             className={FIELD_CLASS}
             style={{ borderColor: "var(--line)" }}
@@ -193,7 +229,7 @@ export function RegisterForm() {
         </Field>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Email" error={errors.guardianEmail}>
+          <Field label="Email" name="guardianEmail" error={errors.guardianEmail}>
             <input
               type="email"
               inputMode="email"
@@ -204,7 +240,7 @@ export function RegisterForm() {
               onChange={(e) => set("guardianEmail", e.target.value)}
             />
           </Field>
-          <Field label="Phone" error={errors.guardianPhone}>
+          <Field label="Phone" name="guardianPhone" error={errors.guardianPhone}>
             <input
               type="tel"
               inputMode="tel"
@@ -219,6 +255,7 @@ export function RegisterForm() {
 
         <Field
           label="Anything we should know?"
+          name="notes"
           error={errors.notes}
           hint="Optional. Previous robotics experience, or anything that would help us support your child."
         >
