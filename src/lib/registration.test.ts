@@ -61,6 +61,22 @@ describe("validateRegistration", () => {
   it("caps notes so a paste cannot become a payload", () => {
     expect(validateRegistration({ ...valid(), notes: "x".repeat(1001) }).notes).toBeTruthy();
   });
+
+  it("accepts notes at exactly the length cap", () => {
+    expect(validateRegistration({ ...valid(), notes: "x".repeat(1000) }).notes).toBeUndefined();
+  });
+
+  it("trims whitespace before validating the email", () => {
+    expect(
+      validateRegistration({ ...valid(), guardianEmail: "  anne@example.com  " }).guardianEmail
+    ).toBeUndefined();
+  });
+
+  it("trims whitespace before validating the program slug", () => {
+    expect(
+      validateRegistration({ ...valid(), programSlug: "  vex-iq-foundation-g1-2  " }).programSlug
+    ).toBeUndefined();
+  });
 });
 
 describe("toCsv", () => {
@@ -102,6 +118,14 @@ describe("toCsv", () => {
 
   it("quotes fields containing a newline", () => {
     expect(toCsv([{ ...row, notes: "line one\nline two" }])).toContain('"line one\nline two"');
+  });
+
+  it("quotes fields containing a lone carriage return", () => {
+    expect(toCsv([{ ...row, notes: "line one\rline two" }])).toContain('"line one\rline two"');
+  });
+
+  it("quotes fields containing a carriage return and newline", () => {
+    expect(toCsv([{ ...row, notes: "line one\r\nline two" }])).toContain('"line one\r\nline two"');
   });
 
   it("renders a null note as an empty field", () => {
