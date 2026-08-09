@@ -31,13 +31,13 @@ export default function ContactPage() {
             <a href={org.emailHref} className="mt-2 block text-lg font-semibold break-all hover:underline">
               {org.email}
             </a>
-            <p className="mt-2 text-sm text-muted">We usually reply within a couple of days.</p>
           </Card>
           <Card>
             <p className="eyebrow text-[var(--muted)]">Where we are</p>
             <p className="mt-2 text-lg font-semibold">{org.address}</p>
             <p className="mt-2 text-sm text-muted">
-              Please arrange a visit before coming in.
+              We run the club out of a home, so not every time works for a visit. Call{" "}
+              <a href={org.phoneHref} className="hover:underline">{org.phone}</a> to book one.
             </p>
           </Card>
         </div>
