@@ -2871,16 +2871,18 @@ Create the project, run both migrations in the SQL editor, copy `.env.local.exam
 3. Enter `anne@` as the email and confirm the email error appears.
 4. Fill the form correctly, wait more than two seconds, submit, and confirm the green success panel.
 5. In the Supabase table editor, confirm the row exists with the values you typed.
-6. In the browser console on `/register`, confirm an anonymous read is refused:
+6. Confirm an anonymous client cannot read the row back. Substitute your own
+   project URL and anon key:
 
-```js
-await (await import("/_next/static/chunks/main-app.js"), window).fetch(
-  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/registrations?select=*`,
-  { headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY } }
-).then((r) => r.json());
+```bash
+curl -s "https://YOUR_PROJECT.supabase.co/rest/v1/registrations?select=*" \
+  -H "apikey: YOUR_ANON_KEY" \
+  -H "Authorization: Bearer YOUR_ANON_KEY"
 ```
 
-Simpler and equivalent: in the Supabase dashboard open the SQL editor, run `set role anon; select * from public.registrations;` and confirm it returns zero rows rather than the row you just inserted.
+Expected: `[]`. Anything else means the RLS policies from Task 11 did not apply
+and must be fixed before this task is complete — a non-empty array here means
+registration data is world-readable.
 
 - [ ] **Step 6: Commit**
 
