@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { formatDateRange, formatLocation, mapVexEvent, upcomingFirst } from "@/lib/vexEvents";
+import {
+  formatDateRange,
+  formatLocation,
+  formatPlace,
+  mapVexEvent,
+  upcomingFirst,
+} from "@/lib/vexEvents";
 
 describe("formatDateRange", () => {
   it("formats a two-day event inside one month", () => {
@@ -41,6 +47,20 @@ describe("formatLocation", () => {
   });
 });
 
+describe("formatPlace", () => {
+  /* Signature Events run worldwide, so the country is the deciding detail. */
+  it("gives city and country, not the venue", () => {
+    expect(
+      formatPlace({ venue: "BMO Centre", city: "Calgary", region: "Alberta", country: "Canada" })
+    ).toBe("Calgary, Canada");
+  });
+
+  it("copes with a partial location", () => {
+    expect(formatPlace({ country: "Canada" })).toBe("Canada");
+    expect(formatPlace(undefined)).toBe("Location to be confirmed");
+  });
+});
+
 describe("mapVexEvent", () => {
   const raw = {
     id: 4357,
@@ -49,7 +69,7 @@ describe("mapVexEvent", () => {
     start: "2027-02-13T09:00:00Z",
     end: "2027-02-14T18:00:00Z",
     program: { name: "VEX U Robotics Competition", code: "VURC" },
-    location: { venue: "BMO Centre", city: "Calgary", region: "Alberta" },
+    location: { venue: "BMO Centre", city: "Calgary", region: "Alberta", country: "Canada" },
   };
 
   it("maps an event to what the page renders", () => {
@@ -59,6 +79,7 @@ describe("mapVexEvent", () => {
     expect(e.program).toBe("VURC");
     expect(e.dates).toBe("13 to 14 February 2027");
     expect(e.location).toBe("BMO Centre, Calgary");
+    expect(e.place).toBe("Calgary, Canada");
     expect(e.url).toContain("RE-VURC-26-4357");
   });
 
@@ -77,7 +98,7 @@ describe("mapVexEvent", () => {
 
 describe("upcomingFirst", () => {
   const at = (startsAt: string, id = startsAt) =>
-    ({ id, name: id, program: "V5RC", dates: "", location: "", url: "", startsAt });
+    ({ id, name: id, program: "V5RC", dates: "", location: "", place: "", url: "", startsAt });
 
   it("drops events that already finished", () => {
     const out = upcomingFirst(

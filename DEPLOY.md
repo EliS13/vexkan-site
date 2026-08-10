@@ -116,8 +116,10 @@ registration data, and the policies are in the migration.
 
 ## Live competition list
 
-The results page pulls upcoming Alberta competitions from the Public VEX Events
-API and refreshes once a day. Without a token it falls back to the events kept
+The results page pulls two lists from the Public VEX Events API and refreshes
+once a day: upcoming competitions in Alberta, and Signature Events worldwide.
+Signature Events are deliberately not filtered to Alberta, since the point of
+that section is the events worth travelling for. Without a token it falls back to the events kept
 by hand in `src/content/club/events.ts`, so the page works either way.
 
 1. Sign in at https://events.vex.com and request an API token for your account.

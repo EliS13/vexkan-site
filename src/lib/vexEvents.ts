@@ -10,7 +10,12 @@
  * browser in the page source.
  */
 
-const API = "https://events.vex.com/api/v2/events";
+/**
+ * Overridable so this can be pointed at a fixture or a staging API. Without it
+ * the only way to see the rendered result is to hold a real token, which meant
+ * shipping the markup unverified.
+ */
+const API = `${process.env.VEX_API_BASE ?? "https://events.vex.com/api/v2"}/events`;
 
 /** One day. Competition calendars move over weeks, not minutes. */
 export const REVALIDATE_SECONDS = 86400;
@@ -34,6 +39,12 @@ export type LiveEvent = {
   /** Already formatted for display, since only this module knows the raw shape. */
   dates: string;
   location: string;
+  /**
+   * City and country. Signature Events run worldwide, and whether one is in
+   * Calgary or Beijing is the first thing a club deciding whether to travel
+   * needs to see.
+   */
+  place: string;
   url: string;
   startsAt: string;
 };
@@ -75,9 +86,15 @@ export function formatDateRange(start?: string, end?: string): string {
   return `${day(from)} ${monthYear(from)} to ${day(to)} ${monthYear(to)}`;
 }
 
-/** "BMO Centre, Calgary" — venue and city only. Full addresses are noise here. */
+/** "BMO Centre, Calgary". Venue and city only, since full addresses are noise here. */
 export function formatLocation(location?: VexApiEvent["location"]): string {
   const parts = [location?.venue, location?.city].filter(Boolean);
+  return parts.length ? parts.join(", ") : "Location to be confirmed";
+}
+
+/** "Calgary, Canada". How far away it is, which is what decides a trip. */
+export function formatPlace(location?: VexApiEvent["location"]): string {
+  const parts = [location?.city, location?.country].filter(Boolean);
   return parts.length ? parts.join(", ") : "Location to be confirmed";
 }
 
@@ -88,6 +105,7 @@ export function mapVexEvent(raw: VexApiEvent): LiveEvent {
     program: raw.program?.code || raw.program?.name || "VEX",
     dates: formatDateRange(raw.start, raw.end),
     location: formatLocation(raw.location),
+    place: formatPlace(raw.location),
     url: `https://events.vex.com/robot-competitions/event/${raw.sku}.html`,
     startsAt: raw.start ?? "",
   };
@@ -104,11 +122,11 @@ export function upcomingFirst(events: LiveEvent[], now: Date = new Date()): Live
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }
 
-export async function fetchAlbertaEvents(): Promise<LiveEventsResult> {
+async function fetchEvents(query: string): Promise<LiveEventsResult> {
   const token = process.env.VEX_API_TOKEN;
   if (!token) return { ok: false, reason: "unconfigured" };
 
-  const url = `${API}?region=Alberta&per_page=50`;
+  const url = `${API}?${query}`;
 
   try {
     const res = await fetch(url, {
@@ -131,4 +149,18 @@ export async function fetchAlbertaEvents(): Promise<LiveEventsResult> {
      */
     return { ok: false, reason: "unavailable" };
   }
+}
+
+/** Competitions in Alberta, which is where the club's teams actually compete. */
+export function fetchAlbertaEvents(): Promise<LiveEventsResult> {
+  return fetchEvents("region=Alberta&per_page=50");
+}
+
+/**
+ * Signature Events, worldwide. These are the invitational-scale events a club
+ * travels for, so they are deliberately not filtered to Alberta: narrowing them
+ * to one province would repeat the section above and hide the point.
+ */
+export function fetchSignatureEvents(): Promise<LiveEventsResult> {
+  return fetchEvents("level%5B%5D=Signature&per_page=50");
 }

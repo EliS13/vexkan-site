@@ -4,7 +4,7 @@ import { achievements, events, inspireAward, teams } from "@/content/club/events
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
-import { fetchAlbertaEvents } from "@/lib/vexEvents";
+import { fetchAlbertaEvents, fetchSignatureEvents, type LiveEvent } from "@/lib/vexEvents";
 
 export const metadata: Metadata = {
   title: `Events & Results, ${org.name}`,
@@ -15,8 +15,44 @@ export const metadata: Metadata = {
 /* Refetched once a day. Competition calendars move over weeks, not minutes. */
 export const revalidate = 86400;
 
+function SignatureCard({ event }: { event: LiveEvent }) {
+  return (
+    <Card>
+      <div className="flex items-start justify-between gap-3">
+        <h3 className="text-lg font-semibold">{event.name}</h3>
+        <span
+          className="eyebrow shrink-0 rounded-full px-2.5 py-1"
+          style={{ background: "var(--teal-bg)", color: "var(--teal-text)" }}
+        >
+          {event.program}
+        </span>
+      </div>
+      <dl className="mt-5 space-y-2 text-sm">
+        <div className="flex gap-3">
+          <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Date</dt>
+          <dd className="text-[var(--ink-body)]">{event.dates}</dd>
+        </div>
+        <div className="flex gap-3">
+          <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Where</dt>
+          <dd className="text-[var(--ink-body)]">{event.place}</dd>
+        </div>
+      </dl>
+      <a
+        href={event.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="mt-5 inline-block text-sm font-semibold text-[var(--purple-text)] hover:underline"
+      >
+        Details on events.vex.com
+      </a>
+    </Card>
+  );
+}
+
 export default async function EventsPage() {
-  const live = await fetchAlbertaEvents();
+  /* Both fetches share the same daily cache window, so this is one round trip
+   * per day, not one per visitor. */
+  const [live, signature] = await Promise.all([fetchAlbertaEvents(), fetchSignatureEvents()]);
   const competitions = events.filter((e) => e.kind === "competition");
   const results = events.filter((e) => e.kind === "result");
 
@@ -134,6 +170,47 @@ export default async function EventsPage() {
           </>
         )}
       </Section>
+
+      {/*
+       * Signature Events are the invitational-scale events worth travelling
+       * for, so this section leads with the two soonest and folds the rest
+       * away. The disclosure is a native <details>, which needs no JavaScript
+       * and delays nothing: the first two are in the markup either way.
+       */}
+      {signature.ok && signature.events.length > 0 && (
+        <Section
+          eyebrow="Worth travelling for"
+          title="Signature Events"
+          lead="Invitational-scale events run by VEX around the world. These are the ones coming up."
+        >
+          <div className="grid gap-5 sm:grid-cols-2">
+            {signature.events.slice(0, 2).map((e) => (
+              <SignatureCard key={e.id} event={e} />
+            ))}
+          </div>
+
+          {signature.events.length > 2 && (
+            <details className="group mt-6">
+              <summary
+                className="inline-flex cursor-pointer list-none items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold"
+                style={{ border: "1px solid var(--line)", background: "var(--surface)" }}
+              >
+                <span className="group-open:hidden">
+                  {/* Singular when exactly one is hidden, or it reads "1 more Events". */}
+                  Show {signature.events.length - 2} more Signature{" "}
+                  {signature.events.length - 2 === 1 ? "Event" : "Events"}
+                </span>
+                <span className="hidden group-open:inline">Show fewer</span>
+              </summary>
+              <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                {signature.events.slice(2).map((e) => (
+                  <SignatureCard key={e.id} event={e} />
+                ))}
+              </div>
+            </details>
+          )}
+        </Section>
+      )}
 
       {/*
        * The Inspire Award is judged, not won on the field, so the criteria say
