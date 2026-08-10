@@ -19,6 +19,8 @@ export const org = {
   foundedBy: "Eli Seeliger",
   studentCount: 20,
   gradesLabel: "Grades 1–12",
+  /** The range on its own, for stat tiles where the word "Grades" is the caption. */
+  gradesShort: "1–12",
 
   phone: "403-404-9033",
   phoneHref: "tel:+14034049033",

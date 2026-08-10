@@ -16,9 +16,8 @@ a single edit in the file named.
 | --- | --- | --- |
 | `date` | both 2025 regionals | Competition date once the REC Foundation publishes it |
 | `location` | both 2025 regionals | Venue and city |
-| `date` | `worlds-dallas-595c` | The year 595C placed 7th |
-| `achievements` | — | The old site said "two invitations" to Worlds. 595Y has since qualified, so confirm the real count and replace the word "Multiple". |
-| `note` | `595Y` | Add the placing once the season's result is known |
+| `date`, `location` | `worlds-16688a`, `worlds-iq-teams` | The year and host city of the World Championship these placings came from |
+| `achievements` | — | The old site said "two invitations" to Worlds. Three teams have since been, so no count is stated at all. Add a real figure if you want one. |
 
 Add new competitions by appending to the `events` array. Delete a season's
 events once they are past, or change `kind` to `"result"` and rewrite the
@@ -28,8 +27,7 @@ summary with the placing.
 
 | Field | Person affected | What to confirm |
 | --- | --- | --- |
-| `bio` | Eli Seeliger | "second year running the club" was accurate when this bio was written (club founded 2023). Confirm the current year count before publishing and update it. |
-| `bio` | Alex Han | "Third year in VEX robotics" — confirm this is still the current count. |
+| `bio` | Eli Seeliger | The bio no longer states a year count, so it cannot go stale. Add one if you want the specifics back. |
 
 ## Photographs
 

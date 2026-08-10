@@ -45,12 +45,20 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section eyebrow="Who we are" title="The people running VexKan">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {/*
+       * One person, so this is a statement rather than a directory. A lone card
+       * in a three-column grid reads as a team page with two people missing.
+       */}
+      <Section eyebrow="Who runs it" title="Student-founded, student-run">
+        <div className="max-w-2xl">
           {people.map((p) => (
             <PersonCard key={p.name} person={p} />
           ))}
         </div>
+        <p className="club-lead mt-6 max-w-2xl">
+          VexKan is coached and organised by students who compete themselves, which is why the
+          club teaches the way it does: everything here was learned at a competition first.
+        </p>
       </Section>
 
       <Section tone="surface" eyebrow="Our teams" title="Competing as VexKan">

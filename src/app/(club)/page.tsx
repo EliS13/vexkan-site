@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { org } from "@/content/club/org";
-import { achievements } from "@/content/club/events";
+import { inspireAward } from "@/content/club/events";
+import { Reveal } from "@/components/club/Reveal";
+import { Scoreboard } from "@/components/club/Scoreboard";
 import { TRACK_LABELS, TRACK_ORDER, programsByTrack } from "@/content/club/programs";
 import { Section } from "@/components/club/Section";
 import { Button } from "@/components/club/Button";
@@ -28,52 +30,97 @@ const STEPS = [
 export default function HomePage() {
   return (
     <>
-      <div className="tile-grid border-b" style={{ borderColor: "var(--line)" }}>
-        <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-16 sm:py-24 lg:grid-cols-2">
-          <div>
+      <div className="tile-grid relative overflow-hidden border-b" style={{ borderColor: "var(--line)" }}>
+        {/*
+         * A soft light over the field, brightest where the headline sits. It
+         * gives the tile grid somewhere to fall away to, so the hero reads as a
+         * lit surface rather than as graph paper.
+         */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(80% 60% at 22% 18%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.35) 45%, rgba(244,242,239,0) 75%)",
+          }}
+        />
+        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:py-28 lg:grid-cols-[1.05fr_1fr]">
+          <div className="rise">
             <p className="eyebrow text-[var(--purple-text)]">
               Nonprofit robotics · {org.city}
             </p>
-            <h1 className="mt-3 text-4xl font-semibold leading-[1.1] sm:text-5xl">
+            <h1 className="mt-4 text-[clamp(2.75rem,7vw,4.5rem)] font-bold leading-[0.98] tracking-[-0.035em]">
               {org.tagline}
             </h1>
-            <p className="club-lead mt-5">
-              {org.name} is a nonprofit club teaching VEX robotics to students in{" "}
-              {org.gradesLabel.toLowerCase()}. We build robots, keep engineering logbooks, and
-              compete — from a first snap-together kit right through to the World Championship.
+            <p className="club-lead mt-6 max-w-xl text-[1.2rem]">
+              At {org.shortName}, we believe robotics is a universal language that sparks
+              innovation and builds important skills.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-9 flex flex-wrap gap-3">
               <Button href="/register" size="lg">Register your child</Button>
               <Button href="/programs" size="lg" variant="secondary">See our programs</Button>
             </div>
           </div>
-          <div className="rounded-2xl p-4" style={{ background: "var(--surface)", border: "1px solid var(--line)" }}>
+          <div
+            className="lift rounded-3xl p-5"
+            style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
+          >
             <RobotHero />
           </div>
         </div>
       </div>
 
+      {/*
+       * The proudest facts the club has, given the highest contrast on the
+       * page. Placings are the one thing a competitive robotics club is
+       * measured by, so they get the dark band rather than a card in a row.
+       */}
+      <div className="band-dark">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+          <Reveal>
+            <p className="eyebrow">At the World Championship</p>
+            <h2 className="mt-3 max-w-2xl text-3xl font-semibold sm:text-4xl" style={{ color: "#f3efe8" }}>
+              Three VexKan teams, three finishes
+            </h2>
+          </Reveal>
+          <Reveal delay={90} className="mt-10">
+            <Scoreboard />
+          </Reveal>
+          <Reveal delay={160}>
+            <p className="mt-8 max-w-2xl text-[15px]" style={{ color: "rgba(243,239,232,0.7)" }}>
+              {inspireAward.summary} It goes to how a team carries itself across the whole
+              event, not to the robot.{" "}
+              <Link href="/events" className="underline underline-offset-4" style={{ color: "var(--purple-on-dark)" }}>
+                See what it takes to win it
+              </Link>
+              .
+            </p>
+          </Reveal>
+        </div>
+      </div>
+
       <Section tone="surface" eyebrow="Our mission" title="Robotics, open to everyone">
         <p className="club-lead max-w-3xl">{org.mission}</p>
-        <div className="mt-10 grid gap-5 sm:grid-cols-3">
-          <Card>
-            <p className="readout text-3xl font-semibold text-[var(--purple-text)]">
-              {org.studentCount}
-            </p>
-            <p className="mt-1 text-sm text-muted">students in the club</p>
-          </Card>
-          <Card>
-            <p className="readout text-3xl font-semibold text-[var(--purple-text)]">
-              {org.gradesLabel.replace("Grades ", "")}
-            </p>
-            <p className="mt-1 text-sm text-muted">grades we teach</p>
-          </Card>
-          <Card>
-            <p className="readout text-3xl font-semibold text-[var(--purple-text)]">
-              {new Date().getFullYear() - org.foundedYear}
-            </p>
-            <p className="mt-1 text-sm text-muted">years running, founded {org.foundedYear}</p>
-          </Card>
+        <div className="mt-12 grid gap-5 sm:grid-cols-3">
+          {/*
+           * Figures the club can stand behind without a rebuild. An earlier
+           * version computed "years running" from the current date, which meant
+           * the number silently went stale between deploys.
+           */}
+          {[
+            { value: `${org.studentCount}`, label: "students in the club" },
+            { value: org.gradesShort, label: "the grades we teach" },
+            { value: `${org.foundedYear}`, label: "founded, and run by students since" },
+          ].map((stat, i) => (
+            <Reveal key={stat.label} delay={i * 80}>
+              <Card className="lift lift-hover h-full">
+                <p className="score text-5xl font-semibold text-[var(--purple-text)]">
+                  {stat.value}
+                </p>
+                <p className="mt-3 text-sm text-muted">{stat.label}</p>
+              </Card>
+            </Reveal>
+          ))}
         </div>
       </Section>
 
@@ -83,10 +130,11 @@ export default function HomePage() {
         lead="Foundation classes teach the basics hands-on. Competition teams are chosen from those classes and represent VexKan against other clubs."
       >
         <div className="grid gap-5 sm:grid-cols-2">
-          {TRACK_ORDER.map((track) => {
+          {TRACK_ORDER.map((track, i) => {
             const list = programsByTrack(track);
             return (
-              <Card key={track}>
+              <Reveal key={track} delay={i * 80} className="h-full">
+                <Card className="lift lift-hover h-full">
                 <h3 className="text-lg font-semibold">{TRACK_LABELS[track]}</h3>
                 <ul className="mt-4 space-y-2">
                   {list.map((p) => (
@@ -101,31 +149,14 @@ export default function HomePage() {
                     </li>
                   ))}
                 </ul>
-              </Card>
+                </Card>
+              </Reveal>
             );
           })}
         </div>
       </Section>
 
-      <Section tone="surface" eyebrow="Results" title="Where our teams have been">
-        <ul className="grid gap-4 sm:grid-cols-2">
-          {achievements.map((a) => (
-            <li key={a} className="flex gap-3">
-              <span
-                className="mt-2 h-2 w-2 shrink-0 rounded-full"
-                style={{ background: "var(--purple)" }}
-                aria-hidden="true"
-              />
-              <span className="text-[var(--ink-body)]">{a}</span>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-8">
-          <Button href="/events" variant="secondary">Events and results</Button>
-        </div>
-      </Section>
-
-      <Section eyebrow="Joining" title="How to join">
+      <Section tone="surface" eyebrow="Joining" title="How to join">
         <ol className="grid gap-5 sm:grid-cols-3">
           {STEPS.map((s) => (
             <li key={s.n}>

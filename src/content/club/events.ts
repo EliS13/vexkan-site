@@ -16,19 +16,21 @@ export const teams: Team[] = [
     number: "595C",
     program: "VEX IQ",
     status: "active",
-    note: "Placed 7th in Division at the World Championship in Dallas, Texas.",
+    note: "Finished 18th at the VEX Robotics World Championship.",
   },
   {
     number: "595Y",
     program: "VEX IQ",
     status: "active",
-    note: "Qualified for the World Championship this season.",
+    note: "Finished 31st at the VEX Robotics World Championship.",
   },
   {
     number: "16688A",
     program: "V5RC",
     status: "active",
-    note: "The club's V5 competition team, and the byline on our field guide.",
+    note:
+      "Finished 7th out of 84 teams at the VEX Robotics World Championship and won " +
+      "the Inspire Award. Also the byline on our field guide.",
   },
   {
     number: "36467E",
@@ -65,24 +67,64 @@ export const events: ClubEvent[] = [
     summary: "The regional VEX IQ competition for our elementary and middle school teams.",
   },
   {
-    slug: "worlds-dallas-595c",
-    name: "VEX Robotics World Championship — Dallas, TX",
+    slug: "worlds-16688a",
+    name: "VEX Robotics World Championship — 16688A",
     kind: "result",
     date: TBD,
-    location: "Dallas, Texas",
-    summary: "Team 595C finished 7th in their Division at the World Championship.",
+    location: TBD,
+    summary:
+      "Team 16688A finished 7th out of 84 teams and won the Inspire Award, the " +
+      "judged award for how a team carries itself across the whole event.",
+  },
+  {
+    slug: "worlds-iq-teams",
+    name: "VEX Robotics World Championship — 595C and 595Y",
+    kind: "result",
+    date: TBD,
+    location: TBD,
+    summary: "Our VEX IQ teams finished 18th (595C) and 31st (595Y) at the World Championship.",
   },
 ];
 
 /**
- * The "two invitations" line is taken from the current vexkan.ca. 595Y has
- * since qualified as well, so the count is very likely stale — TODO.md flags it
- * for the club to confirm rather than have this file guess at a new number.
+ * The Inspire Award is a judged award, so it says something about the team
+ * rather than the robot — which is why the criteria are worth showing rather
+ * than just naming the trophy.
+ *
+ * These are summarised in our own words from the REC Foundation's Guide to
+ * Judging rather than reproduced, and the page links to the source so a reader
+ * can check them against the official wording.
+ */
+export const inspireAward = {
+  name: "Inspire Award",
+  team: "16688A",
+  event: "VEX Robotics World Championship",
+  /** What the REC Foundation says the award is for. */
+  summary:
+    "The Inspire Award recognises a team's passion for the competition and the " +
+    "positivity they bring to the event.",
+  criteria: [
+    "Shows passion and a positive attitude throughout the event",
+    "Acts with integrity and goodwill toward other teams, coaches and event staff",
+    "Overcomes an obstacle, or reaches a goal or special accomplishment at the event",
+    "Interviews well — clear communication, real teamwork, professionalism, and students doing the talking",
+  ],
+  note: "Like every judged award, it requires a completed team interview.",
+  sourceLabel: "REC Foundation Guide to Judging",
+  sourceUrl:
+    "https://v5rc-kb.recf.org/hc/en-us/articles/33153576505367-Guide-to-Judging-Judged-Awards-Appendix",
+} as const;
+
+/**
+ * The "two invitations" line on the old vexkan.ca is not repeated here: three
+ * teams have since been to Worlds, so the count was stale. TODO.md asks the
+ * club to confirm a real figure rather than have this file guess one.
  */
 export const achievements: string[] = [
+  "Team 16688A, 7th out of 84 teams at the VEX Robotics World Championship",
+  "Team 16688A, Inspire Award at the VEX Robotics World Championship",
+  "Team 595C, 18th at the VEX Robotics World Championship",
+  "Team 595Y, 31st at the VEX Robotics World Championship",
   "Tournament Championships and Excellence Awards",
-  "Multiple invitations to the VEX Robotics World Championship",
   "Invitations to the U.S. Open",
-  "Team 595C, 7th in Division at the World Championship in Dallas, Texas",
-  "Team 595Y qualified for the World Championship this season",
 ];
