@@ -69,6 +69,13 @@ cannot be done by anyone else:
 Set the apex `A` record back to `35.208.229.19` and restore the previous `www`
 record. WordPress starts serving again as soon as DNS propagates.
 
+## Old field guide URLs
+
+The old site had the field guide at `/chapters`, `/tools`, `/ask`,
+`/seasons`, and `/account`. That content now lives under `/guide`, so any of
+those old paths will 404. If any of them were ever shared or bookmarked,
+add redirects for them in `next.config.ts`.
+
 ## Supabase
 
 1. Create a project at https://supabase.com.
@@ -83,6 +90,26 @@ record. WordPress starts serving again as soon as DNS propagates.
    insert into public.admins (user_id)
    select id from auth.users where email = 'admin@vexkan.ca';
    ```
+
+5. In the Supabase dashboard, under Authentication settings, turn off open
+   email sign-ups now that the first admin is granted. Until this is off,
+   anyone who visits `/admin` can create an `auth.users` row for themselves
+   by requesting a sign-in link. Row level security still means they read
+   nothing — the `admins` table is what actually gates access — but there is
+   no reason to leave self-serve sign-up open once the club account exists.
+
+6. **LAUNCH GATE — run this after the migrations and before announcing the
+   site.** Confirm an anonymous client cannot read registration data:
+
+   ```bash
+   curl -s "https://YOUR_PROJECT.supabase.co/rest/v1/registrations?select=*" \
+     -H "apikey: YOUR_ANON_KEY" \
+     -H "Authorization: Bearer YOUR_ANON_KEY"
+   ```
+
+   Expected result: an empty array (`[]`). Anything else — any registration
+   row coming back — means children's names and contact details are
+   world-readable, and the site must not go live until that is fixed.
 
 The anon key is meant to be public. Row level security is what protects
 registration data, and the policies are in the migration.

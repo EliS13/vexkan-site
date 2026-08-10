@@ -43,6 +43,7 @@ alter table public.admins        enable row level security;
 drop policy if exists "see own admin row" on public.admins;
 create policy "see own admin row"
   on public.admins for select
+  to authenticated
   using (user_id = auth.uid());
 
 -- Anyone may submit a registration.
