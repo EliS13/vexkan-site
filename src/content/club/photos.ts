@@ -71,7 +71,7 @@ export const programPhotos: Photo[] = [
   {
     src: "/photos/iq_IMG_3768.jpg",
     alt: "A VEX IQ robot built from blue, green, yellow and red plastic beams, with gears and a chain drive down one side.",
-    caption: "A VEX IQ build, part way through",
+    caption: "A finished robot",
   },
   {
     src: "/photos/IMG_3576.jpg",
