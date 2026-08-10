@@ -4,9 +4,9 @@ import { events, inspireAward, teams } from "@/content/club/events";
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
-import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import { Slideshow } from "@/components/club/Slideshow";
-import { communityPhotos, competitionPhotos } from "@/content/club/photos";
+import { communityPhotos, competitionPhotos, eventPhotos } from "@/content/club/photos";
+import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import {
   featureBothPrograms,
   fetchAlbertaEvents,
@@ -84,6 +84,9 @@ export default async function EventsPage() {
           </a>{" "}
           by map to find everything running in Alberta this season.
         </p>
+        <div className="mt-10 max-w-2xl">
+          <Slideshow photos={eventPhotos} />
+        </div>
       </Section>
 
       <Section tone="surface" title="Competitions in Alberta">
