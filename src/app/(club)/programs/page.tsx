@@ -6,7 +6,7 @@ import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 
 export const metadata: Metadata = {
-  title: `Programs — ${org.name}`,
+  title: `Programs, ${org.name}`,
   description:
     "VEX IQ Foundation Classes from Grade 1, and VEX IQ and V5RC competition teams.",
 };
@@ -41,12 +41,6 @@ export default function ProgramsPage() {
                     className="text-sm font-semibold text-[var(--purple-text)] hover:underline"
                   >
                     Details
-                  </Link>
-                  <Link
-                    href={`/register?program=${p.slug}`}
-                    className="text-sm font-semibold text-[var(--ink-body)] hover:underline"
-                  >
-                    Register
                   </Link>
                 </div>
               </Card>

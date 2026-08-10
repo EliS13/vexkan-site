@@ -5,7 +5,7 @@ import { Section } from "@/components/club/Section";
 import { RegisterForm } from "./RegisterForm";
 
 export const metadata: Metadata = {
-  title: `Register — ${org.name}`,
+  title: `Register, ${org.name}`,
   description: `Register a student for a ${org.name} robotics program in ${org.city}.`,
 };
 

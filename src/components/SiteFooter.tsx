@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function SiteFooter() {
   return (
     <footer className="border-t bg-surface" style={{ borderColor: "var(--line)" }}>
@@ -9,6 +11,16 @@ export function SiteFooter() {
             VEX Robotics
           </a>{" "}
           game manual for your season.
+        </p>
+        {/*
+         * The club site points here as its main call to action, so there has to
+         * be a way back. Without this a reader who follows "Resources" lands in
+         * a section with different chrome and no route out.
+         */}
+        <p className="mt-3">
+          <Link href="/" className="underline hover:text-[var(--ink-body)]">
+            Back to VexKan Robotics Club
+          </Link>
         </p>
       </div>
     </footer>

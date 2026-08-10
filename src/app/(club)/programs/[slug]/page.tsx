@@ -29,7 +29,7 @@ export async function generateMetadata({
   const program = getProgram(slug);
   if (!program) return {};
   return {
-    title: `${program.title} (${program.gradeLabel}) — ${org.name}`,
+    title: `${program.title} (${program.gradeLabel}), ${org.name}`,
     description: program.summary,
   };
 }
@@ -52,11 +52,18 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
           </p>
           <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{program.title}</h1>
           <p className="club-lead mt-4 max-w-2xl">{program.summary}</p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <Button href={`/register?program=${program.slug}`} size="lg">
-              Register for this program
-            </Button>
+          {/*
+           * Asking a question leads, joining is a plain link underneath. The
+           * page is here to explain the program, not to close a signup.
+           */}
+          <div className="mt-7 flex flex-wrap items-center gap-5">
             <Button href="/contact" size="lg" variant="secondary">Ask a question</Button>
+            <Link
+              href={`/register?program=${program.slug}`}
+              className="text-sm font-semibold text-[var(--purple-text)] underline underline-offset-4"
+            >
+              Join this program
+            </Link>
           </div>
         </div>
       </div>
@@ -83,7 +90,10 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
               <dl className="mt-3">
                 <DetailRow label="Grades" value={program.gradeLabel} />
                 <DetailRow label="Schedule" value={program.schedule} />
-                <DetailRow label="Fees" value={program.fee} />
+                {/*
+                 * No cost row. The club is a nonprofit and does not want money
+                 * to be the first thing a family reads about a program.
+                 */}
                 {program.prerequisites && (
                   <DetailRow label="Entry" value={program.prerequisites} />
                 )}

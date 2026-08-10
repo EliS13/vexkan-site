@@ -8,12 +8,12 @@ import { Button } from "@/components/club/Button";
 import { PersonCard } from "@/components/club/PersonCard";
 
 export const metadata: Metadata = {
-  title: `About — ${org.name}`,
+  title: `About, ${org.name}`,
   description: `${org.name} is a nonprofit robotics club founded in ${org.foundedYear} in ${org.city}, teaching VEX robotics to ${org.gradesLabel.toLowerCase()}.`,
 };
 
 const VALUES = [
-  { title: "Open to everyone", body: "Support and mentorship are free. Cost should never be why a child misses out on robotics." },
+  { title: "Open to everyone", body: "What we work out gets written down and left open, so a team we have never met can use it." },
   { title: "Hands on the parts", body: "Clubbers build, program and test the robot themselves. We coach; we don't build it for them." },
   { title: "Write it down", body: "Every team keeps an Engineering Logbook, because explaining a decision is as much of the work as making it." },
   { title: "Compete, and keep going", body: "Losing a match is a design brief. Teams iterate through a season rather than starting over." },
@@ -95,9 +95,13 @@ export default function AboutPage() {
         </ul>
       </Section>
 
-      <Section eyebrow="Next step" title="Come and build with us">
-        <div className="flex flex-wrap gap-3">
-          <Button href="/register" size="lg">Register your child</Button>
+      <Section eyebrow="Next step" title="Use what we have written">
+        <p className="club-lead max-w-2xl">
+          The guides, calculators and notebook templates are open to any team, in our club or
+          not. That is the part of this we are most glad to hand over.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Button href="/guide" size="lg">Read the free guides</Button>
           <Button href="/contact" size="lg" variant="secondary">Ask us a question</Button>
         </div>
       </Section>

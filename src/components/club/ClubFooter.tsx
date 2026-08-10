@@ -37,8 +37,8 @@ export function ClubFooter() {
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link href="/about" className="text-[var(--ink-body)] hover:underline">About us</Link></li>
             <li><Link href="/events" className="text-[var(--ink-body)] hover:underline">Events</Link></li>
-            <li><Link href="/register" className="text-[var(--ink-body)] hover:underline">Register</Link></li>
-            <li><Link href={org.guideHref} className="text-[var(--ink-body)] hover:underline">Field Guide</Link></li>
+            <li><Link href="/register" className="text-[var(--ink-body)] hover:underline">Join the club</Link></li>
+            <li><Link href={org.guideHref} className="text-[var(--ink-body)] hover:underline">Free resources</Link></li>
           </ul>
         </div>
 

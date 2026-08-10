@@ -3,12 +3,15 @@
 Every item below currently renders as "Contact us for current details". Each is
 a single edit in the file named.
 
-## `programs.ts` — all seven programs
+## `programs.ts`, all seven programs
 
 | Field | Programs affected | What to write |
 | --- | --- | --- |
 | `schedule` | all 7 | Day and time, e.g. `"Tuesdays, 6:00–8:00PM"` |
-| `fee` | all 7 | Cost and period, e.g. `"$180 per term"`, or `"Free"` |
+
+Cost is deliberately absent. The `fee` field was removed rather than left
+blank, so nothing on the site mentions money. If the club ever needs to publish
+a cost, add the field back rather than writing a figure into a summary.
 
 ## `events.ts`
 
