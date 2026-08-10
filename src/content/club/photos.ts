@@ -18,19 +18,16 @@ export const founderPhoto: Photo = {
 };
 
 /**
- * The club's teams with what they won. These lead everywhere, because they are
- * the clearest answer to what the club is for.
+ * Every set below is disjoint. A photograph appears on exactly one page, so
+ * moving between tabs shows new pictures rather than the same ones again.
  */
-export const teamPhotos: Photo[] = [
+
+/** Home: who the club is, and what its teams have won. */
+export const homePhotos: Photo[] = [
   {
-    src: "/photos/club/club-04.jpg",
-    alt: "Three members of team 595B in VexKan club shirts, one holding their robot, one a controller and one their Judges Award trophy, in front of the upcoming matches screen.",
-    caption: "595B, Judges Award",
-  },
-  {
-    src: "/photos/club/club-05.jpg",
-    alt: "The three members of team 595B in VexKan club shirts, holding their robot, a controller and their Judges Award trophy at the Alberta provincial championships.",
-    caption: "595B at provincials",
+    src: "/photos/club/club-25.jpg",
+    alt: "Three young clubbers around a classroom table, one driving a VEX IQ robot with a controller while another steadies it and a third sorts parts.",
+    caption: "A foundation class in session",
   },
   {
     src: "/photos/iq_IMG_3390.jpg",
@@ -48,22 +45,14 @@ export const teamPhotos: Photo[] = [
     caption: "595B, Energy Award",
   },
   {
-    src: "/photos/iq_IMG_3858.jpg",
-    alt: "Three young clubbers holding a VEX IQ trophy together in front of the Mecha Mayhem backdrop.",
-    caption: "A trophy at Mecha Mayhem",
+    src: "/photos/iq_IMG_3782.jpg",
+    alt: "Four club members around a practice field laid out on a living room floor, two of them driving robots while the others watch the match.",
+    caption: "Practice on the home field",
   },
 ];
 
-/**
- * Classes and practice. These carry the most weight on the Programs page,
- * because a family deciding on a class wants to see the class.
- */
-export const classPhotos: Photo[] = [
-  {
-    src: "/photos/club/club-25.jpg",
-    alt: "Three young clubbers around a classroom table, one driving a VEX IQ robot with a controller while another steadies it and a third sorts parts.",
-    caption: "A foundation class in session",
-  },
+/** Programs: what a class actually looks like, and what gets built in one. */
+export const programPhotos: Photo[] = [
   {
     src: "/photos/club/club-18.jpg",
     alt: "A young girl fitting a beam onto a VEX IQ frame at a table spread with parts, working on her own build.",
@@ -74,19 +63,10 @@ export const classPhotos: Photo[] = [
     alt: "Two young clubbers building at a table with VEX IQ beams laid out in front of them and an instruction sheet open beside the parts.",
     caption: "Sorting parts before a build",
   },
-];
-
-/** Practice, and the club's own field at home. */
-export const buildPhotos: Photo[] = [
   {
     src: "/photos/club/club-01.jpg",
     alt: "Two students sitting at a table going over a V5 robot together, with a scoring sheet and a VexKan Robotics Club pen in front of them.",
     caption: "Going over a build together",
-  },
-  {
-    src: "/photos/iq_IMG_3782.jpg",
-    alt: "Four club members around a practice field laid out on a living room floor, two of them driving robots while the others watch the match.",
-    caption: "Practice on the home field",
   },
   {
     src: "/photos/iq_IMG_3768.jpg",
@@ -100,8 +80,23 @@ export const buildPhotos: Photo[] = [
   },
 ];
 
-/** The pits and the field. What a competition day actually looks like. */
-export const competitionPhotos: Photo[] = [
+/** Results: competition days, from the pits to the trophy. */
+export const eventPhotos: Photo[] = [
+  {
+    src: "/photos/club/club-05.jpg",
+    alt: "The three members of team 595B in VexKan club shirts, holding their robot, a controller and their Judges Award trophy at the Alberta provincial championships.",
+    caption: "595B at provincials",
+  },
+  {
+    src: "/photos/iq_IMG_3858.jpg",
+    alt: "Three young clubbers holding a VEX IQ trophy together in front of the Mecha Mayhem backdrop.",
+    caption: "A trophy at Mecha Mayhem",
+  },
+  {
+    src: "/photos/club/club-02.jpg",
+    alt: "Students crowded around a long pit table at a competition, working on V5 robots while a volunteer talks to a team behind them.",
+    caption: "In the pits",
+  },
   {
     src: "/photos/IMG_3541.jpg",
     alt: "Three students in team jerseys standing at the edge of a competition field, watching two V5 robots line up before a match.",
@@ -113,45 +108,22 @@ export const competitionPhotos: Photo[] = [
     caption: "Pit work between matches",
   },
   {
+    src: "/photos/IMG_3558.jpg",
+    alt: "A student holding a controller at the driver station beside students from two other teams, with the REC Foundation's Canada leader standing with them.",
+    caption: "With the REC Foundation Canada leader",
+  },
+];
+
+/** About: the club away from the field. Its own set, shared with no other page. */
+export const aboutPhotos: Photo[] = [
+  {
+    src: "/photos/club/club-11.jpg",
+    alt: "A young clubber crouched in front of a large VEX Robotics sign in a convention centre concourse at the World Championship.",
+    caption: "At the World Championship",
+  },
+  {
     src: "/photos/IMG_3564.jpg",
     alt: "Two students in team lanyards standing at the field wall during a match, with other teams' pits behind them.",
-    caption: "Watching the field",
+    caption: "Watching a match",
   },
-];
-
-/** Meeting other clubs, judges and volunteers. */
-export const communityPhotos: Photo[] = [
-  {
-    src: "/photos/IMG_3558.jpg",
-    alt: "A student holding a controller at the driver station beside students from two other teams and an event volunteer.",
-    caption: "At the driver station with other teams",
-  },
-];
-
-/**
- * The home rotation. Teams and their awards first, practice next, and only then
- * anything from the senior side.
- */
-export const homePhotos: Photo[] = [
-  classPhotos[0],
-  teamPhotos[0],
-  teamPhotos[1],
-  buildPhotos[0],
-  teamPhotos[2],
-  teamPhotos[3],
-  buildPhotos[1],
-];
-
-export const programPhotos: Photo[] = [
-  classPhotos[0],
-  classPhotos[1],
-  classPhotos[2],
-  buildPhotos[1],
-];
-
-export const eventPhotos: Photo[] = [
-  teamPhotos[0],
-  teamPhotos[2],
-  competitionPhotos[0],
-  communityPhotos[0],
 ];

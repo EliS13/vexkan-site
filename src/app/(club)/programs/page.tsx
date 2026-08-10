@@ -23,9 +23,7 @@ export default function ProgramsPage() {
         titleAs="h1"
       >
         {/* What a class actually looks like, before the descriptions of them. */}
-        <div className="max-w-2xl">
-          <Slideshow photos={programPhotos} />
-        </div>
+        <Slideshow photos={programPhotos} />
       </Section>
       {TRACK_ORDER.map((track, i) => (
         <Section key={track} tone={i % 2 === 0 ? "surface" : "default"} title={TRACK_LABELS[track]}>

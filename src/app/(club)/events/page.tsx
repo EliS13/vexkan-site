@@ -5,7 +5,7 @@ import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 import { Slideshow } from "@/components/club/Slideshow";
-import { communityPhotos, competitionPhotos, eventPhotos } from "@/content/club/photos";
+import { eventPhotos } from "@/content/club/photos";
 import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import {
   featureBothPrograms,
@@ -84,7 +84,7 @@ export default async function EventsPage() {
           </a>{" "}
           by map to find everything running in Alberta this season.
         </p>
-        <div className="mt-10 max-w-2xl">
+        <div className="mt-10">
           <Slideshow photos={eventPhotos} />
         </div>
       </Section>
@@ -282,7 +282,6 @@ export default async function EventsPage() {
 
       <Section tone="surface" eyebrow="At the event" title="What competing looks like">
         <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">
-          <Slideshow photos={competitionPhotos} />
           <div>
             <p className="club-lead">
               Most of a competition happens away from the field: fixing what broke in the last
@@ -318,7 +317,6 @@ export default async function EventsPage() {
               worked out.
             </p>
           </div>
-          <Slideshow photos={communityPhotos} />
         </div>
       </Section>
     </>

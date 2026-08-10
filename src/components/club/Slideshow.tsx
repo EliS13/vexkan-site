@@ -19,9 +19,10 @@ type Props = {
  * changes which one is visible. That keeps it inside the club's rule against
  * animations that delay content appearing.
  *
- * There are no arrows and no pause button, just dots. Advancing stops on hover
- * and on keyboard focus, and never starts at all for a reader who has asked for
- * reduced motion, so there is still a way to hold a slide still.
+ * The arrows sit on the photograph rather than in a bar underneath it, so the
+ * controls do not take height away from the image on a phone. Advancing stops
+ * on hover and on keyboard focus, and never starts at all for a reader who has
+ * asked for reduced motion, so a slide can still be held still.
  */
 export function Slideshow({ photos, interval = 9000, priority = false }: Props) {
   const [index, setIndex] = useState(0);
@@ -61,7 +62,7 @@ export function Slideshow({ photos, interval = 9000, priority = false }: Props) 
       aria-roledescription="carousel"
       aria-label="Photographs of the club"
     >
-      <div className="relative aspect-[4/3]">
+      <div className="relative aspect-[16/10]">
         {photos.map((p, i) => (
           <div
             key={p.src}
@@ -80,9 +81,36 @@ export function Slideshow({ photos, interval = 9000, priority = false }: Props) 
           </div>
         ))}
 
+        {photos.length > 1 && (
+          <>
+            {([
+              { dir: -1, side: "left", label: "Previous photo", glyph: "\u2039" },
+              { dir: 1, side: "right", label: "Next photo", glyph: "\u203a" },
+            ] as const).map((a) => (
+              <button
+                key={a.side}
+                type="button"
+                onClick={() => go(index + a.dir)}
+                aria-label={a.label}
+                className="absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-2xl leading-none transition-opacity hover:opacity-100"
+                style={{
+                  [a.side]: 12,
+                  background: "rgba(255,255,255,0.9)",
+                  color: "var(--foreground)",
+                  boxShadow: "var(--shadow-rest)",
+                  opacity: 0.82,
+                  paddingBottom: 3,
+                }}
+              >
+                {a.glyph}
+              </button>
+            ))}
+          </>
+        )}
+
         {photos[index].caption && (
           <p
-            className="absolute inset-x-0 bottom-0 px-5 py-4 text-sm font-medium text-white"
+            className="absolute inset-x-0 bottom-0 px-6 pb-12 pt-10 text-sm font-medium text-white sm:text-base"
             style={{ background: "linear-gradient(to top, rgba(23,21,15,0.78), transparent)" }}
           >
             {photos[index].caption}
@@ -91,7 +119,7 @@ export function Slideshow({ photos, interval = 9000, priority = false }: Props) 
       </div>
 
       {photos.length > 1 && (
-        <div className="flex items-center justify-center gap-2 px-4 py-4">
+        <div className="absolute inset-x-0 bottom-4 flex items-center justify-center gap-2">
           {photos.map((p, i) => (
             <button
               key={p.src}
@@ -102,7 +130,8 @@ export function Slideshow({ photos, interval = 9000, priority = false }: Props) 
               className="h-2.5 rounded-full transition-all"
               style={{
                 width: i === index ? 24 : 10,
-                background: i === index ? "var(--purple)" : "var(--line)",
+                background: i === index ? "var(--purple)" : "rgba(255,255,255,0.65)",
+                boxShadow: "0 1px 3px rgba(23,21,15,0.35)",
               }}
             />
           ))}

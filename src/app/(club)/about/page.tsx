@@ -6,7 +6,7 @@ import { Card } from "@/components/club/Card";
 import { Button } from "@/components/club/Button";
 import { PersonCard } from "@/components/club/PersonCard";
 import { Slideshow } from "@/components/club/Slideshow";
-import { buildPhotos, competitionPhotos } from "@/content/club/photos";
+import { aboutPhotos } from "@/content/club/photos";
 
 export const metadata: Metadata = {
   title: `About, ${org.name}`,
@@ -44,7 +44,7 @@ export default function AboutPage() {
               it again.
             </p>
           </div>
-          <Slideshow photos={buildPhotos.concat(competitionPhotos.slice(0, 3))} />
+          <Slideshow photos={aboutPhotos} />
         </div>
       </Section>
 
