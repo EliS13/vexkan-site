@@ -105,15 +105,13 @@ export const inspireAward = {
 } as const;
 
 /**
- * Counted across every team the club has mentored, not just the ones competing
- * now, which is why it is a floor rather than an exact figure.
+ * A floor rather than an exact count. The list below is what could be
+ * evidenced, from VEX's records and the club's own certificates, and the club
+ * has won more than that across the teams it has mentored over the years.
  */
 export const clubAwards = {
-  /** Derived, so it can never disagree with the list below it. */
-  get count() {
-    return String(awards.length);
-  },
-  label: "awards across the teams we have mentored",
+  count: "30+",
+  label: "awards",
 } as const;
 
 export type Award = {
@@ -128,6 +126,12 @@ export type Award = {
  * something a specific team earned.
  */
 export const awards: Award[] = [
+  /*
+   * These two are missing from VEX's own record but are on the certificates in
+   * the club's photographs, so they are recorded here from those.
+   */
+  { team: "595B", award: "Energy Award", event: "VEX IQ Robotics Competition January Showdown" },
+  { team: "565A", award: "Think Award", event: "VEX IQ Robotics Competition January Showdown" },
   /*
    * Club-supplied, not from VEX's award records. The U.S. Open invitation is
    * something the club states about itself; everything below it was read from

@@ -78,17 +78,24 @@ describe("achievements", () => {
     expect(usOpen?.team).toBe("16688A");
   });
 
-  it("leads with the club-wide award count", () => {
-    expect(achievements[0]).toBe(`${awards.length} awards across the teams we have mentored`);
+  /*
+   * A deliberate floor, not a tally. The list holds what could be evidenced
+   * from VEX's records and the club's certificates; the club has won more
+   * across the teams it has mentored than that list can prove.
+   */
+  it("states the award count as a floor", () => {
+    expect(achievements[0]).toBe("30+ awards");
+    expect(clubAwards.count).toMatch(/\+$/);
+  });
+
+  it("has at least as many recorded awards as it claims", () => {
+    expect(awards.length).toBeGreaterThanOrEqual(30);
   });
 
   /*
    * "30+" is a floor the club can stand behind. An exact number would need
    * recounting every season, and would be wrong the moment a team won again.
    */
-  it("derives the count from the award list, so the two cannot disagree", () => {
-    expect(clubAwards.count).toBe(String(awards.length));
-  });
 
   it("states each team's real Worlds finish", () => {
     const by = (t: string) => placings.find((p) => p.team === t)?.place;

@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Photo } from "@/content/club/photos";
 
 type Props = {
   photos: Photo[];
-  /** Milliseconds between slides. Auto-advance is off entirely when omitted. */
+  /** Milliseconds between slides. Slow on purpose: these are photographs to look at. */
   interval?: number;
   priority?: boolean;
 };
@@ -19,20 +19,13 @@ type Props = {
  * changes which one is visible. That keeps it inside the club's rule against
  * animations that delay content appearing.
  *
- * Auto-advance stops on hover, on keyboard focus, and whenever the reader has
- * asked for reduced motion. There is also a real pause control, because WCAG
- * 2.2.2 wants a mechanism to stop anything that moves on its own.
+ * There are no arrows and no pause button, just dots. Advancing stops on hover
+ * and on keyboard focus, and never starts at all for a reader who has asked for
+ * reduced motion, so there is still a way to hold a slide still.
  */
-export function Slideshow({ photos, interval = 5000, priority = false }: Props) {
+export function Slideshow({ photos, interval = 9000, priority = false }: Props) {
   const [index, setIndex] = useState(0);
-  const [playing, setPlaying] = useState(true);
   const [paused, setPaused] = useState(false);
-  const reducedMotion = useRef(false);
-
-  useEffect(() => {
-    reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reducedMotion.current) setPlaying(false);
-  }, []);
 
   const go = useCallback(
     (next: number) => setIndex(((next % photos.length) + photos.length) % photos.length),
@@ -40,10 +33,19 @@ export function Slideshow({ photos, interval = 5000, priority = false }: Props) 
   );
 
   useEffect(() => {
-    if (!playing || paused || photos.length < 2) return;
+    if (paused || photos.length < 2) return;
+
+    /*
+     * Read straight from the media query rather than mirroring it into state.
+     * With no pause button on screen, this preference has to be able to stop
+     * the timer before its first tick, and a state update from an effect lands
+     * after the first render it would have to prevent.
+     */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const id = window.setInterval(() => setIndex((i) => (i + 1) % photos.length), interval);
     return () => window.clearInterval(id);
-  }, [playing, paused, photos.length, interval]);
+  }, [paused, photos.length, interval]);
 
   if (photos.length === 0) return null;
 
@@ -89,49 +91,21 @@ export function Slideshow({ photos, interval = 5000, priority = false }: Props) 
       </div>
 
       {photos.length > 1 && (
-        <div className="flex items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-2">
-            {photos.map((p, i) => (
-              <button
-                key={p.src}
-                type="button"
-                onClick={() => go(i)}
-                aria-label={`Show photo ${i + 1} of ${photos.length}`}
-                aria-current={i === index ? "true" : undefined}
-                className="h-2.5 rounded-full transition-all"
-                style={{
-                  width: i === index ? 22 : 10,
-                  background: i === index ? "var(--purple)" : "var(--line)",
-                }}
-              />
-            ))}
-          </div>
-
-          <div className="flex items-center gap-1">
+        <div className="flex items-center justify-center gap-2 px-4 py-4">
+          {photos.map((p, i) => (
             <button
+              key={p.src}
               type="button"
-              onClick={() => setPlaying((v) => !v)}
-              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
-            >
-              {playing ? "Pause" : "Play"}
-            </button>
-            <button
-              type="button"
-              onClick={() => go(index - 1)}
-              aria-label="Previous photo"
-              className="rounded-lg px-2.5 py-1.5 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              onClick={() => go(index + 1)}
-              aria-label="Next photo"
-              className="rounded-lg px-2.5 py-1.5 text-sm font-semibold text-[var(--muted)] hover:text-[var(--foreground)]"
-            >
-              →
-            </button>
-          </div>
+              onClick={() => go(i)}
+              aria-label={`Show photo ${i + 1} of ${photos.length}`}
+              aria-current={i === index ? "true" : undefined}
+              className="h-2.5 rounded-full transition-all"
+              style={{
+                width: i === index ? 24 : 10,
+                background: i === index ? "var(--purple)" : "var(--line)",
+              }}
+            />
+          ))}
         </div>
       )}
     </div>
