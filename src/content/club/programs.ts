@@ -16,7 +16,6 @@ export type Program = {
   learn: string[];
   prerequisites: string | null;
   schedule: Maybe<string>;
-  fee: Maybe<string>;
   /**
    * The Google Form the club used before this site had its own registration.
    * Not linked in normal operation; the register page falls back to it when
@@ -73,7 +72,6 @@ function foundation(
     learn: FOUNDATION_LEARN,
     prerequisites: null,
     schedule: TBD,
-    fee: TBD,
     legacyFormUrl,
   };
 }
@@ -86,7 +84,7 @@ export const programs: Program[] = [
 
   {
     slug: "vex-iq-competition-es",
-    title: "VEX IQ Competition Team — Elementary",
+    title: "VEX IQ Competition Team, Elementary",
     shortTitle: "IQ Competition, Elementary",
     track: "iq-competition",
     gradeLabel: "Grades 3–6",
@@ -107,13 +105,12 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from the Grade 3–6 Foundation Classes.",
     schedule: TBD,
-    fee: TBD,
     legacyFormUrl:
       "https://docs.google.com/forms/d/e/1FAIpQLSfKw2kGi8jhkNtxTmPYE1otpKju-cQXqTWUud1VtyQLfROKjQ/viewform",
   },
   {
     slug: "vex-iq-competition-ms",
-    title: "VEX IQ Competition Team — Middle School",
+    title: "VEX IQ Competition Team, Middle School",
     shortTitle: "IQ Competition, Middle School",
     track: "iq-competition",
     gradeLabel: "Grades 7–8",
@@ -134,7 +131,6 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from the Grade 7–8 Foundation Classes.",
     schedule: TBD,
-    fee: TBD,
     legacyFormUrl: null,
   },
   {
@@ -161,7 +157,6 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from previous competitive teams or the IQ Competition Teams.",
     schedule: TBD,
-    fee: TBD,
     legacyFormUrl: "https://forms.gle/VxGq6iRduycambFK6",
   },
 ];

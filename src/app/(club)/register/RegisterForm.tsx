@@ -177,7 +177,7 @@ export function RegisterForm() {
             <option value="">Choose a program…</option>
             {programs.map((p) => (
               <option key={p.slug} value={p.slug}>
-                {p.shortTitle} — {p.gradeLabel}
+                {p.shortTitle}, {p.gradeLabel}
               </option>
             ))}
           </select>

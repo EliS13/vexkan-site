@@ -68,7 +68,7 @@ export const events: ClubEvent[] = [
   },
   {
     slug: "worlds-16688a",
-    name: "VEX Robotics World Championship — 16688A",
+    name: "VEX Robotics World Championship, 16688A",
     kind: "result",
     date: TBD,
     location: TBD,
@@ -78,7 +78,7 @@ export const events: ClubEvent[] = [
   },
   {
     slug: "worlds-iq-teams",
-    name: "VEX Robotics World Championship — 595C and 595Y",
+    name: "VEX Robotics World Championship, 595C and 595Y",
     kind: "result",
     date: TBD,
     location: TBD,
@@ -107,7 +107,7 @@ export const inspireAward = {
     "Shows passion and a positive attitude throughout the event",
     "Acts with integrity and goodwill toward other teams, coaches and event staff",
     "Overcomes an obstacle, or reaches a goal or special accomplishment at the event",
-    "Interviews well — clear communication, real teamwork, professionalism, and students doing the talking",
+    "Interviews well, with clear communication, real teamwork, professionalism, and students doing the talking",
   ],
   note: "Like every judged award, it requires a completed team interview.",
   sourceLabel: "REC Foundation Guide to Judging",

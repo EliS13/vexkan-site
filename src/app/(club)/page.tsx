@@ -1,29 +1,43 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { org } from "@/content/club/org";
-import { inspireAward } from "@/content/club/events";
-import { Reveal } from "@/components/club/Reveal";
-import { Scoreboard } from "@/components/club/Scoreboard";
 import { TRACK_LABELS, TRACK_ORDER, programsByTrack } from "@/content/club/programs";
 import { Section } from "@/components/club/Section";
 import { Button } from "@/components/club/Button";
 import { Card } from "@/components/club/Card";
 import { RobotHero } from "@/components/club/art/RobotHero";
+import { Scoreboard } from "@/components/club/Scoreboard";
 
-const STEPS = [
+export const metadata: Metadata = {
+  title: `${org.name}`,
+  description:
+    "A nonprofit robotics club in Calgary. Free VEX guides, calculators and notebook templates, plus classes and competition teams for Grades 1 to 12.",
+};
+
+/**
+ * What a visitor can take away today, without asking anyone for anything. The
+ * field guide is already written, so these are real links rather than promises.
+ */
+const RESOURCES = [
   {
-    n: "1",
-    title: "Pick a program",
-    body: "Foundation classes start from Grade 1. Competition teams are selected from those classes.",
+    href: "/guide/chapters",
+    title: "The field guide",
+    body: "Seventeen chapters on building, programming and competing, written from the pit rather than from a manual.",
   },
   {
-    n: "2",
-    title: "Send us a registration",
-    body: "One short form with your child's grade and how to reach you. It takes about a minute.",
+    href: "/guide/tools/gear-ratio",
+    title: "Gear ratio calculator",
+    body: "Work out speed against torque before you commit to a drivetrain, instead of after.",
   },
   {
-    n: "3",
-    title: "We get in touch",
-    body: "We confirm the current schedule, answer your questions, and get your child started.",
+    href: "/guide/tools/notebook-template",
+    title: "Engineering notebook template",
+    body: "The entry structure judges actually look for, with an export you can hand in.",
+  },
+  {
+    href: "/guide/tools/season-planner",
+    title: "Season planner",
+    body: "Lay a season out across the months you really have, so build does not eat all of it.",
   },
 ];
 
@@ -31,11 +45,6 @@ export default function HomePage() {
   return (
     <>
       <div className="tile-grid relative overflow-hidden border-b" style={{ borderColor: "var(--line)" }}>
-        {/*
-         * A soft light over the field, brightest where the headline sits. It
-         * gives the tile grid somewhere to fall away to, so the hero reads as a
-         * lit surface rather than as graph paper.
-         */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
@@ -45,7 +54,7 @@ export default function HomePage() {
           }}
         />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:py-28 lg:grid-cols-[1.05fr_1fr]">
-          <div className="rise">
+          <div>
             <p className="eyebrow text-[var(--purple-text)]">
               Nonprofit robotics · {org.city}
             </p>
@@ -53,12 +62,13 @@ export default function HomePage() {
               {org.tagline}
             </h1>
             <p className="club-lead mt-6 max-w-xl text-[1.2rem]">
-              At {org.shortName}, we believe robotics is a universal language that sparks
-              innovation and builds important skills.
+              We are a student-run robotics club in Calgary. Everything we have worked out, the
+              guides, the calculators, the notebook templates, is free here for any team to use,
+              whether you are in our club or not.
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
-              <Button href="/register" size="lg">Register your child</Button>
-              <Button href="/programs" size="lg" variant="secondary">See our programs</Button>
+              <Button href="/guide" size="lg">Start with the free guides</Button>
+              <Button href="/programs" size="lg" variant="secondary">See what we run</Button>
             </div>
           </div>
           <div
@@ -71,110 +81,88 @@ export default function HomePage() {
       </div>
 
       {/*
-       * The proudest facts the club has, given the highest contrast on the
-       * page. Placings are the one thing a competitive robotics club is
-       * measured by, so they get the dark band rather than a card in a row.
+       * First real section on the page, because it is the thing a visitor can
+       * use without contacting anyone. Nothing here asks for an email address.
        */}
-      <div className="band-dark">
-        <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
-          <Reveal>
-            <p className="eyebrow">At the World Championship</p>
-            <h2 className="mt-3 max-w-2xl text-3xl font-semibold sm:text-4xl" style={{ color: "#f3efe8" }}>
-              Three VexKan teams, three finishes
-            </h2>
-          </Reveal>
-          <Reveal delay={90} className="mt-10">
-            <Scoreboard />
-          </Reveal>
-          <Reveal delay={160}>
-            <p className="mt-8 max-w-2xl text-[15px]" style={{ color: "rgba(243,239,232,0.7)" }}>
-              {inspireAward.summary} It goes to how a team carries itself across the whole
-              event, not to the robot.{" "}
-              <Link href="/events" className="underline underline-offset-4" style={{ color: "var(--purple-on-dark)" }}>
-                See what it takes to win it
-              </Link>
-              .
-            </p>
-          </Reveal>
-        </div>
-      </div>
-
-      <Section tone="surface" eyebrow="Our mission" title="Robotics, open to everyone">
-        <p className="club-lead max-w-3xl">{org.mission}</p>
-        <div className="mt-12 grid gap-5 sm:grid-cols-3">
-          {/*
-           * Figures the club can stand behind without a rebuild. An earlier
-           * version computed "years running" from the current date, which meant
-           * the number silently went stale between deploys.
-           */}
-          {[
-            { value: `${org.studentCount}`, label: "students in the club" },
-            { value: org.gradesShort, label: "the grades we teach" },
-            { value: `${org.foundedYear}`, label: "founded, and run by students since" },
-          ].map((stat, i) => (
-            <Reveal key={stat.label} delay={i * 80}>
-              <Card className="lift lift-hover h-full">
-                <p className="score text-5xl font-semibold text-[var(--purple-text)]">
-                  {stat.value}
-                </p>
-                <p className="mt-3 text-sm text-muted">{stat.label}</p>
+      <Section
+        tone="surface"
+        eyebrow="Free, no signup"
+        title="Take what you need"
+        lead="We write this for our own teams and then leave it open. No account, no email, no form in the way."
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
+          {RESOURCES.map((r) => (
+            <Link key={r.href} href={r.href} className="group block">
+              <Card className="lift-hover h-full">
+                <h3 className="text-lg font-semibold group-hover:text-[var(--purple-text)]">
+                  {r.title}
+                </h3>
+                <p className="mt-2 text-sm text-muted">{r.body}</p>
               </Card>
-            </Reveal>
+            </Link>
           ))}
+        </div>
+        <div className="mt-8">
+          <Button href="/guide" variant="secondary">Browse everything</Button>
         </div>
       </Section>
 
       <Section
-        eyebrow="Programs"
-        title="A path from Grade 1 to the World Championship"
-        lead="Foundation classes teach the basics hands-on. Competition teams are chosen from those classes and represent VexKan against other clubs."
+        eyebrow="What we run"
+        title="Classes and competition teams"
+        lead="Foundation classes teach the basics hands on. Competition teams are picked from those classes and represent the club against other schools."
       >
-        <div className="grid gap-5 sm:grid-cols-2">
-          {TRACK_ORDER.map((track, i) => {
-            const list = programsByTrack(track);
-            return (
-              <Reveal key={track} delay={i * 80} className="h-full">
-                <Card className="lift lift-hover h-full">
-                <h3 className="text-lg font-semibold">{TRACK_LABELS[track]}</h3>
-                <ul className="mt-4 space-y-2">
-                  {list.map((p) => (
-                    <li key={p.slug}>
-                      <Link
-                        href={`/programs/${p.slug}`}
-                        className="flex items-baseline justify-between gap-3 text-sm text-[var(--ink-body)] hover:underline"
-                      >
-                        <span>{p.shortTitle}</span>
-                        <span className="eyebrow shrink-0 text-[var(--muted)]">{p.gradeLabel}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                </Card>
-              </Reveal>
-            );
-          })}
+        <div className="grid gap-5 sm:grid-cols-3">
+          {TRACK_ORDER.map((track) => (
+            <Card key={track} className="lift-hover h-full">
+              <h3 className="text-lg font-semibold">{TRACK_LABELS[track]}</h3>
+              <ul className="mt-4 space-y-2">
+                {programsByTrack(track).map((p) => (
+                  <li key={p.slug}>
+                    <Link
+                      href={`/programs/${p.slug}`}
+                      className="flex items-baseline justify-between gap-3 text-sm text-[var(--ink-body)] hover:underline"
+                    >
+                      <span>{p.shortTitle}</span>
+                      <span className="eyebrow shrink-0 text-[var(--muted)]">{p.gradeLabel}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ))}
         </div>
       </Section>
 
-      <Section tone="surface" eyebrow="Joining" title="How to join">
-        <ol className="grid gap-5 sm:grid-cols-3">
-          {STEPS.map((s) => (
-            <li key={s.n}>
-              <Card>
-                <span
-                  className="readout flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold text-white"
-                  style={{ background: "var(--purple)" }}
-                >
-                  {s.n}
-                </span>
-                <h3 className="mt-4 text-base font-semibold">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted">{s.body}</p>
-              </Card>
-            </li>
-          ))}
-        </ol>
-        <div className="mt-8">
-          <Button href="/register" size="lg">Register your child</Button>
+      {/*
+       * Low on the page and deliberately compact. The placings are here to say
+       * the advice above has been tested, not to be admired.
+       */}
+      <div className="band-dark">
+        <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
+          <p className="eyebrow">Teams from our club</p>
+          <h2 className="mt-3 max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
+            How our teams have done at the World Championship
+          </h2>
+          <div className="mt-8">
+            <Scoreboard />
+          </div>
+          <p className="mt-7">
+            <Link href="/events" className="underline underline-offset-4" style={{ color: "var(--purple-on-dark)" }}>
+              The full record, and what the Inspire Award takes
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      <Section eyebrow="Getting in touch" title="Ask us anything">
+        <p className="club-lead max-w-2xl">
+          Questions about robotics are welcome even if your child never joins. We are students
+          ourselves, so during build season and competition weekends replies can take a while.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Button href="/contact" size="lg">Contact us</Button>
+          <Button href="/register" size="lg" variant="secondary">Join the club</Button>
         </div>
       </Section>
     </>

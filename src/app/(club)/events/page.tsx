@@ -4,10 +4,9 @@ import { achievements, events, inspireAward, teams } from "@/content/club/events
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
-import { Button } from "@/components/club/Button";
 
 export const metadata: Metadata = {
-  title: `Events & Results — ${org.name}`,
+  title: `Events & Results, ${org.name}`,
   description:
     "Regional VEX IQ and V5RC competitions VexKan teams attend, and how our teams have placed.",
 };
@@ -123,9 +122,6 @@ export default function EventsPage() {
               <p className="mt-3 text-sm text-[var(--ink-body)]">{t.note}</p>
             </Card>
           ))}
-        </div>
-        <div className="mt-8">
-          <Button href="/register">Join a team</Button>
         </div>
       </Section>
     </>
