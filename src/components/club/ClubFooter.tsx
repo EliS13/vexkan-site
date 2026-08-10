@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { org } from "@/content/club/org";
 import { programs } from "@/content/club/programs";
@@ -7,7 +8,13 @@ export function ClubFooter() {
     <footer className="border-t bg-surface" style={{ borderColor: "var(--line)" }}>
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="font-serif text-base font-semibold">{org.name}</p>
+          <Image
+            src="/logo-vexkan.png"
+            alt={org.name}
+            width={996}
+            height={248}
+            className="h-8 w-auto"
+          />
           <p className="mt-2 text-sm text-muted">{org.tagline}</p>
           <p className="mt-4 text-sm text-muted">
             A nonprofit robotics club for {org.gradesLabel.toLowerCase()} in {org.city}.

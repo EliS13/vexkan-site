@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -39,17 +40,20 @@ export function ClubHeader() {
       }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3">
-        <Link href="/" className="group flex min-w-0 items-center gap-2.5">
-          <span
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[13px] font-bold text-white"
-            style={{ background: "var(--purple)", boxShadow: "var(--shadow-rest)" }}
-            aria-hidden="true"
-          >
-            VK
-          </span>
-          <span className="truncate font-serif text-[15px] font-semibold tracking-tight">
-            {org.name}
-          </span>
+        <Link href="/" className="ml-1 flex min-w-0 items-center sm:ml-3" aria-label={`${org.name}, home`}>
+          {/*
+           * The club's own logo, which already reads "VexKan Robotics Club", so
+           * repeating the name beside it would say the same thing twice. The
+           * accessible name lives on the link instead.
+           */}
+          <Image
+            src="/logo-vexkan.png"
+            alt=""
+            width={996}
+            height={248}
+            priority
+            className="h-9 w-auto sm:h-10"
+          />
         </Link>
 
         {/*
