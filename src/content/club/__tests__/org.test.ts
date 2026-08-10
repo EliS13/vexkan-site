@@ -18,10 +18,17 @@ describe("org", () => {
     expect(org.phoneHref).toBe("tel:+14034049033");
   });
 
-  it("lists opening hours for the weekdays the club is open", () => {
-    expect(org.hours).toHaveLength(3);
-    expect(org.hours[0]).toEqual({ days: "Monday–Thursday", time: "8AM–5PM" });
-    expect(org.hours[2]).toEqual({ days: "Weekends & holidays", time: "Closed" });
+  /*
+   * The club runs out of a home on no fixed timetable, so published hours were
+   * misleading. Visits are arranged by phone instead.
+   */
+  it("publishes no opening hours", () => {
+    expect("hours" in org).toBe(false);
+  });
+
+  it("serves Grades 3 to 12, not from Grade 1", () => {
+    expect(org.gradesLabel).toBe("Grades 3–12");
+    expect(org.gradesShort).toBe("3–12");
   });
 
   it("was founded in 2023 by Eli Seeliger", () => {

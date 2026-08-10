@@ -21,8 +21,21 @@ export default function EventsPage() {
         eyebrow="Events"
         title="Where our teams compete"
         titleAs="h1"
-        lead="Competition dates are set by the REC Foundation each season and change from year to year. Get in touch for the current calendar."
-      />
+        lead="VEX sets the competition calendar each season and it changes from year to year. The full list, including events we have not listed here, is on events.vex.com."
+      >
+        <p className="club-lead max-w-2xl">
+          Search{" "}
+          <a
+            href="https://events.vex.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-4 text-[var(--purple-text)]"
+          >
+            events.vex.com
+          </a>{" "}
+          by map to find everything running in Alberta this season.
+        </p>
+      </Section>
 
       <Section tone="surface" title="Competitions">
         <div className="grid gap-5 sm:grid-cols-2">
@@ -57,10 +70,13 @@ export default function EventsPage() {
             Team {inspireAward.team} won the {inspireAward.name}
           </h2>
           <p className="club-lead mt-5 max-w-2xl" style={{ color: "rgba(243,239,232,0.78)" }}>
-            {inspireAward.summary}
+            {inspireAward.summary} {inspireAward.meaning}
           </p>
 
-          <ol className="mt-10 grid gap-px overflow-hidden rounded-2xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
+          <p className="eyebrow mt-10" style={{ color: "rgba(243,239,232,0.5)" }}>
+            {inspireAward.criteriaLabel}
+          </p>
+          <ol className="mt-4 grid gap-px overflow-hidden rounded-2xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
             {inspireAward.criteria.map((c, i) => (
               <li key={c} className="flex gap-4 p-6" style={{ background: "var(--ink-deep)" }}>
                 <span className="readout shrink-0 text-sm" style={{ color: "var(--purple-on-dark)" }}>

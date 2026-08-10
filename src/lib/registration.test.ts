@@ -9,7 +9,7 @@ import {
 
 function valid() {
   return {
-    ...emptyRegistration("vex-iq-foundation-g1-2"),
+    ...emptyRegistration("vex-iq-foundation"),
     studentFirst: "Ada",
     studentLast: "Lovelace",
     studentGrade: "2",
@@ -74,7 +74,7 @@ describe("validateRegistration", () => {
 
   it("trims whitespace before validating the program slug", () => {
     expect(
-      validateRegistration({ ...valid(), programSlug: "  vex-iq-foundation-g1-2  " }).programSlug
+      validateRegistration({ ...valid(), programSlug: "  vex-iq-foundation  " }).programSlug
     ).toBeUndefined();
   });
 });
@@ -83,7 +83,7 @@ describe("toCsv", () => {
   const row: RegistrationRow = {
     id: "1",
     created_at: "2026-08-09T12:00:00Z",
-    program_slug: "vex-iq-foundation-g1-2",
+    program_slug: "vex-iq-foundation",
     student_first: "Ada",
     student_last: "Lovelace",
     student_grade: "2",

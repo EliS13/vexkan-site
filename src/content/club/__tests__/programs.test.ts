@@ -8,12 +8,12 @@ import {
 } from "@/content/club/programs";
 
 describe("programs", () => {
-  it("has the seven programs the club runs", () => {
-    expect(programs).toHaveLength(7);
+  it("has the four programs the club runs", () => {
+    expect(programs).toHaveLength(4);
   });
 
   it("uses unique slugs", () => {
-    expect(new Set(programSlugs()).size).toBe(7);
+    expect(new Set(programSlugs()).size).toBe(4);
   });
 
   /*
@@ -26,17 +26,25 @@ describe("programs", () => {
   });
 
   it("finds a program by slug", () => {
-    const p = getProgram("vex-iq-foundation-g1-2");
+    const p = getProgram("vex-iq-foundation");
     expect(p?.title).toBe("VEX IQ Foundation Class");
-    expect(p?.gradeLabel).toBe("Grades 1–2");
+    expect(p?.gradeLabel).toBe("Grades 3–5, older beginners welcome");
+  });
+
+  /*
+   * Grades 1 and 2 were dropped as too young for the kit, and the four
+   * per-grade foundation bands collapsed into one class.
+   */
+  it("starts at Grade 3 and offers a single foundation class", () => {
+    expect(programsByTrack("iq-foundation")).toHaveLength(1);
+    expect(getProgram("vex-iq-foundation-g1-2")).toBeUndefined();
+    for (const p of programs) {
+      expect(p.gradeMin === null || p.gradeMin >= 3).toBe(true);
+    }
   });
 
   it("returns undefined for an unknown slug", () => {
     expect(getProgram("not-a-program")).toBeUndefined();
-  });
-
-  it("groups the four foundation classes onto one track", () => {
-    expect(programsByTrack("iq-foundation")).toHaveLength(4);
   });
 
   it("groups the two IQ competition teams onto one track", () => {
@@ -56,8 +64,10 @@ describe("programs", () => {
     }
   });
 
-  it("orders foundation classes by ascending grade", () => {
-    const grades = programsByTrack("iq-foundation").map((p) => p.gradeMin);
-    expect(grades).toEqual([1, 3, 5, 7]);
+  /* No Google Forms remain, so nothing can send a family off-site. */
+  it("carries no external signup links", () => {
+    for (const p of programs) {
+      expect("legacyFormUrl" in p).toBe(false);
+    }
   });
 });
