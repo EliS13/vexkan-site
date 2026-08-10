@@ -106,8 +106,8 @@ export function RegisterForm() {
         <h2 className="text-xl font-semibold text-[var(--teal-text)]">Registration received</h2>
         <p className="mt-3 text-[var(--ink-body)]">
           Thank you. We&apos;ll be in touch at the email or phone number you gave us to confirm the
-          schedule and answer any questions. If you don&apos;t hear from us within a few days,
-          call {org.phone}.
+          schedule and answer any questions. If you&apos;d like to check on your registration in
+          the meantime, call {org.phone}.
         </p>
         <Link href="/programs" className="mt-6 inline-block font-semibold text-[var(--teal-text)] hover:underline">
           Back to programs

@@ -25,6 +25,13 @@ Add new competitions by appending to the `events` array. Delete a season's
 events once they are past, or change `kind` to `"result"` and rewrite the
 summary with the placing.
 
+## `people.ts`
+
+| Field | Person affected | What to confirm |
+| --- | --- | --- |
+| `bio` | Eli Seeliger | "second year running the club" was accurate when this bio was written (club founded 2023). Confirm the current year count before publishing and update it. |
+| `bio` | Alex Han | "Third year in VEX robotics" — confirm this is still the current count. |
+
 ## Photographs
 
 `src/components/club/art/RobotHero.tsx` is a drawing standing in for a photo of

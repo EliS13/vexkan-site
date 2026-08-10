@@ -58,7 +58,7 @@ export default function HomePage() {
         <div className="mt-10 grid gap-5 sm:grid-cols-3">
           <Card>
             <p className="readout text-3xl font-semibold text-[var(--purple-text)]">
-              {org.studentCount}+
+              {org.studentCount}
             </p>
             <p className="mt-1 text-sm text-muted">students in the club</p>
           </Card>

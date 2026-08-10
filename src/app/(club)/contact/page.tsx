@@ -16,7 +16,7 @@ export default function ContactPage() {
         eyebrow="Contact"
         title="Get in touch"
         titleAs="h1"
-        lead="Questions about a program, a schedule, or fees are welcome — those are the things we get asked most, and we answer them properly."
+        lead="Questions about a program, a schedule, or fees are welcome — reach us by phone or email and we'll get back to you."
       >
         <div className="grid gap-5 lg:grid-cols-3">
           <Card>
