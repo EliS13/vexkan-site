@@ -195,9 +195,18 @@ async function fetchEvents(query: string): Promise<LiveEventsResult> {
   }
 }
 
+/**
+ * Today, as an RFC3339 date. The API needs this: it returns a region's whole
+ * history oldest-first, so without it the first page is events from 2014 and
+ * the upcoming filter leaves the section empty.
+ */
+function fromToday(): string {
+  return `${new Date().toISOString().slice(0, 10)}T00:00:00Z`;
+}
+
 /** Competitions in Alberta, which is where the club's teams actually compete. */
 export function fetchAlbertaEvents(): Promise<LiveEventsResult> {
-  return fetchEvents("region=Alberta&per_page=50");
+  return fetchEvents(`region=Alberta&start=${encodeURIComponent(fromToday())}&per_page=50`);
 }
 
 /**
@@ -206,5 +215,7 @@ export function fetchAlbertaEvents(): Promise<LiveEventsResult> {
  * to one province would repeat the section above and hide the point.
  */
 export function fetchSignatureEvents(): Promise<LiveEventsResult> {
-  return fetchEvents("level%5B%5D=Signature&per_page=50");
+  return fetchEvents(
+    `level%5B%5D=Signature&start=${encodeURIComponent(fromToday())}&per_page=50`
+  );
 }

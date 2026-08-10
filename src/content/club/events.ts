@@ -2,58 +2,30 @@ import { TBD, type Maybe } from "./types";
 
 export type Team = {
   number: string;
+  name: string;
   program: "VEX IQ" | "V5RC";
-  status: "active" | "past";
+  grade: "ES" | "MS" | "HS";
   note: string;
 };
 
 /**
- * Every number the club has competed under, active and retired. 16688A is also
- * the byline on the field guide, which is why it appears in both places.
+ * Every team the club currently runs.
+ *
+ * Team numbers are not unique across programs: 595B, 16688A and 16688K each
+ * also exist as another club's team in the other program. Anything looked up
+ * against VEX must match the program and team name too, or it credits someone
+ * else's results to us.
  */
 export const teams: Team[] = [
-  {
-    number: "595C",
-    program: "VEX IQ",
-    status: "active",
-    note: "Our elementary VEX IQ team, and a Design Award winner at provincials.",
-  },
-  {
-    number: "595Y",
-    program: "VEX IQ",
-    status: "active",
-    note: "Our other VEX IQ team, and an Excellence Award winner at provincials.",
-  },
-  {
-    number: "16688A",
-    program: "V5RC",
-    status: "active",
-    note: "Our senior V5 team, and the byline on our field guide.",
-  },
-  {
-    number: "36467E",
-    program: "V5RC",
-    status: "past",
-    note: "Competed before 16688A, through to the Alberta provincial championship.",
-  },
-  {
-    number: "595B",
-    program: "VEX IQ",
-    status: "past",
-    note: "Competed through to the Alberta provincial championship.",
-  },
-  {
-    number: "565D",
-    program: "VEX IQ",
-    status: "past",
-    note: "Competed through to the Alberta provincial championship.",
-  },
-  {
-    number: "565A",
-    program: "VEX IQ",
-    status: "past",
-    note: "Competed through to the Alberta provincial championship.",
-  },
+  { number: "565A", name: "Arctic Foxes", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
+  { number: "565D", name: "Future Builders", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
+  { number: "595A", name: "Unicorn Knight", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
+  { number: "595B", name: "RTD", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
+  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team." },
+  { number: "595Y", name: "Croissants", program: "VEX IQ", grade: "MS", note: "Middle school VEX IQ." },
+  { number: "16688A", name: "Blue See 123", program: "V5RC", grade: "MS", note: "Inspire Award winners at the World Championship." },
+  { number: "16688K", name: "FoldX", program: "V5RC", grade: "HS", note: "Our high school V5 team." },
+  { number: "36467E", name: "All Purpose Flour", program: "V5RC", grade: "MS", note: "Middle school V5." },
 ];
 
 export type ClubEvent = {
@@ -137,7 +109,10 @@ export const inspireAward = {
  * now, which is why it is a floor rather than an exact figure.
  */
 export const clubAwards = {
-  count: "30+",
+  /** Derived, so it can never disagree with the list below it. */
+  get count() {
+    return String(awards.length);
+  },
   label: "awards across the teams we have mentored",
 } as const;
 
@@ -153,11 +128,41 @@ export type Award = {
  * something a specific team earned.
  */
 export const awards: Award[] = [
-  { team: "16688A", award: "Inspire Award", event: "VEX Robotics World Championship" },
-  { team: "595Y", award: "Excellence Award", event: "Alberta Provincial Championship" },
-  { team: "595C", award: "Design Award", event: "Alberta Provincial Championship" },
-  { team: "36467E", award: "Judges Award", event: "Alberta Provincial Championship" },
+  /*
+   * Club-supplied, not from VEX's award records. The U.S. Open invitation is
+   * something the club states about itself; everything below it was read from
+   * the VEX Events API.
+   */
   { team: "16688A", award: "Invitation to the U.S. Open", event: "U.S. Open Robotics Championship" },
+  { team: "565A", award: "Sportsmanship Award", event: "Alberta VEX IQ Blended Provincial Championship" },
+  { team: "595B", award: "Innovate Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
+  { team: "595B", award: "Judges Award", event: "Alberta VIQRC ES Provincial Championship" },
+  { team: "595C", award: "Teamwork Champion Award", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)" },
+  { team: "595C", award: "Robot Skills Champion", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)" },
+  { team: "595C", award: "Build Award", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)" },
+  { team: "595C", award: "Robot Skills Champion", event: "VEX IQ Robotics Competition January Showdown" },
+  { team: "595C", award: "Teamwork Champion Award", event: "Alberta VEX IQ Blended Provincial Championship" },
+  { team: "595C", award: "Robot Skills Champion", event: "Alberta VEX IQ Blended Provincial Championship" },
+  { team: "595C", award: "Judges Award", event: "Alberta VEX IQ Blended Provincial Championship" },
+  { team: "595C", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
+  { team: "595C", award: "Robot Skills Champion", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
+  { team: "595C", award: "Design Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
+  { team: "595Y", award: "Design Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
+  { team: "595Y", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
+  { team: "595Y", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
+  { team: "595Y", award: "Robot Skills Champion", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
+  { team: "595Y", award: "Innovate Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
+  { team: "595Y", award: "Excellence Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
+  { team: "16688A", award: "Excellence Award", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
+  { team: "16688A", award: "Tournament Champions", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
+  { team: "16688A", award: "Robot Skills Champion", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
+  { team: "16688A", award: "Tournament Champions", event: "STEM Collegiate – V5RC Push Back" },
+  { team: "16688A", award: "Robot Skills Champion", event: "STEM Collegiate – V5RC Push Back" },
+  { team: "16688A", award: "Robot Skills Champion", event: "Alberta V5RC MS Provincial Championship" },
+  { team: "16688A", award: "Inspire Award", event: "2026 VEX Robotics World Championship" },
+  { team: "16688K", award: "Tournament Champions", event: "STEM Collegiate – V5RC Push Back" },
+  { team: "36467E", award: "Tournament Finalists", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
+  { team: "36467E", award: "Judges Award", event: "Alberta VEX V5 Robotics Competition Provincial Championships (MS)" },
 ];
 
 /** Finishing positions, which are not awards and are counted separately. */

@@ -24,10 +24,19 @@ describe("people", () => {
 });
 
 describe("teams", () => {
-  it("lists every team the club has competed under", () => {
+  it("lists all nine teams the club runs", () => {
     expect(teams.map((t) => t.number).sort()).toEqual(
-      ["16688A", "36467E", "565A", "565D", "595B", "595C", "595Y"]
+      ["16688A", "16688K", "36467E", "565A", "565D", "595A", "595B", "595C", "595Y"]
     );
+  });
+
+  /*
+   * Team numbers repeat across programs: 595B, 16688A and 16688K each also
+   * exist as another club's team in the other program. The name is what makes
+   * ours identifiable, so every team must carry one.
+   */
+  it("names every team, so it cannot be confused with another club's", () => {
+    for (const t of teams) expect(t.name.length).toBeGreaterThan(2);
   });
 
   it("puts both 595 teams in VEX IQ and 16688A in V5RC", () => {
@@ -36,17 +45,8 @@ describe("teams", () => {
     expect(teams.find((t) => t.number === "16688A")?.program).toBe("V5RC");
   });
 
-  it("keeps three teams active and the rest retired", () => {
-    expect(teams.filter((t) => t.status === "active").map((t) => t.number).sort())
-      .toEqual(["16688A", "595C", "595Y"]);
-    expect(teams.filter((t) => t.status === "past")).toHaveLength(4);
-  });
-
-  /* The retired 595B, 565D and 565A all reached Alberta provincials. */
-  it("records the provincial run for the retired IQ teams", () => {
-    for (const n of ["595B", "565D", "565A"]) {
-      expect(teams.find((t) => t.number === n)?.note).toContain("provincial");
-    }
+  it("assigns every team a grade level", () => {
+    for (const t of teams) expect(["ES", "MS", "HS"]).toContain(t.grade);
   });
 });
 
@@ -79,15 +79,15 @@ describe("achievements", () => {
   });
 
   it("leads with the club-wide award count", () => {
-    expect(achievements[0]).toBe("30+ awards across the teams we have mentored");
+    expect(achievements[0]).toBe(`${awards.length} awards across the teams we have mentored`);
   });
 
   /*
    * "30+" is a floor the club can stand behind. An exact number would need
    * recounting every season, and would be wrong the moment a team won again.
    */
-  it("keeps the award count as a floor rather than an exact figure", () => {
-    expect(clubAwards.count).toMatch(/\+$/);
+  it("derives the count from the award list, so the two cannot disagree", () => {
+    expect(clubAwards.count).toBe(String(awards.length));
   });
 
   it("states each team's real Worlds finish", () => {
@@ -124,10 +124,19 @@ describe("awards", () => {
     }
   });
 
-  it("puts the provincial awards at the provincial championship", () => {
-    for (const t of ["595Y", "595C", "36467E"]) {
-      expect(awards.find((a) => a.team === t)?.event).toContain("Provincial");
-    }
+  /* Read from the VEX API, so these are the club's real record, not a claim. */
+  it("carries the awards VEX has on record for our teams", () => {
+    const has = (team: string, award: string) =>
+      awards.some((a) => a.team === team && a.award === award);
+    expect(has("16688A", "Inspire Award")).toBe(true);
+    expect(has("595Y", "Excellence Award")).toBe(true);
+    expect(has("595C", "Design Award")).toBe(true);
+    expect(has("36467E", "Judges Award")).toBe(true);
+  });
+
+  it("only credits awards to teams the club actually runs", () => {
+    const ours = new Set(teams.map((t) => t.number));
+    for (const a of awards) expect(ours.has(a.team)).toBe(true);
   });
 });
 
