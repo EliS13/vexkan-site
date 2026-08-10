@@ -174,6 +174,5 @@ export const placings: Placing[] = [
  */
 export const achievements: string[] = [
   `${clubAwards.count} ${clubAwards.label}`,
-  "Tournament Championships and Excellence Awards",
   "Invitations to the U.S. Open",
 ];

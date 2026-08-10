@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
-import { achievements, awards, events, inspireAward, placings, teams } from "@/content/club/events";
+import { achievements, events, inspireAward, placings, teams } from "@/content/club/events";
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
+import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import {
   featureBothPrograms,
   fetchAlbertaEvents,
-  fetchClubAwards,
   fetchSignatureEvents,
   remainingAfterFeature,
   type LiveEvent,
@@ -59,18 +59,7 @@ function SignatureCard({ event }: { event: LiveEvent }) {
 export default async function EventsPage() {
   /* Both fetches share the same daily cache window, so this is one round trip
    * per day, not one per visitor. */
-  const [live, signature, liveAwards] = await Promise.all([
-    fetchAlbertaEvents(),
-    fetchSignatureEvents(),
-    fetchClubAwards(teams.map((t) => t.number)),
-  ]);
-
-  /*
-   * VEX's own record when we can reach it, the hand-kept list otherwise. The
-   * live list is authoritative because it cannot drift out of date, but an
-   * outage must not empty the table.
-   */
-  const shownAwards = liveAwards.ok && liveAwards.awards.length > 0 ? liveAwards.awards : awards;
+  const [live, signature] = await Promise.all([fetchAlbertaEvents(), fetchSignatureEvents()]);
   const competitions = events.filter((e) => e.kind === "competition");
   const results = events.filter((e) => e.kind === "result");
 
@@ -239,6 +228,14 @@ export default async function EventsPage() {
        * more about the club than the trophy does. They are summarised in our
        * own words and linked to the REC Foundation rather than reproduced.
        */}
+      <Section
+        eyebrow="Recognition"
+        title="What our teams have been recognised for"
+        lead="Most of these came from teams we mentored rather than teams we ran, which is the part we are proudest of."
+      >
+        <AwardsShowcase />
+      </Section>
+
       <div className="band-dark">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           <p className="eyebrow">Judged award · {inspireAward.event}</p>
@@ -297,40 +294,6 @@ export default async function EventsPage() {
          * happened. A prose list let a team's award read as the club's, which
          * is the one thing a results page must not blur.
          */}
-        <h3 className="mt-14 text-lg font-semibold">Awards</h3>
-        <p className="mt-2 text-sm text-muted">
-          {liveAwards.ok && liveAwards.awards.length > 0
-            ? "Every award our teams have won, pulled from events.vex.com and refreshed daily."
-            : "The awards we have recorded by hand. The live list from events.vex.com is not switched on yet."}
-        </p>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[560px] border-collapse text-left text-sm">
-            <thead>
-              <tr>
-                {["Team", "Award", "Event"].map((h) => (
-                  <th
-                    key={h}
-                    scope="col"
-                    className="eyebrow border-b py-2.5 pr-6 text-[var(--muted)]"
-                    style={{ borderColor: "var(--line)" }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {shownAwards.map((a) => (
-                <tr key={`${a.team}-${a.award}`} className="border-b" style={{ borderColor: "var(--line)" }}>
-                  <td className="readout py-3 pr-6 font-semibold">{a.team}</td>
-                  <td className="py-3 pr-6 text-[var(--ink-body)]">{a.award}</td>
-                  <td className="py-3 pr-6 text-muted">{a.event}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
         <h3 className="mt-12 text-lg font-semibold">Finishes</h3>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[560px] border-collapse text-left text-sm">
