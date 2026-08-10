@@ -113,3 +113,22 @@ add redirects for them in `next.config.ts`.
 
 The anon key is meant to be public. Row level security is what protects
 registration data, and the policies are in the migration.
+
+## Live competition list
+
+The results page pulls upcoming Alberta competitions from the Public VEX Events
+API and refreshes once a day. Without a token it falls back to the events kept
+by hand in `src/content/club/events.ts`, so the page works either way.
+
+1. Sign in at https://events.vex.com and request an API token for your account.
+2. Add it to Vercel's environment variables as `VEX_API_TOKEN`, for Production.
+3. Redeploy, open the results page, and confirm the competitions section says
+   "Pulled from events.vex.com and refreshed daily" rather than showing the
+   amber fallback notice.
+
+**Do not prefix it `NEXT_PUBLIC_`.** That prefix ships the value to the browser,
+where anyone can read it out of the page source. The variable is read only on
+the server.
+
+Note that `api.robotevents.com` no longer accepts connections since VEX and the
+REC Foundation separated. events.vex.com is the only live source.

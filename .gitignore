@@ -32,6 +32,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...except the template, which holds no secrets and which the README tells you
+# to copy. Without this it was ignored, so that instruction pointed at a file
+# nobody cloning the repo actually had.
+!.env.local.example
 
 # vercel
 .vercel

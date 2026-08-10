@@ -4,6 +4,7 @@ import { achievements, events, inspireAward, teams } from "@/content/club/events
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
+import { fetchAlbertaEvents } from "@/lib/vexEvents";
 
 export const metadata: Metadata = {
   title: `Events & Results, ${org.name}`,
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
     "Regional VEX IQ and V5RC competitions VexKan teams attend, and how our teams have placed.",
 };
 
-export default function EventsPage() {
+/* Refetched once a day. Competition calendars move over weeks, not minutes. */
+export const revalidate = 86400;
+
+export default async function EventsPage() {
+  const live = await fetchAlbertaEvents();
   const competitions = events.filter((e) => e.kind === "competition");
   const results = events.filter((e) => e.kind === "result");
 
@@ -37,25 +42,97 @@ export default function EventsPage() {
         </p>
       </Section>
 
-      <Section tone="surface" title="Competitions">
-        <div className="grid gap-5 sm:grid-cols-2">
-          {competitions.map((e) => (
-            <Card key={e.slug}>
-              <h3 className="text-lg font-semibold">{e.name}</h3>
-              <p className="mt-3 text-sm text-muted">{e.summary}</p>
-              <dl className="mt-5 space-y-2 text-sm">
-                <div className="flex gap-3">
-                  <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Date</dt>
-                  <dd className={isTbd(e.date) ? "text-muted" : "text-[var(--ink-body)]"}>{e.date}</dd>
-                </div>
-                <div className="flex gap-3">
-                  <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Location</dt>
-                  <dd className={isTbd(e.location) ? "text-muted" : "text-[var(--ink-body)]"}>{e.location}</dd>
-                </div>
-              </dl>
-            </Card>
-          ))}
-        </div>
+      <Section tone="surface" title="Competitions in Alberta">
+        {live.ok ? (
+          <>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {live.events.map((e) => (
+                <Card key={e.id}>
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-lg font-semibold">{e.name}</h3>
+                    <span
+                      className="eyebrow shrink-0 rounded-full px-2.5 py-1"
+                      style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
+                    >
+                      {e.program}
+                    </span>
+                  </div>
+                  <dl className="mt-5 space-y-2 text-sm">
+                    <div className="flex gap-3">
+                      <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Date</dt>
+                      <dd className="text-[var(--ink-body)]">{e.dates}</dd>
+                    </div>
+                    <div className="flex gap-3">
+                      <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Where</dt>
+                      <dd className="text-[var(--ink-body)]">{e.location}</dd>
+                    </div>
+                  </dl>
+                  <a
+                    href={e.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-block text-sm font-semibold text-[var(--purple-text)] hover:underline"
+                  >
+                    Details on events.vex.com
+                  </a>
+                </Card>
+              ))}
+            </div>
+            {live.events.length === 0 && (
+              <p className="text-muted">
+                VEX lists no upcoming Alberta competitions right now. New events appear here as
+                soon as they are published.
+              </p>
+            )}
+            <p className="mt-8 text-sm text-muted">
+              Pulled from events.vex.com and refreshed daily.
+            </p>
+          </>
+        ) : (
+          <>
+            {/*
+             * The live list is unavailable, so the hand-kept events show
+             * instead. Saying nothing here would let an outage read as "no
+             * competitions this season", which is the failure that matters.
+             */}
+            <div className="grid gap-5 sm:grid-cols-2">
+              {competitions.map((e) => (
+                <Card key={e.slug}>
+                  <h3 className="text-lg font-semibold">{e.name}</h3>
+                  <p className="mt-3 text-sm text-muted">{e.summary}</p>
+                  <dl className="mt-5 space-y-2 text-sm">
+                    <div className="flex gap-3">
+                      <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Date</dt>
+                      <dd className={isTbd(e.date) ? "text-muted" : "text-[var(--ink-body)]"}>{e.date}</dd>
+                    </div>
+                    <div className="flex gap-3">
+                      <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Where</dt>
+                      <dd className={isTbd(e.location) ? "text-muted" : "text-[var(--ink-body)]"}>{e.location}</dd>
+                    </div>
+                  </dl>
+                </Card>
+              ))}
+            </div>
+            <p
+              className="mt-8 rounded-xl px-4 py-3 text-sm"
+              style={{ background: "var(--amber-bg)", color: "var(--amber-text)" }}
+            >
+              {live.reason === "unconfigured"
+                ? "The live competition list is not switched on yet, so this shows only the events we keep by hand."
+                : "We could not reach events.vex.com just now, so this may be out of date."}{" "}
+              The full Alberta calendar is always on{" "}
+              <a
+                href="https://events.vex.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4"
+              >
+                events.vex.com
+              </a>
+              .
+            </p>
+          </>
+        )}
       </Section>
 
       {/*

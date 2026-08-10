@@ -1,0 +1,134 @@
+/**
+ * Live Alberta competitions from the Public VEX Events API.
+ *
+ * events.vex.com is the only source now: the old RobotEvents API refuses
+ * connections since VEX and the REC Foundation separated, so anything built
+ * against api.robotevents.com is already dead.
+ *
+ * The token is a credential and is read from a server-only environment
+ * variable. It must never be prefixed NEXT_PUBLIC_, which would ship it to the
+ * browser in the page source.
+ */
+
+const API = "https://events.vex.com/api/v2/events";
+
+/** One day. Competition calendars move over weeks, not minutes. */
+export const REVALIDATE_SECONDS = 86400;
+
+/** Shape of the pieces of the API's Event object that this site renders. */
+type VexApiEvent = {
+  id: number;
+  sku: string;
+  name: string;
+  start?: string;
+  end?: string;
+  program?: { name?: string; code?: string };
+  location?: { venue?: string; city?: string; region?: string; country?: string };
+  event_type?: string;
+};
+
+export type LiveEvent = {
+  id: string;
+  name: string;
+  program: string;
+  /** Already formatted for display, since only this module knows the raw shape. */
+  dates: string;
+  location: string;
+  url: string;
+  startsAt: string;
+};
+
+export type LiveEventsResult =
+  | { ok: true; events: LiveEvent[] }
+  | { ok: false; reason: "unconfigured" | "unavailable" };
+
+/**
+ * "13 to 14 February 2027" for a range, a single date otherwise. Dates come
+ * back as RFC3339, and are rendered in the event's own local terms rather than
+ * the reader's, because a competition happens where it happens.
+ */
+export function formatDateRange(start?: string, end?: string): string {
+  if (!start) return "Dates to be confirmed";
+
+  const from = new Date(start);
+  if (Number.isNaN(from.getTime())) return "Dates to be confirmed";
+
+  const day = (d: Date) => d.getUTCDate();
+  const monthYear = (d: Date) =>
+    `${d.toLocaleString("en-CA", { month: "long", timeZone: "UTC" })} ${d.getUTCFullYear()}`;
+
+  const to = end ? new Date(end) : null;
+
+  /*
+   * Compared by calendar day, not by timestamp. A one-day competition still
+   * reports a start of 09:00 and an end of 18:00, which are different strings,
+   * and comparing those rendered "13 to 13 February".
+   */
+  const sameDay =
+    !to ||
+    Number.isNaN(to.getTime()) ||
+    from.toISOString().slice(0, 10) === to.toISOString().slice(0, 10);
+
+  if (sameDay) return `${day(from)} ${monthYear(from)}`;
+
+  if (monthYear(from) === monthYear(to)) return `${day(from)} to ${day(to)} ${monthYear(from)}`;
+  return `${day(from)} ${monthYear(from)} to ${day(to)} ${monthYear(to)}`;
+}
+
+/** "BMO Centre, Calgary" — venue and city only. Full addresses are noise here. */
+export function formatLocation(location?: VexApiEvent["location"]): string {
+  const parts = [location?.venue, location?.city].filter(Boolean);
+  return parts.length ? parts.join(", ") : "Location to be confirmed";
+}
+
+export function mapVexEvent(raw: VexApiEvent): LiveEvent {
+  return {
+    id: raw.sku || String(raw.id),
+    name: raw.name,
+    program: raw.program?.code || raw.program?.name || "VEX",
+    dates: formatDateRange(raw.start, raw.end),
+    location: formatLocation(raw.location),
+    url: `https://events.vex.com/robot-competitions/event/${raw.sku}.html`,
+    startsAt: raw.start ?? "",
+  };
+}
+
+/**
+ * Drops anything that finished before today and orders soonest first, so the
+ * page never opens on a competition that has already happened.
+ */
+export function upcomingFirst(events: LiveEvent[], now: Date = new Date()): LiveEvent[] {
+  const today = now.toISOString().slice(0, 10);
+  return events
+    .filter((e) => !e.startsAt || e.startsAt.slice(0, 10) >= today)
+    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
+
+export async function fetchAlbertaEvents(): Promise<LiveEventsResult> {
+  const token = process.env.VEX_API_TOKEN;
+  if (!token) return { ok: false, reason: "unconfigured" };
+
+  const url = `${API}?region=Alberta&per_page=50`;
+
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      // Literal on purpose: Next requires this value to be statically analysable.
+      next: { revalidate: 86400 },
+    });
+
+    if (!res.ok) return { ok: false, reason: "unavailable" };
+
+    const body = (await res.json()) as { data?: VexApiEvent[] };
+    if (!Array.isArray(body?.data)) return { ok: false, reason: "unavailable" };
+
+    return { ok: true, events: upcomingFirst(body.data.map(mapVexEvent)) };
+  } catch {
+    /*
+     * A failed fetch must never read as "no competitions this season". The
+     * caller falls back to the hand-listed events and says the live list could
+     * not be loaded.
+     */
+    return { ok: false, reason: "unavailable" };
+  }
+}
