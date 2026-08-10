@@ -3,6 +3,9 @@ import {
   formatDateRange,
   formatLocation,
   formatPlace,
+  featureBothPrograms,
+  programFamily,
+  remainingAfterFeature,
   mapVexEvent,
   upcomingFirst,
 } from "@/lib/vexEvents";
@@ -127,5 +130,69 @@ describe("upcomingFirst", () => {
 
   it("keeps an event with no date rather than silently dropping it", () => {
     expect(upcomingFirst([at("", "no-date")], new Date("2026-08-09T00:00:00Z"))).toHaveLength(1);
+  });
+});
+
+describe("featureBothPrograms", () => {
+  const ev = (id: string, program: string, startsAt: string) => ({
+    id, name: id, program, dates: "", location: "", place: "", url: "", startsAt,
+  });
+
+  /*
+   * The case this exists for: chronology alone would show two V5RC events and
+   * tell a VEX IQ family the club only travels for the older students.
+   */
+  it("shows one of each program when both exist", () => {
+    const featured = featureBothPrograms([
+      ev("v5-a", "V5RC", "2027-01-01T00:00:00Z"),
+      ev("v5-b", "V5RC", "2027-02-01T00:00:00Z"),
+      ev("iq-a", "VIQRC", "2027-06-01T00:00:00Z"),
+    ]);
+    expect(featured.map((e) => e.id).sort()).toEqual(["iq-a", "v5-a"]);
+  });
+
+  it("keeps the featured pair in date order", () => {
+    const featured = featureBothPrograms([
+      ev("iq-a", "VIQRC", "2027-06-01T00:00:00Z"),
+      ev("v5-a", "V5RC", "2027-01-01T00:00:00Z"),
+    ]);
+    expect(featured.map((e) => e.id)).toEqual(["v5-a", "iq-a"]);
+  });
+
+  it("falls back to date order when only one program is running", () => {
+    const featured = featureBothPrograms([
+      ev("v5-a", "V5RC", "2027-01-01T00:00:00Z"),
+      ev("v5-b", "V5RC", "2027-02-01T00:00:00Z"),
+      ev("v5-c", "V5RC", "2027-03-01T00:00:00Z"),
+    ]);
+    expect(featured.map((e) => e.id)).toEqual(["v5-a", "v5-b"]);
+  });
+
+  it("never duplicates an event", () => {
+    const featured = featureBothPrograms([ev("only", "V5RC", "2027-01-01T00:00:00Z")]);
+    expect(featured).toHaveLength(1);
+  });
+
+  it("treats VURC as the V5 side, not IQ", () => {
+    expect(programFamily("VURC")).toBe("v5");
+    expect(programFamily("V5RC")).toBe("v5");
+    expect(programFamily("VIQRC")).toBe("iq");
+    expect(programFamily("VEX IQ")).toBe("iq");
+  });
+});
+
+describe("remainingAfterFeature", () => {
+  const ev = (id: string) => ({
+    id, name: id, program: "V5RC", dates: "", location: "", place: "", url: "", startsAt: "",
+  });
+
+  it("returns everything not featured, and nothing twice", () => {
+    const all = [ev("a"), ev("b"), ev("c")];
+    expect(remainingAfterFeature(all, [all[0], all[2]]).map((e) => e.id)).toEqual(["b"]);
+  });
+
+  it("returns all of them when nothing is featured", () => {
+    const all = [ev("a"), ev("b")];
+    expect(remainingAfterFeature(all, [])).toHaveLength(2);
   });
 });
