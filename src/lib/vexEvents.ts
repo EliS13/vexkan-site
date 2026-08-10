@@ -208,3 +208,114 @@ export function fetchAlbertaEvents(): Promise<LiveEventsResult> {
 export function fetchSignatureEvents(): Promise<LiveEventsResult> {
   return fetchEvents("level%5B%5D=Signature&per_page=50");
 }
+
+/* ------------------------------------------------------------------ awards */
+
+type VexApiAward = {
+  id: number;
+  title?: string;
+  event?: { id?: number; name?: string };
+};
+
+type VexApiTeam = {
+  id: number;
+  number?: string;
+};
+
+export type LiveAward = {
+  team: string;
+  award: string;
+  event: string;
+};
+
+export type LiveAwardsResult =
+  | { ok: true; awards: LiveAward[] }
+  | { ok: false; reason: "unconfigured" | "unavailable" };
+
+/**
+ * Award titles arrive with the program bolted on, like
+ * "Excellence Award (VRC/VEXU)". The suffix is noise on a club page where the
+ * team number already says which program it is.
+ */
+export function cleanAwardTitle(title: string): string {
+  return title.replace(/\s*\([^)]*\)\s*$/, "").trim();
+}
+
+/**
+ * Newest first, then by team, so a reader scanning the table sees this season
+ * before results from three years ago.
+ */
+export function sortAwards(awards: LiveAward[]): LiveAward[] {
+  return [...awards].sort(
+    (a, b) => b.event.localeCompare(a.event) || a.team.localeCompare(b.team)
+  );
+}
+
+/** Same award listed twice, once per division, collapses to one row. */
+export function dedupeAwards(awards: LiveAward[]): LiveAward[] {
+  const seen = new Set<string>();
+  return awards.filter((a) => {
+    const key = `${a.team}|${a.award}|${a.event}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+export function mapAward(raw: VexApiAward, team: string): LiveAward | null {
+  const title = raw.title ? cleanAwardTitle(raw.title) : "";
+  const event = raw.event?.name ?? "";
+  /* An award with no title or no event teaches a reader nothing, so it is
+   * dropped rather than rendered as a blank row. */
+  if (!title || !event) return null;
+  return { team, award: title, event };
+}
+
+async function getJson<T>(url: string, token: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      next: { revalidate: 86400 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Every award the club's teams have won, straight from VEX.
+ *
+ * Two round trips per team per day, which is why it sits behind the same daily
+ * cache as everything else. Any team that cannot be resolved is skipped rather
+ * than failing the whole table.
+ */
+export async function fetchClubAwards(teamNumbers: string[]): Promise<LiveAwardsResult> {
+  const token = process.env.VEX_API_TOKEN;
+  if (!token) return { ok: false, reason: "unconfigured" };
+
+  const base = process.env.VEX_API_BASE ?? "https://events.vex.com/api/v2";
+  const query = teamNumbers.map((n) => `number%5B%5D=${encodeURIComponent(n)}`).join("&");
+
+  const teams = await getJson<{ data?: VexApiTeam[] }>(`${base}/teams?${query}&per_page=50`, token);
+  if (!teams || !Array.isArray(teams.data)) return { ok: false, reason: "unavailable" };
+
+  const found = teams.data.filter((t) => t.number);
+  if (found.length === 0) return { ok: false, reason: "unavailable" };
+
+  const perTeam = await Promise.all(
+    found.map(async (t) => {
+      const res = await getJson<{ data?: VexApiAward[] }>(
+        `${base}/teams/${t.id}/awards?per_page=250`,
+        token
+      );
+      if (!res || !Array.isArray(res.data)) return [];
+      return res.data
+        .map((a) => mapAward(a, t.number as string))
+        .filter((a): a is LiveAward => a !== null);
+    })
+  );
+
+  return { ok: true, awards: sortAwards(dedupeAwards(perTeam.flat())) };
+}
