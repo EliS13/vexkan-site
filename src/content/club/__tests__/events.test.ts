@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { achievements, clubAwards, events, inspireAward, teams } from "@/content/club/events";
+import {
+  achievements,
+  awards,
+  clubAwards,
+  events,
+  inspireAward,
+  placings,
+  teams,
+} from "@/content/club/events";
 import { people } from "@/content/club/people";
 
 describe("people", () => {
@@ -55,10 +63,13 @@ describe("events", () => {
 });
 
 describe("achievements", () => {
-  it("records the Worlds results and the U.S. Open invitations", () => {
+  it("keeps only club-wide lines, not a specific team's result", () => {
     const joined = achievements.join(" ");
-    expect(joined).toContain("World Championship");
     expect(joined).toContain("U.S. Open");
+    /* A team's award belongs to that team, credited by name in `awards`. */
+    for (const t of ["16688A", "595C", "595Y", "36467E"]) {
+      expect(joined).not.toContain(t);
+    }
   });
 
   it("leads with the club-wide award count", () => {
@@ -73,12 +84,11 @@ describe("achievements", () => {
     expect(clubAwards.count).toMatch(/\+$/);
   });
 
-  it("states each team's real Worlds placing", () => {
-    const joined = achievements.join(" ");
-    expect(joined).toContain("7th out of 84");
-    expect(joined).toContain("18th");
-    expect(joined).toContain("31st");
-    expect(joined).toContain("Inspire Award");
+  it("states each team's real Worlds finish", () => {
+    const by = (t: string) => placings.find((p) => p.team === t)?.place;
+    expect(by("16688A")).toBe("7th of 84");
+    expect(by("595C")).toBe("18th");
+    expect(by("595Y")).toBe("31st");
   });
 
   /*
@@ -88,6 +98,30 @@ describe("achievements", () => {
   it("does not claim a specific number of Worlds invitations", () => {
     const joined = achievements.join(" ");
     expect(joined).not.toMatch(/\b(two|three|2|3) invitations\b/i);
+  });
+});
+
+describe("awards", () => {
+  const by = (t: string) => awards.filter((a) => a.team === t).map((a) => a.award);
+
+  it("credits every award to the team that won it", () => {
+    expect(by("16688A")).toContain("Inspire Award");
+    expect(by("595Y")).toContain("Excellence Award");
+    expect(by("595C")).toContain("Design Award");
+    expect(by("36467E")).toContain("Judges Award");
+  });
+
+  it("names the event each award came from", () => {
+    for (const a of awards) {
+      expect(a.event.length).toBeGreaterThan(5);
+      expect(a.team).toBeTruthy();
+    }
+  });
+
+  it("puts the provincial awards at the provincial championship", () => {
+    for (const t of ["595Y", "595C", "36467E"]) {
+      expect(awards.find((a) => a.team === t)?.event).toContain("Provincial");
+    }
   });
 });
 

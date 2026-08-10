@@ -122,6 +122,50 @@ export function upcomingFirst(events: LiveEvent[], now: Date = new Date()): Live
     .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
 }
 
+/**
+ * Which competition family a program code belongs to. VEX IQ codes carry "IQ";
+ * everything else (V5RC, VURC, VAIRC) is the metal-robot side.
+ */
+export function programFamily(program: string): "iq" | "v5" {
+  return /iq/i.test(program) ? "iq" : "v5";
+}
+
+/**
+ * Picks the events to feature so both VEX IQ and V5RC appear when both exist.
+ *
+ * Straight chronology could show two V5RC events and leave a VEX IQ family
+ * thinking the club only travels for the older students. This takes the soonest
+ * of each family first, then fills any remaining slots in date order.
+ */
+export function featureBothPrograms(events: LiveEvent[], count = 2): LiveEvent[] {
+  const picked: LiveEvent[] = [];
+  const seen = new Set<string>();
+
+  for (const family of ["iq", "v5"] as const) {
+    const first = events.find((e) => programFamily(e.program) === family);
+    if (first && !seen.has(first.id)) {
+      picked.push(first);
+      seen.add(first.id);
+    }
+  }
+
+  for (const e of events) {
+    if (picked.length >= count) break;
+    if (!seen.has(e.id)) {
+      picked.push(e);
+      seen.add(e.id);
+    }
+  }
+
+  return picked.slice(0, count).sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+}
+
+/** Everything not featured, still in date order. */
+export function remainingAfterFeature(events: LiveEvent[], featured: LiveEvent[]): LiveEvent[] {
+  const ids = new Set(featured.map((e) => e.id));
+  return events.filter((e) => !ids.has(e.id));
+}
+
 async function fetchEvents(query: string): Promise<LiveEventsResult> {
   const token = process.env.VEX_API_TOKEN;
   if (!token) return { ok: false, reason: "unconfigured" };

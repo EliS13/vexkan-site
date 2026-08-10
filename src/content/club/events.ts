@@ -16,27 +16,25 @@ export const teams: Team[] = [
     number: "595C",
     program: "VEX IQ",
     status: "active",
-    note: "Finished 18th at the VEX Robotics World Championship.",
+    note: "Our elementary VEX IQ team, and a Design Award winner at provincials.",
   },
   {
     number: "595Y",
     program: "VEX IQ",
     status: "active",
-    note: "Finished 31st at the VEX Robotics World Championship.",
+    note: "Our other VEX IQ team, and an Excellence Award winner at provincials.",
   },
   {
     number: "16688A",
     program: "V5RC",
     status: "active",
-    note:
-      "Finished 7th out of 84 teams at the VEX Robotics World Championship and won " +
-      "the Inspire Award. Also the byline on our field guide.",
+    note: "Our senior V5 team, and the byline on our field guide.",
   },
   {
     number: "36467E",
     program: "V5RC",
     status: "past",
-    note: "An earlier V5 team that competed before 16688A.",
+    note: "Competed before 16688A, through to the Alberta provincial championship.",
   },
   {
     number: "595B",
@@ -143,12 +141,39 @@ export const clubAwards = {
   label: "awards across the teams we have mentored",
 } as const;
 
+export type Award = {
+  team: string;
+  award: string;
+  event: string;
+};
+
+/**
+ * Every award, with the team that won it and the event it came from. Kept as a
+ * table rather than a prose list so nothing can end up crediting the club for
+ * something a specific team earned.
+ */
+export const awards: Award[] = [
+  { team: "16688A", award: "Inspire Award", event: "VEX Robotics World Championship" },
+  { team: "595Y", award: "Excellence Award", event: "Alberta Provincial Championship" },
+  { team: "595C", award: "Design Award", event: "Alberta Provincial Championship" },
+  { team: "36467E", award: "Judges Award", event: "Alberta Provincial Championship" },
+];
+
+/** Finishing positions, which are not awards and are counted separately. */
+export type Placing = { team: string; place: string; event: string };
+
+export const placings: Placing[] = [
+  { team: "16688A", place: "7th of 84", event: "VEX Robotics World Championship" },
+  { team: "595C", place: "18th", event: "VEX Robotics World Championship" },
+  { team: "595Y", place: "31st", event: "VEX Robotics World Championship" },
+];
+
+/**
+ * Club-wide lines only. Anything a specific team earned belongs in `awards` or
+ * `placings`, where it is credited to that team by name.
+ */
 export const achievements: string[] = [
   `${clubAwards.count} ${clubAwards.label}`,
-  "Team 16688A, 7th out of 84 teams at the VEX Robotics World Championship",
-  "Team 16688A, Inspire Award at the VEX Robotics World Championship",
-  "Team 595C, 18th at the VEX Robotics World Championship",
-  "Team 595Y, 31st at the VEX Robotics World Championship",
   "Tournament Championships and Excellence Awards",
   "Invitations to the U.S. Open",
 ];

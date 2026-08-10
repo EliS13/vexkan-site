@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
-import { achievements, events, inspireAward, teams } from "@/content/club/events";
+import { achievements, awards, events, inspireAward, placings, teams } from "@/content/club/events";
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
-import { fetchAlbertaEvents, fetchSignatureEvents, type LiveEvent } from "@/lib/vexEvents";
+import {
+  featureBothPrograms,
+  fetchAlbertaEvents,
+  fetchSignatureEvents,
+  remainingAfterFeature,
+  type LiveEvent,
+} from "@/lib/vexEvents";
 
 export const metadata: Metadata = {
   title: `Events & Results, ${org.name}`,
@@ -177,19 +183,22 @@ export default async function EventsPage() {
        * away. The disclosure is a native <details>, which needs no JavaScript
        * and delays nothing: the first two are in the markup either way.
        */}
-      {signature.ok && signature.events.length > 0 && (
+      {signature.ok && signature.events.length > 0 && (() => {
+        const featured = featureBothPrograms(signature.events);
+        const rest = remainingAfterFeature(signature.events, featured);
+        return (
         <Section
           eyebrow="Worth travelling for"
           title="Signature Events"
           lead="Invitational-scale events run by VEX around the world. These are the ones coming up."
         >
           <div className="grid gap-5 sm:grid-cols-2">
-            {signature.events.slice(0, 2).map((e) => (
+            {featured.map((e) => (
               <SignatureCard key={e.id} event={e} />
             ))}
           </div>
 
-          {signature.events.length > 2 && (
+          {rest.length > 0 && (
             <details className="group mt-6">
               <summary
                 className="inline-flex cursor-pointer list-none items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold"
@@ -197,20 +206,21 @@ export default async function EventsPage() {
               >
                 <span className="group-open:hidden">
                   {/* Singular when exactly one is hidden, or it reads "1 more Events". */}
-                  Show {signature.events.length - 2} more Signature{" "}
-                  {signature.events.length - 2 === 1 ? "Event" : "Events"}
+                  Show {rest.length} more Signature{" "}
+                  {rest.length === 1 ? "Event" : "Events"}
                 </span>
                 <span className="hidden group-open:inline">Show fewer</span>
               </summary>
               <div className="mt-5 grid gap-5 sm:grid-cols-2">
-                {signature.events.slice(2).map((e) => (
+                {rest.map((e) => (
                   <SignatureCard key={e.id} event={e} />
                 ))}
               </div>
             </details>
           )}
         </Section>
-      )}
+        );
+      })()}
 
       {/*
        * The Inspire Award is judged, not won on the field, so the criteria say
@@ -270,7 +280,70 @@ export default async function EventsPage() {
           ))}
         </div>
 
-        <h3 className="mt-12 text-lg font-semibold">Club record</h3>
+        {/*
+         * Awards are credited to the team that won them, at the event where it
+         * happened. A prose list let a team's award read as the club's, which
+         * is the one thing a results page must not blur.
+         */}
+        <h3 className="mt-14 text-lg font-semibold">Awards</h3>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+            <thead>
+              <tr>
+                {["Team", "Award", "Event"].map((h) => (
+                  <th
+                    key={h}
+                    scope="col"
+                    className="eyebrow border-b py-2.5 pr-6 text-[var(--muted)]"
+                    style={{ borderColor: "var(--line)" }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {awards.map((a) => (
+                <tr key={`${a.team}-${a.award}`} className="border-b" style={{ borderColor: "var(--line)" }}>
+                  <td className="readout py-3 pr-6 font-semibold">{a.team}</td>
+                  <td className="py-3 pr-6 text-[var(--ink-body)]">{a.award}</td>
+                  <td className="py-3 pr-6 text-muted">{a.event}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h3 className="mt-12 text-lg font-semibold">Finishes</h3>
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+            <thead>
+              <tr>
+                {["Team", "Finish", "Event"].map((h) => (
+                  <th
+                    key={h}
+                    scope="col"
+                    className="eyebrow border-b py-2.5 pr-6 text-[var(--muted)]"
+                    style={{ borderColor: "var(--line)" }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {placings.map((p) => (
+                <tr key={`${p.team}-${p.event}`} className="border-b" style={{ borderColor: "var(--line)" }}>
+                  <td className="readout py-3 pr-6 font-semibold">{p.team}</td>
+                  <td className="readout py-3 pr-6 text-[var(--ink-body)]">{p.place}</td>
+                  <td className="py-3 pr-6 text-muted">{p.event}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <h3 className="mt-12 text-lg font-semibold">Across the club</h3>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {achievements.map((a) => (
             <li key={a} className="flex gap-3">
