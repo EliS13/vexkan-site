@@ -120,7 +120,17 @@ export const inspireAward = {
  * teams have since been to Worlds, so the count was stale. TODO.md asks the
  * club to confirm a real figure rather than have this file guess one.
  */
+/**
+ * Counted across every team the club has mentored, not just the ones competing
+ * now, which is why it is a floor rather than an exact figure.
+ */
+export const clubAwards = {
+  count: "30+",
+  label: "awards across the teams we have mentored",
+} as const;
+
 export const achievements: string[] = [
+  `${clubAwards.count} ${clubAwards.label}`,
   "Team 16688A, 7th out of 84 teams at the VEX Robotics World Championship",
   "Team 16688A, Inspire Award at the VEX Robotics World Championship",
   "Team 595C, 18th at the VEX Robotics World Championship",
