@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { achievements, events, teams } from "@/content/club/events";
+import { achievements, events, inspireAward, teams } from "@/content/club/events";
 import { people } from "@/content/club/people";
 
 describe("people", () => {
-  it("lists the three club leaders", () => {
-    expect(people.map((p) => p.name)).toEqual(["Eli Seeliger", "Alex Han", "Michael Li"]);
+  it("lists the founder and nobody else", () => {
+    expect(people.map((p) => p.name)).toEqual(["Eli Seeliger"]);
   });
 
   it("gives every leader a role and a bio", () => {
@@ -45,9 +45,49 @@ describe("events", () => {
 });
 
 describe("achievements", () => {
-  it("records the Worlds and U.S. Open invitations", () => {
+  it("records the Worlds results and the U.S. Open invitations", () => {
     const joined = achievements.join(" ");
     expect(joined).toContain("World Championship");
     expect(joined).toContain("U.S. Open");
+  });
+
+  it("states each team's real Worlds placing", () => {
+    const joined = achievements.join(" ");
+    expect(joined).toContain("7th out of 84");
+    expect(joined).toContain("18th");
+    expect(joined).toContain("31st");
+    expect(joined).toContain("Inspire Award");
+  });
+
+  /*
+   * The old site said "two invitations" to Worlds. Three teams have since been,
+   * so any hard count here would be wrong until the club confirms one.
+   */
+  it("does not claim a specific number of Worlds invitations", () => {
+    const joined = achievements.join(" ");
+    expect(joined).not.toMatch(/\b(two|three|2|3) invitations\b/i);
+  });
+});
+
+describe("inspireAward", () => {
+  it("credits 16688A at the World Championship", () => {
+    expect(inspireAward.team).toBe("16688A");
+    expect(inspireAward.event).toContain("World Championship");
+  });
+
+  it("lists the four judging criteria", () => {
+    expect(inspireAward.criteria).toHaveLength(4);
+    for (const c of inspireAward.criteria) {
+      expect(c.length).toBeGreaterThan(20);
+    }
+  });
+
+  /*
+   * The criteria are summarised from the REC Foundation rather than quoted, so
+   * the page must always be able to point a reader at the official wording.
+   */
+  it("links to the REC Foundation source", () => {
+    expect(inspireAward.sourceUrl).toMatch(/^https:\/\/.*recf\.org/);
+    expect(inspireAward.sourceLabel).toBeTruthy();
   });
 });

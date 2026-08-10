@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
-import { achievements, events, teams } from "@/content/club/events";
+import { achievements, events, inspireAward, teams } from "@/content/club/events";
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
@@ -45,6 +45,48 @@ export default function EventsPage() {
           ))}
         </div>
       </Section>
+
+      {/*
+       * The Inspire Award is judged, not won on the field, so the criteria say
+       * more about the club than the trophy does. They are summarised in our
+       * own words and linked to the REC Foundation rather than reproduced.
+       */}
+      <div className="band-dark">
+        <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+          <p className="eyebrow">Judged award · {inspireAward.event}</p>
+          <h2 className="mt-3 text-3xl font-semibold sm:text-4xl" style={{ color: "#f3efe8" }}>
+            Team {inspireAward.team} won the {inspireAward.name}
+          </h2>
+          <p className="club-lead mt-5 max-w-2xl" style={{ color: "rgba(243,239,232,0.78)" }}>
+            {inspireAward.summary}
+          </p>
+
+          <ol className="mt-10 grid gap-px overflow-hidden rounded-2xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
+            {inspireAward.criteria.map((c, i) => (
+              <li key={c} className="flex gap-4 p-6" style={{ background: "var(--ink-deep)" }}>
+                <span className="readout shrink-0 text-sm" style={{ color: "var(--purple-on-dark)" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span style={{ color: "rgba(243,239,232,0.88)" }}>{c}</span>
+              </li>
+            ))}
+          </ol>
+
+          <p className="mt-6 text-sm" style={{ color: "rgba(243,239,232,0.6)" }}>
+            {inspireAward.note} Criteria summarised from the{" "}
+            <a
+              href={inspireAward.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4"
+              style={{ color: "var(--purple-on-dark)" }}
+            >
+              {inspireAward.sourceLabel}
+            </a>
+            .
+          </p>
+        </div>
+      </div>
 
       <Section title="Results">
         <div className="grid gap-5 sm:grid-cols-2">
