@@ -2,9 +2,9 @@ import Link from "next/link";
 import { AccountMenu } from "./AccountMenu";
 
 const NAV_LINKS = [
-  { href: "/chapters", label: "Chapters" },
-  { href: "/tools", label: "Tools" },
-  { href: "/ask", label: "Ask" },
+  { href: "/guide/chapters", label: "Chapters" },
+  { href: "/guide/tools", label: "Tools" },
+  { href: "/guide/ask", label: "Ask" },
 ];
 
 export function SiteHeader() {
@@ -14,7 +14,7 @@ export function SiteHeader() {
       style={{ borderColor: "var(--line)" }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
-        <Link href="/" className="flex min-w-0 items-center gap-2.5">
+        <Link href="/guide" className="flex min-w-0 items-center gap-2.5">
           <span
             className="flex h-8 shrink-0 items-center justify-center rounded-md px-2 text-xs font-bold tracking-tight text-white"
             style={{ background: "var(--purple)" }}

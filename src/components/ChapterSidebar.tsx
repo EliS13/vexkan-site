@@ -28,7 +28,7 @@ export function ChapterSidebar({ activeSlug }: { activeSlug: string }) {
                   <li key={c.slug}>
                     {ready ? (
                       <Link
-                        href={`/chapters/${c.slug}`}
+                        href={`/guide/chapters/${c.slug}`}
                         className="block rounded-md px-2 py-1.5 transition-colors"
                         style={
                           active
