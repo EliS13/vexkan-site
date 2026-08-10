@@ -22,6 +22,11 @@ export function AdminDashboard() {
   const [filter, setFilter] = useState<string>("all");
   const [email, setEmail] = useState("");
   const [sent, setSent] = useState(false);
+  // Shared by the initial load, refreshes, status updates and deletes: any of
+  // them can fail (expired token, dropped network, RLS misconfiguration), and
+  // a maintainer must see that plainly rather than have it look identical to
+  // "nothing to show" or a status/delete that silently did nothing.
+  const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     const sb = getSupabase();
@@ -32,7 +37,13 @@ export function AdminDashboard() {
 
     if (!(await isAdmin())) return setState("not-admin");
 
-    setRows(await listRegistrations());
+    const result = await listRegistrations();
+    if (result.ok) {
+      setRows(result.rows);
+      setError(null);
+    } else {
+      setError(result.message);
+    }
     setState("ready");
   }, []);
 
@@ -60,11 +71,16 @@ export function AdminDashboard() {
     await getSupabase()?.auth.signOut();
     setState("signed-out");
     setRows([]);
+    setError(null);
   }
 
   async function setStatus(id: string, status: string) {
-    if (await updateRegistrationStatus(id, status)) {
+    const result = await updateRegistrationStatus(id, status);
+    if (result.ok) {
       setRows((rs) => rs.map((r) => (r.id === id ? { ...r, status } : r)));
+      setError(null);
+    } else {
+      setError(result.message);
     }
   }
 
@@ -73,8 +89,12 @@ export function AdminDashboard() {
       `Permanently delete the registration for ${row.student_first} ${row.student_last}? This cannot be undone.`
     );
     if (!ok) return;
-    if (await deleteRegistration(row.id)) {
+    const result = await deleteRegistration(row.id);
+    if (result.ok) {
       setRows((rs) => rs.filter((r) => r.id !== row.id));
+      setError(null);
+    } else {
+      setError(result.message);
     }
   }
 
@@ -159,9 +179,24 @@ export function AdminDashboard() {
         </button>
       </div>
 
-      {shown.length === 0 ? (
+      {error && (
+        <p
+          role="alert"
+          className="mt-5 rounded-xl px-4 py-3 text-sm"
+          style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
+        >
+          {error}{" "}
+          <button onClick={() => void load()} className="font-semibold underline">
+            Try again
+          </button>
+        </p>
+      )}
+
+      {shown.length === 0 && !error && (
         <p className="mt-10 text-muted">No registrations yet.</p>
-      ) : (
+      )}
+
+      {shown.length > 0 && (
         <div className="mt-6 overflow-x-auto">
           <table className="w-full min-w-[860px] border-collapse text-sm">
             <thead>

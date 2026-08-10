@@ -35,16 +35,30 @@ export async function submitRegistration(input: RegistrationInput): Promise<Subm
   return { ok: true };
 }
 
-/** Admin only. Row level security refuses this for everyone else. */
-export async function listRegistrations(): Promise<RegistrationRow[]> {
+export type ActionResult = { ok: true } | { ok: false; message: string };
+export type ListResult = { ok: true; rows: RegistrationRow[] } | { ok: false; message: string };
+
+/**
+ * Admin only. Row level security refuses this for everyone else, which comes
+ * back as a Postgrest error, not an empty result — so a failure here must
+ * never look the same as "there are zero registrations". Callers need to be
+ * able to tell an expired token or a network drop apart from a genuinely
+ * empty table.
+ */
+export async function listRegistrations(): Promise<ListResult> {
   const sb = getSupabase();
-  if (!sb) return [];
+  if (!sb) return { ok: false, message: "Online registration isn't set up yet." };
   const { data, error } = await sb
     .from(REGISTRATIONS_TABLE)
     .select("*")
     .order("created_at", { ascending: false });
-  if (error || !data) return [];
-  return data as RegistrationRow[];
+  if (error) {
+    return {
+      ok: false,
+      message: "We couldn't load registrations. Check your connection and try again.",
+    };
+  }
+  return { ok: true, rows: (data ?? []) as RegistrationRow[] };
 }
 
 export async function isAdmin(): Promise<boolean> {
@@ -56,18 +70,24 @@ export async function isAdmin(): Promise<boolean> {
   return Boolean(data);
 }
 
-export async function updateRegistrationStatus(id: string, status: string): Promise<boolean> {
+export async function updateRegistrationStatus(id: string, status: string): Promise<ActionResult> {
   const sb = getSupabase();
-  if (!sb) return false;
+  if (!sb) return { ok: false, message: "Online registration isn't set up yet." };
   const { error } = await sb.from(REGISTRATIONS_TABLE).update({ status }).eq("id", id);
-  return !error;
+  if (error) {
+    return { ok: false, message: "We couldn't update that status. Please try again." };
+  }
+  return { ok: true };
 }
 
-export async function deleteRegistration(id: string): Promise<boolean> {
+export async function deleteRegistration(id: string): Promise<ActionResult> {
   const sb = getSupabase();
-  if (!sb) return false;
+  if (!sb) return { ok: false, message: "Online registration isn't set up yet." };
   const { error } = await sb.from(REGISTRATIONS_TABLE).delete().eq("id", id);
-  return !error;
+  if (error) {
+    return { ok: false, message: "We couldn't delete that registration. Please try again." };
+  }
+  return { ok: true };
 }
 
 export { isCloudConfigured };
