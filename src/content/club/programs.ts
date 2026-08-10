@@ -27,9 +27,9 @@ export const TRACK_LABELS: Record<ProgramTrack, string> = {
 export const TRACK_ORDER: ProgramTrack[] = ["iq-foundation", "iq-competition", "v5rc"];
 
 /**
- * One foundation class rather than a band per grade pair. The club found
- * Grades 1 and 2 too young for the kit, and everyone from Grade 3 up learns it
- * together, so splitting the listing only made a parent guess which one to read.
+ * One foundation class rather than a band per grade pair. Grades 1 and 2 were
+ * too young for the kit, and everyone from Grade 3 to 6 learns it together, so
+ * splitting the listing only made a parent guess which one to read.
  */
 export const programs: Program[] = [
   {
@@ -37,9 +37,9 @@ export const programs: Program[] = [
     title: "VEX IQ Foundation Class",
     shortTitle: "Foundation Class",
     track: "iq-foundation",
-    gradeLabel: "Grades 3–5, older beginners welcome",
+    gradeLabel: "Grades 3–6",
     gradeMin: 3,
-    gradeMax: 8,
+    gradeMax: 6,
     summary:
       "Where most clubbers start, and the usual route onto a competition team. " +
       "Build, program, keep a logbook, and compete internally for certificates.",
@@ -56,8 +56,7 @@ export const programs: Program[] = [
       "Programming the finished robot",
       "Competing in regular internal competitions",
     ],
-    prerequisites:
-      "Aimed at Grades 3 to 5. Older students starting robotics for the first time are welcome.",
+    prerequisites: "Open to any student in Grades 3 to 6.",
     schedule: TBD,
   },
   {

@@ -32,6 +32,19 @@ type VexApiEvent = {
   event_type?: string;
 };
 
+/**
+ * VEX U is a university competition. The club runs elementary through high
+ * school, so those events are noise on every page here.
+ *
+ * The program code alone is not enough: some VEX U divisions come back tagged
+ * V5RC with "VEX U" only in the name, so the name is checked too.
+ */
+export function isVexU(raw: { name?: string; program?: { code?: string; name?: string } }): boolean {
+  const code = raw.program?.code ?? "";
+  if (/^VURC$/i.test(code)) return true;
+  return /\bVEX ?U\b/i.test(raw.name ?? "");
+}
+
 export type LiveEvent = {
   id: string;
   name: string;
@@ -47,6 +60,9 @@ export type LiveEvent = {
   place: string;
   url: string;
   startsAt: string;
+  /** Kept so Signature Events can be filtered to the ones worth travelling to. */
+  region: string;
+  country: string;
 };
 
 export type LiveEventsResult =
@@ -108,6 +124,8 @@ export function mapVexEvent(raw: VexApiEvent): LiveEvent {
     place: formatPlace(raw.location),
     url: `https://events.vex.com/robot-competitions/event/${raw.sku}.html`,
     startsAt: raw.start ?? "",
+    region: raw.location?.region ?? "",
+    country: raw.location?.country ?? "",
   };
 }
 
@@ -184,7 +202,8 @@ async function fetchEvents(query: string): Promise<LiveEventsResult> {
     const body = (await res.json()) as { data?: VexApiEvent[] };
     if (!Array.isArray(body?.data)) return { ok: false, reason: "unavailable" };
 
-    return { ok: true, events: upcomingFirst(body.data.map(mapVexEvent)) };
+    const usable = body.data.filter((e) => !isVexU(e));
+    return { ok: true, events: upcomingFirst(usable.map(mapVexEvent)) };
   } catch {
     /*
      * A failed fetch must never read as "no competitions this season". The
@@ -210,12 +229,23 @@ export function fetchAlbertaEvents(): Promise<LiveEventsResult> {
 }
 
 /**
- * Signature Events, worldwide. These are the invitational-scale events a club
- * travels for, so they are deliberately not filtered to Alberta: narrowing them
- * to one province would repeat the section above and hide the point.
+ * Signature Events the club could realistically travel to.
+ *
+ * Alberta's own Signature Event is excluded because it already appears in the
+ * section above, and the rest of the world is excluded because a Calgary club
+ * is not flying to Hong Kong or Bangkok for a weekend. What is left is the US
+ * and the rest of Canada, which is the honest answer to "where could we go".
  */
-export function fetchSignatureEvents(): Promise<LiveEventsResult> {
-  return fetchEvents(
-    `level%5B%5D=Signature&start=${encodeURIComponent(fromToday())}&per_page=50`
+export function isWithinReach(e: LiveEvent): boolean {
+  const nearby = ["United States", "Canada"];
+  if (!nearby.includes(e.country)) return false;
+  return e.region !== "Alberta";
+}
+
+export async function fetchSignatureEvents(): Promise<LiveEventsResult> {
+  const res = await fetchEvents(
+    `level%5B%5D=Signature&start=${encodeURIComponent(fromToday())}&per_page=100`
   );
+  if (!res.ok) return res;
+  return { ok: true, events: res.events.filter(isWithinReach) };
 }

@@ -1,23 +1,34 @@
+import Image from "next/image";
 import type { Person } from "@/content/club/people";
+import { founderPhoto } from "@/content/club/photos";
 import { Card } from "./Card";
 
 export function PersonCard({ person }: { person: Person }) {
   return (
-    <Card>
-      <div className="flex items-center gap-4">
+    <Card className="lift-hover">
+      <div className="flex items-center gap-5">
+        {/*
+         * A real photograph where there is one. The initials badge stays as the
+         * fallback so adding a second person does not need a photo first.
+         */}
         <span
-          className="readout flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-lg font-semibold text-white"
+          className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl"
           style={{ background: "var(--purple)" }}
-          aria-hidden="true"
         >
-          {person.initials}
+          <Image
+            src={founderPhoto.src}
+            alt={founderPhoto.alt}
+            fill
+            sizes="80px"
+            className="object-cover"
+          />
         </span>
         <div>
-          <h3 className="text-base font-semibold">{person.name}</h3>
+          <h3 className="text-lg font-semibold">{person.name}</h3>
           <p className="eyebrow text-[var(--muted)]">{person.role}</p>
         </div>
       </div>
-      <p className="mt-4 text-sm text-[var(--ink-body)]">{person.bio}</p>
+      <p className="mt-5 text-sm text-[var(--ink-body)]">{person.bio}</p>
     </Card>
   );
 }

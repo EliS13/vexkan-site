@@ -3,6 +3,8 @@ import {
   formatDateRange,
   formatLocation,
   formatPlace,
+  isVexU,
+  isWithinReach,
   featureBothPrograms,
   programFamily,
   remainingAfterFeature,
@@ -101,7 +103,7 @@ describe("mapVexEvent", () => {
 
 describe("upcomingFirst", () => {
   const at = (startsAt: string, id = startsAt) =>
-    ({ id, name: id, program: "V5RC", dates: "", location: "", place: "", url: "", startsAt });
+    ({ id, name: id, program: "V5RC", dates: "", location: "", place: "", url: "", startsAt, region: "", country: "" });
 
   it("drops events that already finished", () => {
     const out = upcomingFirst(
@@ -136,6 +138,7 @@ describe("upcomingFirst", () => {
 describe("featureBothPrograms", () => {
   const ev = (id: string, program: string, startsAt: string) => ({
     id, name: id, program, dates: "", location: "", place: "", url: "", startsAt,
+    region: "", country: "",
   });
 
   /*
@@ -184,6 +187,7 @@ describe("featureBothPrograms", () => {
 describe("remainingAfterFeature", () => {
   const ev = (id: string) => ({
     id, name: id, program: "V5RC", dates: "", location: "", place: "", url: "", startsAt: "",
+    region: "", country: "",
   });
 
   it("returns everything not featured, and nothing twice", () => {
@@ -200,3 +204,49 @@ describe("remainingAfterFeature", () => {
 
 
 
+
+describe("isVexU", () => {
+  /* VEX U is a university competition; this club is elementary to high school. */
+  it("catches the VURC program code", () => {
+    expect(isVexU({ name: "Anything", program: { code: "VURC" } })).toBe(true);
+  });
+
+  /*
+   * Some VEX U divisions come back tagged V5RC with "VEX U" only in the name,
+   * so the code alone would let them through.
+   */
+  it("catches a VEX U division mislabelled as V5RC", () => {
+    expect(
+      isVexU({ name: "Bots @ Bristol VEX U Robotics® Competition", program: { code: "V5RC" } })
+    ).toBe(true);
+  });
+
+  it("leaves the school-age programs alone", () => {
+    expect(isVexU({ name: "Mecha Mayhem: VEX V5", program: { code: "V5RC" } })).toBe(false);
+    expect(isVexU({ name: "Kalahari Classic", program: { code: "VIQRC" } })).toBe(false);
+  });
+});
+
+describe("isWithinReach", () => {
+  const at = (region: string, country: string) => ({
+    id: region + country, name: "x", program: "V5RC", dates: "", location: "",
+    place: "", url: "", startsAt: "", region, country,
+  });
+
+  /* Alberta's own Signature Event is already listed in the section above. */
+  it("excludes Alberta", () => {
+    expect(isWithinReach(at("Alberta", "Canada"))).toBe(false);
+  });
+
+  it("keeps the rest of Canada and the United States", () => {
+    expect(isWithinReach(at("Ontario", "Canada"))).toBe(true);
+    expect(isWithinReach(at("Utah", "United States"))).toBe(true);
+  });
+
+  /* A Calgary club is not flying to Hong Kong for a weekend. */
+  it("excludes everywhere else", () => {
+    for (const c of ["Hong Kong", "Thailand", "China", "United Kingdom", "Taiwan"]) {
+      expect(isWithinReach(at("", c))).toBe(false);
+    }
+  });
+});
