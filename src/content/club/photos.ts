@@ -75,8 +75,8 @@ export const programPhotos: Photo[] = [
   },
   {
     src: "/photos/IMG_3576.jpg",
-    alt: "A student holding a stack of blue VEX rings on a robot's lift arm while checking how it sits.",
-    caption: "Testing a lift",
+    alt: "A student in the pits at Mecha Mayhem holding a stack of blue VEX rings on a robot's lift arm, checking how it sits.",
+    caption: "In the pits at Mecha Mayhem",
   },
 ];
 
