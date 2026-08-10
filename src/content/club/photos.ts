@@ -23,6 +23,11 @@ export const founderPhoto: Photo = {
  */
 export const teamPhotos: Photo[] = [
   {
+    src: "/photos/club/club-04.jpg",
+    alt: "Three members of team 595B in VexKan club shirts, one holding their robot, one a controller and one their Judges Award trophy, in front of the upcoming matches screen.",
+    caption: "595B, Judges Award",
+  },
+  {
     src: "/photos/iq_IMG_3390.jpg",
     alt: "Four members of team 595C in VexKan club shirts, three holding VEX IQ trophies and one holding a Teamwork Champion certificate, with their robot held up beside them.",
     caption: "595C, Teamwork Champion",
@@ -46,6 +51,11 @@ export const teamPhotos: Photo[] = [
 
 /** Practice, and the club's own field at home. */
 export const buildPhotos: Photo[] = [
+  {
+    src: "/photos/club/club-01.jpg",
+    alt: "Two students sitting at a table going over a V5 robot together, with a scoring sheet and a VexKan Robotics Club pen in front of them.",
+    caption: "Going over a build together",
+  },
   {
     src: "/photos/iq_IMG_3782.jpg",
     alt: "Four club members around a practice field laid out on a living room floor, two of them driving robots while the others watch the match.",
