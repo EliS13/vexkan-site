@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
-import { achievements, events, inspireAward, placings, teams } from "@/content/club/events";
+import { events, inspireAward, teams } from "@/content/club/events";
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 import { AwardsShowcase } from "@/components/club/AwardsShowcase";
+import { Slideshow } from "@/components/club/Slideshow";
+import { communityPhotos, competitionPhotos } from "@/content/club/photos";
 import {
   featureBothPrograms,
   fetchAlbertaEvents,
@@ -24,7 +26,7 @@ export const revalidate = 86400;
 
 function SignatureCard({ event }: { event: LiveEvent }) {
   return (
-    <Card>
+    <Card className="lift-hover h-full">
       <div className="flex items-start justify-between gap-3">
         <h3 className="text-lg font-semibold">{event.name}</h3>
         <span
@@ -61,7 +63,6 @@ export default async function EventsPage() {
    * per day, not one per visitor. */
   const [live, signature] = await Promise.all([fetchAlbertaEvents(), fetchSignatureEvents()]);
   const competitions = events.filter((e) => e.kind === "competition");
-  const results = events.filter((e) => e.kind === "result");
 
   return (
     <>
@@ -90,7 +91,7 @@ export default async function EventsPage() {
           <>
             <div className="grid gap-5 sm:grid-cols-2">
               {live.events.map((e) => (
-                <Card key={e.id}>
+                <Card key={e.id} className="lift-hover h-full">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="text-lg font-semibold">{e.name}</h3>
                     <span
@@ -140,7 +141,7 @@ export default async function EventsPage() {
              */}
             <div className="grid gap-5 sm:grid-cols-2">
               {competitions.map((e) => (
-                <Card key={e.slug}>
+                <Card key={e.slug} className="lift-hover h-full">
                   <h3 className="text-lg font-semibold">{e.name}</h3>
                   <p className="mt-3 text-sm text-muted">{e.summary}</p>
                   <dl className="mt-5 space-y-2 text-sm">
@@ -276,68 +277,26 @@ export default async function EventsPage() {
         </div>
       </div>
 
-      <Section title="Results">
-        <div className="grid gap-5 sm:grid-cols-2">
-          {results.map((e) => (
-            <Card key={e.slug}>
-              <h3 className="text-lg font-semibold">{e.name}</h3>
-              <p className="mt-3 text-[var(--ink-body)]">{e.summary}</p>
-              {!isTbd(e.location) && (
-                <p className="eyebrow mt-4 text-[var(--muted)]">{e.location}</p>
-              )}
-            </Card>
-          ))}
+      <Section tone="surface" eyebrow="At the event" title="What competing looks like">
+        <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">
+          <Slideshow photos={competitionPhotos} />
+          <div>
+            <p className="club-lead">
+              Most of a competition happens away from the field: fixing what broke in the last
+              match, talking through a strategy with an alliance partner, and explaining a design
+              choice to a judge.
+            </p>
+            <p className="club-lead mt-4">
+              These are our own teams at the Mecha Mayhem Signature Event in Calgary.
+            </p>
+          </div>
         </div>
-
-        {/*
-         * Awards are credited to the team that won them, at the event where it
-         * happened. A prose list let a team's award read as the club's, which
-         * is the one thing a results page must not blur.
-         */}
-        <h3 className="mt-12 text-lg font-semibold">Finishes</h3>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[560px] border-collapse text-left text-sm">
-            <thead>
-              <tr>
-                {["Team", "Finish", "Event"].map((h) => (
-                  <th
-                    key={h}
-                    scope="col"
-                    className="eyebrow border-b py-2.5 pr-6 text-[var(--muted)]"
-                    style={{ borderColor: "var(--line)" }}
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {placings.map((p) => (
-                <tr key={`${p.team}-${p.event}`} className="border-b" style={{ borderColor: "var(--line)" }}>
-                  <td className="readout py-3 pr-6 font-semibold">{p.team}</td>
-                  <td className="readout py-3 pr-6 text-[var(--ink-body)]">{p.place}</td>
-                  <td className="py-3 pr-6 text-muted">{p.event}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        <h3 className="mt-12 text-lg font-semibold">Across the club</h3>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {achievements.map((a) => (
-            <li key={a} className="flex gap-3">
-              <span className="mt-2 h-2 w-2 shrink-0 rounded-full" style={{ background: "var(--purple)" }} aria-hidden="true" />
-              <span className="text-[var(--ink-body)]">{a}</span>
-            </li>
-          ))}
-        </ul>
       </Section>
 
       <Section tone="surface" title="Our teams">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {teams.map((t) => (
-            <Card key={t.number}>
+            <Card key={t.number} className="lift-hover h-full">
               <span className="readout text-xl font-semibold">{t.number}</span>
               <p className="eyebrow mt-1 text-[var(--muted)]">
                 {t.program} · {t.status === "active" ? "Active" : "Past"}
@@ -345,6 +304,18 @@ export default async function EventsPage() {
               <p className="mt-3 text-sm text-[var(--ink-body)]">{t.note}</p>
             </Card>
           ))}
+        </div>
+
+        <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]">
+          <div>
+            <h3 className="text-lg font-semibold">The rest of the community</h3>
+            <p className="club-lead mt-3">
+              Competitions are where our teams meet everyone else doing this. Some of the most
+              useful things we know came from another club being generous with what they had
+              worked out.
+            </p>
+          </div>
+          <Slideshow photos={communityPhotos} />
         </div>
       </Section>
     </>

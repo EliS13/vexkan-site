@@ -29,19 +29,19 @@ export default function ContactPage() {
           than email.
         </p>
         <div className="grid gap-5 lg:grid-cols-3">
-          <Card>
+          <Card className="lift-hover h-full">
             <p className="eyebrow text-[var(--muted)]">Phone</p>
             <a href={org.phoneHref} className="mt-2 block text-lg font-semibold hover:underline">
               {org.phone}
             </a>
           </Card>
-          <Card>
+          <Card className="lift-hover h-full">
             <p className="eyebrow text-[var(--muted)]">Email</p>
             <a href={org.emailHref} className="mt-2 block text-lg font-semibold break-all hover:underline">
               {org.email}
             </a>
           </Card>
-          <Card>
+          <Card className="lift-hover h-full">
             <p className="eyebrow text-[var(--muted)]">Where we are</p>
             <p className="mt-2 text-lg font-semibold">{org.address}</p>
             <p className="mt-2 text-sm text-muted">

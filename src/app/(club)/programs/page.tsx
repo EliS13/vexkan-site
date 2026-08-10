@@ -24,7 +24,7 @@ export default function ProgramsPage() {
         <Section key={track} tone={i % 2 === 0 ? "surface" : "default"} title={TRACK_LABELS[track]}>
           <div className="grid gap-5 sm:grid-cols-2">
             {programsByTrack(track).map((p) => (
-              <Card key={p.slug}>
+              <Card key={p.slug} className="lift-hover h-full">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="text-lg font-semibold">{p.title}</h3>
                   <span
