@@ -298,10 +298,10 @@ export default async function EventsPage() {
           {teams.map((t) => (
             <Card key={t.number} className="lift-hover h-full">
               <span className="readout text-xl font-semibold">{t.number}</span>
-              <p className="eyebrow mt-1 text-[var(--muted)]">
-                {t.program} · {t.status === "active" ? "Active" : "Past"}
+              <p className="mt-1 text-sm font-medium text-[var(--ink-body)]">{t.name}</p>
+              <p className="eyebrow mt-2 text-[var(--muted)]">
+                {t.program} · {t.grade}
               </p>
-              <p className="mt-3 text-sm text-[var(--ink-body)]">{t.note}</p>
             </Card>
           ))}
         </div>

@@ -1,5 +1,3 @@
-import { teams } from "@/content/club/events";
-
 /**
  * The club's Worlds placings, set the way an event bracket sets them: the
  * placing carries the weight, the field size stays a quiet denominator.
@@ -69,7 +67,4 @@ export function Scoreboard() {
   );
 }
 
-/** Used by the events page, where the teams' own notes carry the detail. */
-export function teamsWithResults() {
-  return teams.filter((t) => t.status === "active");
-}
+
