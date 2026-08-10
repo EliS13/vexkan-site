@@ -7,6 +7,7 @@ import { Card } from "@/components/club/Card";
 import {
   featureBothPrograms,
   fetchAlbertaEvents,
+  fetchClubAwards,
   fetchSignatureEvents,
   remainingAfterFeature,
   type LiveEvent,
@@ -58,7 +59,18 @@ function SignatureCard({ event }: { event: LiveEvent }) {
 export default async function EventsPage() {
   /* Both fetches share the same daily cache window, so this is one round trip
    * per day, not one per visitor. */
-  const [live, signature] = await Promise.all([fetchAlbertaEvents(), fetchSignatureEvents()]);
+  const [live, signature, liveAwards] = await Promise.all([
+    fetchAlbertaEvents(),
+    fetchSignatureEvents(),
+    fetchClubAwards(teams.map((t) => t.number)),
+  ]);
+
+  /*
+   * VEX's own record when we can reach it, the hand-kept list otherwise. The
+   * live list is authoritative because it cannot drift out of date, but an
+   * outage must not empty the table.
+   */
+  const shownAwards = liveAwards.ok && liveAwards.awards.length > 0 ? liveAwards.awards : awards;
   const competitions = events.filter((e) => e.kind === "competition");
   const results = events.filter((e) => e.kind === "result");
 
@@ -286,6 +298,11 @@ export default async function EventsPage() {
          * is the one thing a results page must not blur.
          */}
         <h3 className="mt-14 text-lg font-semibold">Awards</h3>
+        <p className="mt-2 text-sm text-muted">
+          {liveAwards.ok && liveAwards.awards.length > 0
+            ? "Every award our teams have won, pulled from events.vex.com and refreshed daily."
+            : "The awards we have recorded by hand. The live list from events.vex.com is not switched on yet."}
+        </p>
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[560px] border-collapse text-left text-sm">
             <thead>
@@ -303,7 +320,7 @@ export default async function EventsPage() {
               </tr>
             </thead>
             <tbody>
-              {awards.map((a) => (
+              {shownAwards.map((a) => (
                 <tr key={`${a.team}-${a.award}`} className="border-b" style={{ borderColor: "var(--line)" }}>
                   <td className="readout py-3 pr-6 font-semibold">{a.team}</td>
                   <td className="py-3 pr-6 text-[var(--ink-body)]">{a.award}</td>
