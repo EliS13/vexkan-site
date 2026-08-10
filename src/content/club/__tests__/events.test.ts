@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { achievements, events, inspireAward, teams } from "@/content/club/events";
+import { achievements, clubAwards, events, inspireAward, teams } from "@/content/club/events";
 import { people } from "@/content/club/people";
 
 describe("people", () => {
@@ -49,6 +49,18 @@ describe("achievements", () => {
     const joined = achievements.join(" ");
     expect(joined).toContain("World Championship");
     expect(joined).toContain("U.S. Open");
+  });
+
+  it("leads with the club-wide award count", () => {
+    expect(achievements[0]).toBe("30+ awards across the teams we have mentored");
+  });
+
+  /*
+   * "30+" is a floor the club can stand behind. An exact number would need
+   * recounting every season, and would be wrong the moment a team won again.
+   */
+  it("keeps the award count as a floor rather than an exact figure", () => {
+    expect(clubAwards.count).toMatch(/\+$/);
   });
 
   it("states each team's real Worlds placing", () => {

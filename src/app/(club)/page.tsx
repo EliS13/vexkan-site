@@ -7,6 +7,7 @@ import { Button } from "@/components/club/Button";
 import { Card } from "@/components/club/Card";
 import { RobotHero } from "@/components/club/art/RobotHero";
 import { Scoreboard } from "@/components/club/Scoreboard";
+import { clubAwards } from "@/content/club/events";
 
 export const metadata: Metadata = {
   title: `${org.name}`,
@@ -147,6 +148,20 @@ export default function HomePage() {
           <div className="mt-8">
             <Scoreboard />
           </div>
+          {/*
+           * The placings above are three teams on three days. This is the
+           * longer run, and it counts every team the club has mentored rather
+           * than only the ones competing now.
+           */}
+          <p className="mt-9 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="score text-4xl font-semibold" style={{ color: "var(--purple-on-dark)" }}>
+              {clubAwards.count}
+            </span>
+            <span className="text-[15px]" style={{ color: "rgba(243,239,232,0.78)" }}>
+              {clubAwards.label}
+            </span>
+          </p>
+
           <p className="mt-7">
             <Link href="/events" className="underline underline-offset-4" style={{ color: "var(--purple-on-dark)" }}>
               The full record, and what the Inspire Award takes
