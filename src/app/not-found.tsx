@@ -1,24 +1,27 @@
-import { Button } from "@/components/club/Button";
+import { ClubHeader } from "@/components/club/ClubHeader";
+import { ClubFooter } from "@/components/club/ClubFooter";
+import { NotFoundContent } from "@/components/club/NotFoundContent";
 
 /**
  * The (club) route group's not-found only fires when a matched route inside
  * that group calls notFound() (e.g. an invalid /programs/[slug]). A URL that
  * doesn't match any route at all — including anything under /guide, which has
- * no not-found of its own — falls through to this root-level file instead. It
- * mirrors (club)/not-found.tsx so every 404 on the site looks the same.
+ * no not-found of its own — falls through to this root-level file instead.
+ *
+ * The root layout is a bare document shell (no header/footer of its own), so
+ * this file renders the club chrome directly, matching what
+ * (club)/layout.tsx does, rather than leaving visitors on an orphan page.
+ * vexkan.ca is primarily the club site, so club chrome is the right default
+ * even though this file also catches unmatched /guide/* URLs.
  */
 export default function NotFound() {
   return (
-    <div className="mx-auto max-w-xl px-5 py-24 text-center">
-      <p className="eyebrow text-[var(--muted)]">404</p>
-      <h1 className="mt-2 text-3xl font-semibold">We couldn&apos;t find that page</h1>
-      <p className="club-lead mt-4">
-        The link may be out of date. Our programs and contact details are a click away.
-      </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-3">
-        <Button href="/programs">Browse programs</Button>
-        <Button href="/" variant="secondary">Go home</Button>
-      </div>
+    <div className="club flex min-h-full flex-1 flex-col">
+      <ClubHeader />
+      <main id="main" className="flex-1">
+        <NotFoundContent />
+      </main>
+      <ClubFooter />
     </div>
   );
 }
