@@ -3,13 +3,12 @@
 Every item below currently renders as "Contact us for current details". Each is
 a single edit in the file named.
 
-## `programs.ts` — all eight programs
+## `programs.ts` — all seven programs
 
 | Field | Programs affected | What to write |
 | --- | --- | --- |
-| `schedule` | all 8 | Day and time, e.g. `"Tuesdays, 6:00–8:00PM"` |
-| `fee` | all 8 | Cost and period, e.g. `"$180 per term"`, or `"Free"` |
-| `gradeLabel` | `summer-camp` | The grades the camp accepts |
+| `schedule` | all 7 | Day and time, e.g. `"Tuesdays, 6:00–8:00PM"` |
+| `fee` | all 7 | Cost and period, e.g. `"$180 per term"`, or `"Free"` |
 
 ## `events.ts`
 

@@ -8,12 +8,21 @@ import {
 } from "@/content/club/programs";
 
 describe("programs", () => {
-  it("has the eight programs the club runs", () => {
-    expect(programs).toHaveLength(8);
+  it("has the seven programs the club runs", () => {
+    expect(programs).toHaveLength(7);
   });
 
   it("uses unique slugs", () => {
-    expect(new Set(programSlugs()).size).toBe(8);
+    expect(new Set(programSlugs()).size).toBe(7);
+  });
+
+  /*
+   * The summer camp was withdrawn. It is asserted gone rather than merely
+   * absent from the count, so re-adding it has to be a deliberate act.
+   */
+  it("no longer offers the summer camp", () => {
+    expect(getProgram("summer-camp")).toBeUndefined();
+    expect(programs.every((p) => p.track !== ("camp" as never))).toBe(true);
   });
 
   it("finds a program by slug", () => {
