@@ -28,6 +28,11 @@ export const teamPhotos: Photo[] = [
     caption: "595B, Judges Award",
   },
   {
+    src: "/photos/club/club-05.jpg",
+    alt: "The three members of team 595B in VexKan club shirts, holding their robot, a controller and their Judges Award trophy at the Alberta provincial championships.",
+    caption: "595B at provincials",
+  },
+  {
     src: "/photos/iq_IMG_3390.jpg",
     alt: "Four members of team 595C in VexKan club shirts, three holding VEX IQ trophies and one holding a Teamwork Champion certificate, with their robot held up beside them.",
     caption: "595C, Teamwork Champion",
@@ -46,6 +51,28 @@ export const teamPhotos: Photo[] = [
     src: "/photos/iq_IMG_3858.jpg",
     alt: "Three young clubbers holding a VEX IQ trophy together in front of the Mecha Mayhem backdrop.",
     caption: "A trophy at Mecha Mayhem",
+  },
+];
+
+/**
+ * Classes and practice. These carry the most weight on the Programs page,
+ * because a family deciding on a class wants to see the class.
+ */
+export const classPhotos: Photo[] = [
+  {
+    src: "/photos/club/club-25.jpg",
+    alt: "Three young clubbers around a classroom table, one driving a VEX IQ robot with a controller while another steadies it and a third sorts parts.",
+    caption: "A foundation class in session",
+  },
+  {
+    src: "/photos/club/club-18.jpg",
+    alt: "A young girl fitting a beam onto a VEX IQ frame at a table spread with parts, working on her own build.",
+    caption: "Building a first frame",
+  },
+  {
+    src: "/photos/club/club-14.jpg",
+    alt: "Two young clubbers building at a table with VEX IQ beams laid out in front of them and an instruction sheet open beside the parts.",
+    caption: "Sorting parts before a build",
   },
 ];
 
@@ -106,6 +133,7 @@ export const communityPhotos: Photo[] = [
  * anything from the senior side.
  */
 export const homePhotos: Photo[] = [
+  classPhotos[0],
   teamPhotos[0],
   teamPhotos[1],
   buildPhotos[0],
@@ -115,10 +143,10 @@ export const homePhotos: Photo[] = [
 ];
 
 export const programPhotos: Photo[] = [
-  buildPhotos[0],
-  teamPhotos[1],
+  classPhotos[0],
+  classPhotos[1],
+  classPhotos[2],
   buildPhotos[1],
-  teamPhotos[3],
 ];
 
 export const eventPhotos: Photo[] = [
