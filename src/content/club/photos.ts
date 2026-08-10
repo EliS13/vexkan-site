@@ -6,10 +6,10 @@ export type Photo = {
 };
 
 /**
- * The founder's own photo, used once on the About page and nowhere else.
+ * The founder's photo, used once on the About page and nowhere else.
  *
- * Every other slideshow leads on the wider club. A club site should show its
- * members rather than the person who runs it, which is the club's own call.
+ * Every slideshow leads on the club's members. That is the club's own call: a
+ * site about helping other people should show the people being helped.
  */
 export const founderPhoto: Photo = {
   src: "/photos/IMG_3589.jpg",
@@ -17,12 +17,44 @@ export const founderPhoto: Photo = {
   caption: "At Mecha Mayhem",
 };
 
+/**
+ * The club's teams with what they won. These lead everywhere, because they are
+ * the clearest answer to what the club is for.
+ */
+export const teamPhotos: Photo[] = [
+  {
+    src: "/photos/iq_IMG_3390.jpg",
+    alt: "Four members of team 595C in VexKan club shirts, three holding VEX IQ trophies and one holding a Teamwork Champion certificate, with their robot held up beside them.",
+    caption: "595C, Teamwork Champion",
+  },
+  {
+    src: "/photos/iq_IMG_3177.jpg",
+    alt: "Three young clubbers from team 565A holding their Think Award certificate in front of the finals rankings screen.",
+    caption: "565A, Think Award",
+  },
+  {
+    src: "/photos/iq_IMG_3173.jpg",
+    alt: "Four young clubbers from team 595B standing together with their Energy Award certificate, the match results screen behind them.",
+    caption: "595B, Energy Award",
+  },
+  {
+    src: "/photos/iq_IMG_3858.jpg",
+    alt: "Three young clubbers holding a VEX IQ trophy together in front of the Mecha Mayhem backdrop.",
+    caption: "A trophy at Mecha Mayhem",
+  },
+];
+
 /** Practice, and the club's own field at home. */
 export const buildPhotos: Photo[] = [
   {
     src: "/photos/iq_IMG_3782.jpg",
     alt: "Four club members around a practice field laid out on a living room floor, two of them driving robots while the others watch the match.",
     caption: "Practice on the home field",
+  },
+  {
+    src: "/photos/iq_IMG_3768.jpg",
+    alt: "A VEX IQ robot built from blue, green, yellow and red plastic beams, with gears and a chain drive down one side.",
+    caption: "A VEX IQ build, part way through",
   },
   {
     src: "/photos/IMG_3576.jpg",
@@ -60,21 +92,28 @@ export const communityPhotos: Photo[] = [
 ];
 
 /**
- * The home page rotation. Deliberately weighted to the wider club rather than
- * any one member.
+ * The home rotation. Teams and their awards first, practice next, and only then
+ * anything from the senior side.
  */
 export const homePhotos: Photo[] = [
+  teamPhotos[0],
+  teamPhotos[1],
   buildPhotos[0],
-  competitionPhotos[0],
-  communityPhotos[0],
-  competitionPhotos[1],
+  teamPhotos[2],
+  teamPhotos[3],
   buildPhotos[1],
 ];
 
-export const programPhotos: Photo[] = [buildPhotos[0], buildPhotos[1], competitionPhotos[1]];
+export const programPhotos: Photo[] = [
+  buildPhotos[0],
+  teamPhotos[1],
+  buildPhotos[1],
+  teamPhotos[3],
+];
 
 export const eventPhotos: Photo[] = [
+  teamPhotos[0],
+  teamPhotos[2],
   competitionPhotos[0],
   communityPhotos[0],
-  competitionPhotos[2],
 ];
