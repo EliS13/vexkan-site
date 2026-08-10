@@ -12,6 +12,14 @@ export function generateStaticParams() {
   return programSlugs().map((slug) => ({ slug }));
 }
 
+// All valid slugs are known at build time via generateStaticParams above.
+// Without this, a slug that isn't one of the eight still gets routed here
+// and notFound() has to fall back to Next's bare __next_error__ shell
+// (correct 404 status, but no club chrome and no heading without JS). With
+// dynamicParams disabled, an unknown slug never reaches this component at
+// all — Next serves the route group's real not-found page instead.
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {
