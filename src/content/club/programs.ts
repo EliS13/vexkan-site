@@ -16,12 +16,6 @@ export type Program = {
   learn: string[];
   prerequisites: string | null;
   schedule: Maybe<string>;
-  /**
-   * The Google Form the club used before this site had its own registration.
-   * Not linked in normal operation; the register page falls back to it when
-   * Supabase is unconfigured, so a signup is never simply lost.
-   */
-  legacyFormUrl: string | null;
 };
 
 export const TRACK_LABELS: Record<ProgramTrack, string> = {
@@ -33,55 +27,39 @@ export const TRACK_LABELS: Record<ProgramTrack, string> = {
 export const TRACK_ORDER: ProgramTrack[] = ["iq-foundation", "iq-competition", "v5rc"];
 
 /**
- * The foundation classes share their curriculum across all four grade bands,
- * which is how the club describes them. The wording stays identical on purpose.
+ * One foundation class rather than a band per grade pair. The club found
+ * Grades 1 and 2 too young for the kit, and everyone from Grade 3 up learns it
+ * together, so splitting the listing only made a parent guess which one to read.
  */
-const FOUNDATION_DESCRIPTION =
-  "VEX IQ Foundation Class is a good pathway to the Competition teams. Through " +
-  "learning the functions of different VEX parts, tools and accessories, clubbers " +
-  "learn how to brainstorm, design and snap together using pegs and pins, noting " +
-  "Engineering Logbooks, making it easy to construct a robot to fulfill a task.";
-
-const FOUNDATION_LEARN = [
-  "The functions of VEX parts, tools and accessories",
-  "Brainstorming and designing before building",
-  "Assembly with pegs and pins",
-  "Keeping an Engineering Logbook",
-  "Programming the finished robot",
-  "Competing in regular internal competitions",
-];
-
-function foundation(
-  slug: string,
-  gradeMin: number,
-  gradeMax: number,
-  legacyFormUrl: string | null
-): Program {
-  return {
-    slug,
-    title: "VEX IQ Foundation Class",
-    shortTitle: `Foundation, Grades ${gradeMin}–${gradeMax}`,
-    track: "iq-foundation",
-    gradeLabel: `Grades ${gradeMin}–${gradeMax}`,
-    gradeMin,
-    gradeMax,
-    summary:
-      "Hands-on introduction to VEX IQ, and the usual route onto a competition team. " +
-      "Clubbers build, program, keep a logbook, and compete internally for certificates.",
-    description: FOUNDATION_DESCRIPTION,
-    learn: FOUNDATION_LEARN,
-    prerequisites: null,
-    schedule: TBD,
-    legacyFormUrl,
-  };
-}
-
 export const programs: Program[] = [
-  foundation("vex-iq-foundation-g1-2", 1, 2, "https://forms.gle/nYaKofbC96VfLwLm8"),
-  foundation("vex-iq-foundation-g3-4", 3, 4, null),
-  foundation("vex-iq-foundation-g5-6", 5, 6, "https://forms.gle/p1W6PR2kDA3tHUC29"),
-  foundation("vex-iq-foundation-g7-8", 7, 8, "https://forms.gle/p1W6PR2kDA3tHUC29"),
-
+  {
+    slug: "vex-iq-foundation",
+    title: "VEX IQ Foundation Class",
+    shortTitle: "Foundation Class",
+    track: "iq-foundation",
+    gradeLabel: "Grades 3–5, older beginners welcome",
+    gradeMin: 3,
+    gradeMax: 8,
+    summary:
+      "Where most clubbers start, and the usual route onto a competition team. " +
+      "Build, program, keep a logbook, and compete internally for certificates.",
+    description:
+      "VEX IQ Foundation Class is a good pathway to the Competition teams. Through " +
+      "learning the functions of different VEX parts, tools and accessories, clubbers " +
+      "learn how to brainstorm, design and snap together using pegs and pins, noting " +
+      "Engineering Logbooks, making it easy to construct a robot to fulfill a task.",
+    learn: [
+      "The functions of VEX parts, tools and accessories",
+      "Brainstorming and designing before building",
+      "Assembly with pegs and pins",
+      "Keeping an Engineering Logbook",
+      "Programming the finished robot",
+      "Competing in regular internal competitions",
+    ],
+    prerequisites:
+      "Aimed at Grades 3 to 5. Older students starting robotics for the first time are welcome.",
+    schedule: TBD,
+  },
   {
     slug: "vex-iq-competition-es",
     title: "VEX IQ Competition Team, Elementary",
@@ -91,8 +69,8 @@ export const programs: Program[] = [
     gradeMin: 3,
     gradeMax: 6,
     summary:
-      "A team of 3–4 clubbers chosen from the Grade 3–6 Foundation Classes, " +
-      "representing VexKan at regional, provincial and out-of-province events.",
+      "A team of 3 to 4 clubbers chosen from the Foundation Class, representing VexKan " +
+      "at regional, provincial and out-of-province events.",
     description:
       "Members consist of 3-4 team members selected from the Foundation Class of Grade 3-6. " +
       "The team represents the Club against outside teams at regional, provincial and " +
@@ -103,10 +81,8 @@ export const programs: Program[] = [
       "Driving practice and match strategy",
       "Presenting an Engineering Logbook to judges",
     ],
-    prerequisites: "Selected from the Grade 3–6 Foundation Classes.",
+    prerequisites: "Selected from the Foundation Class.",
     schedule: TBD,
-    legacyFormUrl:
-      "https://docs.google.com/forms/d/e/1FAIpQLSfKw2kGi8jhkNtxTmPYE1otpKju-cQXqTWUud1VtyQLfROKjQ/viewform",
   },
   {
     slug: "vex-iq-competition-ms",
@@ -116,9 +92,7 @@ export const programs: Program[] = [
     gradeLabel: "Grades 7–8",
     gradeMin: 7,
     gradeMax: 8,
-    summary:
-      "A team of 3–4 clubbers chosen from the Grade 7–8 Foundation Classes, " +
-      "competing locally, nationally and internationally.",
+    summary: "A team of 3 to 4 clubbers competing locally, nationally and internationally.",
     description:
       "Members consist of 3-4 team members selected from the Foundation Class of Grade 7-8. " +
       "The team represents the Club against outside teams at local, national and " +
@@ -129,9 +103,8 @@ export const programs: Program[] = [
       "Driving practice and match strategy",
       "Presenting an Engineering Logbook to judges",
     ],
-    prerequisites: "Selected from the Grade 7–8 Foundation Classes.",
+    prerequisites: "Selected from the Foundation Class.",
     schedule: TBD,
-    legacyFormUrl: null,
   },
   {
     slug: "v5rc-competition",
@@ -142,7 +115,7 @@ export const programs: Program[] = [
     gradeMin: 7,
     gradeMax: 12,
     summary:
-      "The club's senior teams, 1–5 members each, building metal V5 robots for the " +
+      "The club's senior teams, 1 to 5 members each, building metal V5 robots for the " +
       "middle and high school competition season.",
     description:
       "Members consist of 1-5 team members selected from the previous competitive teams " +
@@ -157,7 +130,6 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from previous competitive teams or the IQ Competition Teams.",
     schedule: TBD,
-    legacyFormUrl: "https://forms.gle/VxGq6iRduycambFK6",
   },
 ];
 

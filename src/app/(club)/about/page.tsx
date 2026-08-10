@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
 import { people } from "@/content/club/people";
-import { achievements, teams } from "@/content/club/events";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 import { Button } from "@/components/club/Button";
@@ -59,40 +58,6 @@ export default function AboutPage() {
           VexKan is coached and organised by students who compete themselves, which is why the
           club teaches the way it does: everything here was learned at a competition first.
         </p>
-      </Section>
-
-      <Section tone="surface" eyebrow="Our teams" title="Competing as VexKan">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {teams.map((t) => (
-            <Card key={t.number}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="readout text-xl font-semibold">{t.number}</span>
-                <span
-                  className="eyebrow rounded-full px-2.5 py-1"
-                  style={
-                    t.status === "active"
-                      ? { background: "var(--teal-bg)", color: "var(--teal-text)" }
-                      : { background: "var(--neutral-bg)", color: "var(--neutral-text)" }
-                  }
-                >
-                  {t.status === "active" ? "Active" : "Past"}
-                </span>
-              </div>
-              <p className="eyebrow mt-2 text-[var(--muted)]">{t.program}</p>
-              <p className="mt-3 text-sm text-[var(--ink-body)]">{t.note}</p>
-            </Card>
-          ))}
-        </div>
-
-        <h3 className="mt-12 text-lg font-semibold">What we&apos;ve won</h3>
-        <ul className="mt-4 grid gap-3 sm:grid-cols-2">
-          {achievements.map((a) => (
-            <li key={a} className="flex gap-3">
-              <span className="mt-2 h-2 w-2 shrink-0 rounded-full" style={{ background: "var(--purple)" }} aria-hidden="true" />
-              <span className="text-[var(--ink-body)]">{a}</span>
-            </li>
-          ))}
-        </ul>
       </Section>
 
       <Section eyebrow="Next step" title="Use what we have written">

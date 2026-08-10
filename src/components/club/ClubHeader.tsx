@@ -6,15 +6,16 @@ import { useState } from "react";
 import { org } from "@/content/club/org";
 
 /**
- * Resources comes first because it is what the club actually gives away, and
- * the nav should read the same way the site does. Registration is a tab of its
- * own rather than a call to action, so no main page has to sell it.
+ * Ordered by what a visitor wants first: take something, see what we run, find
+ * out who we are, then check the record. Results sit after About on purpose,
+ * because leading with placings is asking to be impressed rather than giving.
+ * Join is last and is a tab like any other, so no page has to sell it.
  */
 const NAV = [
   { href: org.guideHref, label: "Resources" },
   { href: "/programs", label: "Programs" },
-  { href: "/events", label: "Results" },
   { href: "/about", label: "About" },
+  { href: "/events", label: "Results" },
   { href: "/contact", label: "Contact" },
   { href: "/register", label: "Join" },
 ];

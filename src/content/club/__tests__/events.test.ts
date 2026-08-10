@@ -16,8 +16,10 @@ describe("people", () => {
 });
 
 describe("teams", () => {
-  it("lists the club's four competition teams", () => {
-    expect(teams.map((t) => t.number).sort()).toEqual(["16688A", "36467E", "595C", "595Y"]);
+  it("lists every team the club has competed under", () => {
+    expect(teams.map((t) => t.number).sort()).toEqual(
+      ["16688A", "36467E", "565A", "565D", "595B", "595C", "595Y"]
+    );
   });
 
   it("puts both 595 teams in VEX IQ and 16688A in V5RC", () => {
@@ -26,9 +28,17 @@ describe("teams", () => {
     expect(teams.find((t) => t.number === "16688A")?.program).toBe("V5RC");
   });
 
-  it("marks 36467E as the only past team", () => {
-    expect(teams.find((t) => t.number === "36467E")?.status).toBe("past");
-    expect(teams.filter((t) => t.status === "active")).toHaveLength(3);
+  it("keeps three teams active and the rest retired", () => {
+    expect(teams.filter((t) => t.status === "active").map((t) => t.number).sort())
+      .toEqual(["16688A", "595C", "595Y"]);
+    expect(teams.filter((t) => t.status === "past")).toHaveLength(4);
+  });
+
+  /* The retired 595B, 565D and 565A all reached Alberta provincials. */
+  it("records the provincial run for the retired IQ teams", () => {
+    for (const n of ["595B", "565D", "565A"]) {
+      expect(teams.find((t) => t.number === n)?.note).toContain("provincial");
+    }
   });
 });
 

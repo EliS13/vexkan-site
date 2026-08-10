@@ -34,7 +34,6 @@ export default function ContactPage() {
             <a href={org.phoneHref} className="mt-2 block text-lg font-semibold hover:underline">
               {org.phone}
             </a>
-            <p className="mt-2 text-sm text-muted">Best during our opening hours.</p>
           </Card>
           <Card>
             <p className="eyebrow text-[var(--muted)]">Email</p>
@@ -50,23 +49,6 @@ export default function ContactPage() {
               <a href={org.phoneHref} className="hover:underline">{org.phone}</a> to book one.
             </p>
           </Card>
-        </div>
-      </Section>
-
-      <Section tone="surface" title="Opening hours">
-        <div className="max-w-md">
-          <dl>
-            {org.hours.map((h) => (
-              <div
-                key={h.days}
-                className="flex items-baseline justify-between gap-6 border-b py-3"
-                style={{ borderColor: "var(--line)" }}
-              >
-                <dt className="text-[var(--ink-body)]">{h.days}</dt>
-                <dd className="readout font-medium">{h.time}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </Section>
 

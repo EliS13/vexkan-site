@@ -47,7 +47,7 @@ const { emptyRegistration } = await import("@/lib/registration");
 
 function input(overrides: Partial<ReturnType<typeof emptyRegistration>> = {}) {
   return {
-    ...emptyRegistration("vex-iq-foundation-g1-2"),
+    ...emptyRegistration("vex-iq-foundation"),
     studentFirst: "  Ada  ",
     studentLast: "  Lovelace  ",
     studentGrade: " 2 ",
@@ -99,7 +99,7 @@ describe("submitRegistration", () => {
     await submitRegistration(input());
 
     const payload = mocks.insertSpy.mock.calls[0][0];
-    expect(payload.program_slug).toBe("vex-iq-foundation-g1-2");
+    expect(payload.program_slug).toBe("vex-iq-foundation");
     expect(payload.student_first).toBe("Ada");
     expect(payload.student_last).toBe("Lovelace");
     expect(payload.student_grade).toBe("2");

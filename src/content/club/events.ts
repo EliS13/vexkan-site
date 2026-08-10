@@ -8,8 +8,8 @@ export type Team = {
 };
 
 /**
- * The club competes under four team numbers. 16688A is also the byline on the
- * field guide, which is why that number appears in both places.
+ * Every number the club has competed under, active and retired. 16688A is also
+ * the byline on the field guide, which is why it appears in both places.
  */
 export const teams: Team[] = [
   {
@@ -38,6 +38,24 @@ export const teams: Team[] = [
     status: "past",
     note: "An earlier V5 team that competed before 16688A.",
   },
+  {
+    number: "595B",
+    program: "VEX IQ",
+    status: "past",
+    note: "Competed through to the Alberta provincial championship.",
+  },
+  {
+    number: "565D",
+    program: "VEX IQ",
+    status: "past",
+    note: "Competed through to the Alberta provincial championship.",
+  },
+  {
+    number: "565A",
+    program: "VEX IQ",
+    status: "past",
+    note: "Competed through to the Alberta provincial championship.",
+  },
 ];
 
 export type ClubEvent = {
@@ -51,20 +69,14 @@ export type ClubEvent = {
 
 export const events: ClubEvent[] = [
   {
-    slug: "vrc-regional-2025",
-    name: "VEX VRC Regional Competition 2025",
+    slug: "mecha-mayhem-2027",
+    name: "Mecha Mayhem 2027 Signature Event",
     kind: "competition",
-    date: TBD,
-    location: TBD,
-    summary: "The regional V5 competition our middle and high school teams compete in.",
-  },
-  {
-    slug: "iq-regional-2025",
-    name: "VEX IQ Regional Competition 2025",
-    kind: "competition",
-    date: TBD,
-    location: TBD,
-    summary: "The regional VEX IQ competition for our elementary and middle school teams.",
+    date: "February 13 to 14, 2027",
+    location: "BMO Centre, Calgary, Alberta",
+    summary:
+      "A VEX Signature Event at the BMO Centre in Calgary, with VEX IQ, middle school, " +
+      "high school and VEX U divisions.",
   },
   {
     slug: "worlds-16688a",
@@ -87,13 +99,15 @@ export const events: ClubEvent[] = [
 ];
 
 /**
- * The Inspire Award is a judged award, so it says something about the team
- * rather than the robot — which is why the criteria are worth showing rather
- * than just naming the trophy.
+ * The Inspire Award is judged, so it says something about the team rather than
+ * the robot, which is why the criteria are worth showing rather than just
+ * naming the trophy.
  *
- * These are summarised in our own words from the REC Foundation's Guide to
- * Judging rather than reproduced, and the page links to the source so a reader
- * can check them against the official wording.
+ * The criteria are summarised in our own words from the REC Foundation's Guide
+ * to Judging rather than reproduced, and the page links to the source so a
+ * reader can check them. VEX and the REC Foundation now run separate
+ * competitions; TODO.md tracks adding VEX's own published wording once it
+ * exists, rather than assuming it matches.
  */
 export const inspireAward = {
   name: "Inspire Award",
@@ -103,6 +117,10 @@ export const inspireAward = {
   summary:
     "The Inspire Award recognises a team's passion for the competition and the " +
     "positivity they bring to the event.",
+  /** Why the club thinks it landed, in the club's own words. */
+  meaning:
+    "Winning it means VEX saw our impact, and our contribution to helping students " +
+    "excel in robotics.",
   criteria: [
     "Shows passion and a positive attitude throughout the event",
     "Acts with integrity and goodwill toward other teams, coaches and event staff",
@@ -110,16 +128,12 @@ export const inspireAward = {
     "Interviews well, with clear communication, real teamwork, professionalism, and students doing the talking",
   ],
   note: "Like every judged award, it requires a completed team interview.",
+  criteriaLabel: "Judged the same way at VEX and REC Foundation events",
   sourceLabel: "REC Foundation Guide to Judging",
   sourceUrl:
     "https://v5rc-kb.recf.org/hc/en-us/articles/33153576505367-Guide-to-Judging-Judged-Awards-Appendix",
 } as const;
 
-/**
- * The "two invitations" line on the old vexkan.ca is not repeated here: three
- * teams have since been to Worlds, so the count was stale. TODO.md asks the
- * club to confirm a real figure rather than have this file guess one.
- */
 /**
  * Counted across every team the club has mentored, not just the ones competing
  * now, which is why it is a floor rather than an exact figure.

@@ -116,50 +116,22 @@ export function RegisterForm() {
     );
   }
 
+  /*
+   * The old Google Forms are gone, so phone and email are the only fallback
+   * left. That is fine as long as this panel names both, since a family reading
+   * it has no other way through.
+   */
   if (!isCloudConfigured) {
-    const selectedFallback = getProgram(form.programSlug)?.legacyFormUrl;
-    const programsWithForms = programs.filter((p) => p.legacyFormUrl);
-
     return (
       <div className="rounded-2xl p-8" style={{ background: "var(--amber-bg)", border: "1px solid var(--amber)" }}>
         <h2 className="text-xl font-semibold text-[var(--amber-text)]">
-          Online registration isn&apos;t switched on yet
+          Online joining isn&apos;t switched on yet
         </h2>
         <p className="mt-3 text-[var(--ink-body)]">
-          Please email <a className="underline" href={org.emailHref}>{org.email}</a> or call{" "}
-          <a className="underline" href={org.phoneHref}>{org.phone}</a> and we&apos;ll sign your
-          child up.
+          Email <a className="underline" href={org.emailHref}>{org.email}</a> or call{" "}
+          <a className="underline" href={org.phoneHref}>{org.phone}</a> and we will get your child
+          started.
         </p>
-        {form.programSlug && selectedFallback ? (
-          <p className="mt-3 text-[var(--ink-body)]">
-            You can also use{" "}
-            <a className="underline" href={selectedFallback} target="_blank" rel="noopener noreferrer">
-              our registration form
-            </a>
-            .
-          </p>
-        ) : (
-          !form.programSlug &&
-          programsWithForms.length > 0 && (
-            <div className="mt-3 text-[var(--ink-body)]">
-              <p>You can also use one of our existing registration forms:</p>
-              <ul className="mt-2 list-disc pl-5">
-                {programsWithForms.map((p) => (
-                  <li key={p.slug}>
-                    <a
-                      className="underline"
-                      href={p.legacyFormUrl as string}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {p.shortTitle}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        )}
       </div>
     );
   }
