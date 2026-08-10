@@ -63,13 +63,19 @@ describe("events", () => {
 });
 
 describe("achievements", () => {
-  it("keeps only club-wide lines, not a specific team's result", () => {
-    const joined = achievements.join(" ");
-    expect(joined).toContain("U.S. Open");
+  it("keeps only the club-wide figure, not a specific team's result", () => {
+    expect(achievements).toHaveLength(1);
     /* A team's award belongs to that team, credited by name in `awards`. */
+    const joined = achievements.join(" ");
     for (const t of ["16688A", "595C", "595Y", "36467E"]) {
       expect(joined).not.toContain(t);
     }
+  });
+
+  /* The U.S. Open invitation is 16688A's, so it moved into the awards table. */
+  it("credits the U.S. Open invitation to 16688A", () => {
+    const usOpen = awards.find((a) => a.award.includes("U.S. Open"));
+    expect(usOpen?.team).toBe("16688A");
   });
 
   it("leads with the club-wide award count", () => {

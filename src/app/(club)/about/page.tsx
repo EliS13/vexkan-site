@@ -5,6 +5,8 @@ import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 import { Button } from "@/components/club/Button";
 import { PersonCard } from "@/components/club/PersonCard";
+import { Slideshow } from "@/components/club/Slideshow";
+import { buildPhotos, competitionPhotos } from "@/content/club/photos";
 
 export const metadata: Metadata = {
   title: `About, ${org.name}`,
@@ -33,10 +35,23 @@ export default function AboutPage() {
         </Card>
       </Section>
 
-      <Section tone="surface" eyebrow="What we value" title="How we run the club">
+      <Section tone="surface" eyebrow="In the workshop" title="How the club actually looks">
+        <div className="grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]">
+          <div>
+            <p className="club-lead">
+              Most of the club happens around a kitchen table and a practice field, long before
+              anyone gets to a competition venue. Clubbers build the robot, break it, and build
+              it again.
+            </p>
+          </div>
+          <Slideshow photos={buildPhotos.concat(competitionPhotos.slice(0, 3))} />
+        </div>
+      </Section>
+
+      <Section eyebrow="What we value" title="How we run the club">
         <div className="grid gap-5 sm:grid-cols-2">
           {VALUES.map((v) => (
-            <Card key={v.title}>
+            <Card key={v.title} className="lift-hover">
               <h3 className="text-base font-semibold">{v.title}</h3>
               <p className="mt-2 text-sm text-muted">{v.body}</p>
             </Card>

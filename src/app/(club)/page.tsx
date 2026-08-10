@@ -5,8 +5,9 @@ import { TRACK_LABELS, TRACK_ORDER, programsByTrack } from "@/content/club/progr
 import { Section } from "@/components/club/Section";
 import { Button } from "@/components/club/Button";
 import { Card } from "@/components/club/Card";
-import { RobotHero } from "@/components/club/art/RobotHero";
 import { Scoreboard } from "@/components/club/Scoreboard";
+import { Slideshow } from "@/components/club/Slideshow";
+import { homePhotos } from "@/content/club/photos";
 import { clubAwards } from "@/content/club/events";
 
 export const metadata: Metadata = {
@@ -72,12 +73,7 @@ export default function HomePage() {
               <Button href="/programs" size="lg" variant="secondary">See what we run</Button>
             </div>
           </div>
-          <div
-            className="lift rounded-3xl p-5"
-            style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
-          >
-            <RobotHero />
-          </div>
+          <Slideshow photos={homePhotos} priority />
         </div>
       </div>
 

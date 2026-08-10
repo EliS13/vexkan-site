@@ -157,6 +157,7 @@ export const awards: Award[] = [
   { team: "595Y", award: "Excellence Award", event: "Alberta Provincial Championship" },
   { team: "595C", award: "Design Award", event: "Alberta Provincial Championship" },
   { team: "36467E", award: "Judges Award", event: "Alberta Provincial Championship" },
+  { team: "16688A", award: "Invitation to the U.S. Open", event: "U.S. Open Robotics Championship" },
 ];
 
 /** Finishing positions, which are not awards and are counted separately. */
@@ -169,10 +170,8 @@ export const placings: Placing[] = [
 ];
 
 /**
- * Club-wide lines only. Anything a specific team earned belongs in `awards` or
- * `placings`, where it is credited to that team by name.
+ * Only the headline figure now. The U.S. Open invitation moved into `awards`
+ * under 16688A, and the rest was crediting the club for what specific teams
+ * earned.
  */
-export const achievements: string[] = [
-  `${clubAwards.count} ${clubAwards.label}`,
-  "Invitations to the U.S. Open",
-];
+export const achievements: string[] = [`${clubAwards.count} ${clubAwards.label}`];

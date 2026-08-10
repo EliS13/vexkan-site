@@ -85,7 +85,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
           </div>
 
           <div>
-            <Card>
+            <Card className="lift-hover h-full">
               <h3 className="text-base font-semibold">At a glance</h3>
               <dl className="mt-3">
                 <DetailRow label="Grades" value={program.gradeLabel} />
@@ -108,7 +108,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         <Section title={`Other ${TRACK_LABELS[program.track]}`}>
           <div className="grid gap-5 sm:grid-cols-3">
             {siblings.map((p) => (
-              <Card key={p.slug}>
+              <Card key={p.slug} className="lift-hover h-full">
                 <h3 className="text-base font-semibold">{p.shortTitle}</h3>
                 <p className="eyebrow mt-1 text-[var(--muted)]">{p.gradeLabel}</p>
                 <Link
