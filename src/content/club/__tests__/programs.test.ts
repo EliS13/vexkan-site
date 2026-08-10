@@ -28,7 +28,7 @@ describe("programs", () => {
   it("finds a program by slug", () => {
     const p = getProgram("vex-iq-foundation");
     expect(p?.title).toBe("VEX IQ Foundation Class");
-    expect(p?.gradeLabel).toBe("Grades 3–5, older beginners welcome");
+    expect(p?.gradeLabel).toBe("Grades 3–6");
   });
 
   /*

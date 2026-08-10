@@ -15,18 +15,19 @@ export type Photo = {
  * names a child: these are minors, and the site has no reason to identify them.
  */
 
+/**
+ * The founder's own photo, used once on the About page. Everywhere else the
+ * slideshows favour group shots of the wider club, since a club site should
+ * show the members rather than the person who runs it.
+ */
+export const founderPhoto: Photo = {
+  src: "/photos/IMG_3589.jpg",
+  alt: "A student in a blue jacket outside the entrance to hall A1, with a Mecha Mayhem banner on the doors behind.",
+  caption: "Outside the venue at Mecha Mayhem",
+};
+
 /** The pits and the field. What competing actually looks like. */
 export const competitionPhotos: Photo[] = [
-  {
-    src: "/photos/IMG_3576.jpg",
-    alt: "A student in a VexKan hoodie fitting the 36467E licence plate onto a metal V5 robot in the team pit, with another student watching from across the table.",
-    caption: "Last checks in the pit before a match",
-  },
-  {
-    src: "/photos/IMG_3551.jpg",
-    alt: "A student holding a VEX controller at the edge of the competition field, with the 36467E robot and an opposing robot on the field and a referee standing behind.",
-    caption: "Driving at the field",
-  },
   {
     src: "/photos/IMG_3541.jpg",
     alt: "Three students in safety glasses standing at the field wall watching a match, with the 36467E robot and an alliance robot among red and blue rings.",
@@ -38,14 +39,24 @@ export const competitionPhotos: Photo[] = [
     caption: "Working a problem out in the pit",
   },
   {
+    src: "/photos/IMG_3584.jpg",
+    alt: "Four students in team lanyards standing together beside the field, waiting for a match to start.",
+    caption: "Waiting on the match ahead",
+  },
+  {
     src: "/photos/IMG_3550.jpg",
     alt: "A student with safety glasses pushed up on their head holding a controller at the field, with two other teams' drivers alongside.",
     caption: "Queued up with the other alliance",
   },
   {
-    src: "/photos/IMG_3584.jpg",
-    alt: "Four students in team lanyards standing together beside the field, waiting for a match to start.",
-    caption: "Waiting on the match ahead",
+    src: "/photos/IMG_3551.jpg",
+    alt: "A student holding a VEX controller at the edge of the competition field, with the 36467E robot and an opposing robot on the field and a referee standing behind.",
+    caption: "Driving at the field",
+  },
+  {
+    src: "/photos/IMG_3576.jpg",
+    alt: "A student in a VexKan hoodie fitting the 36467E licence plate onto a metal V5 robot in the team pit, with another student watching from across the table.",
+    caption: "Last checks in the pit before a match",
   },
   {
     src: "/photos/IMG_3562.jpg",
@@ -99,10 +110,9 @@ export const buildPhotos: Photo[] = [
 
 /** The home page mixes all three, so the first thing a visitor sees is the work. */
 export const homePhotos: Photo[] = [
-  competitionPhotos[0],
-  buildPhotos[0],
-  competitionPhotos[1],
-  communityPhotos[0],
-  competitionPhotos[3],
-  communityPhotos[3],
+  competitionPhotos.find((p) => p.src.includes("IMG_3541"))!,
+  competitionPhotos.find((p) => p.src.includes("IMG_3533"))!,
+  competitionPhotos.find((p) => p.src.includes("IMG_3584"))!,
+  competitionPhotos.find((p) => p.src.includes("IMG_3550"))!,
+  communityPhotos.find((p) => p.src.includes("IMG_3558"))!,
 ];
