@@ -1,6 +1,6 @@
 import { TBD, type Maybe } from "./types";
 
-export type ProgramTrack = "iq-foundation" | "iq-competition" | "v5rc" | "camp";
+export type ProgramTrack = "iq-foundation" | "iq-competition" | "v5rc";
 
 export type Program = {
   slug: string;
@@ -29,10 +29,9 @@ export const TRACK_LABELS: Record<ProgramTrack, string> = {
   "iq-foundation": "VEX IQ Foundation Classes",
   "iq-competition": "VEX IQ Competition Teams",
   v5rc: "VEX V5RC Competition Teams",
-  camp: "Summer Camp",
 };
 
-export const TRACK_ORDER: ProgramTrack[] = ["iq-foundation", "iq-competition", "v5rc", "camp"];
+export const TRACK_ORDER: ProgramTrack[] = ["iq-foundation", "iq-competition", "v5rc"];
 
 /**
  * The foundation classes share their curriculum across all four grade bands,
@@ -164,29 +163,6 @@ export const programs: Program[] = [
     schedule: TBD,
     fee: TBD,
     legacyFormUrl: "https://forms.gle/VxGq6iRduycambFK6",
-  },
-  {
-    slug: "summer-camp",
-    title: "Ms. Cecci's Summer Camp — English and Math",
-    shortTitle: "Summer Camp",
-    track: "camp",
-    gradeLabel: "Contact us for eligible grades",
-    gradeMin: null,
-    gradeMax: null,
-    summary:
-      "A summer camp built on a customised English and Math curriculum, with snack, " +
-      "lunch, materials and prizes included.",
-    description:
-      "Customized curriculum with morning snack, lunch, work materials and prizes included.",
-    learn: [
-      "A customised English and Math curriculum",
-      "Small-group work with materials provided",
-      "Daily activities with prizes",
-    ],
-    prerequisites: null,
-    schedule: TBD,
-    fee: TBD,
-    legacyFormUrl: "https://forms.gle/LUWJUHzDj3NtchEz8",
   },
 ];
 

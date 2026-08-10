@@ -8,7 +8,7 @@ import { Card } from "@/components/club/Card";
 export const metadata: Metadata = {
   title: `Programs — ${org.name}`,
   description:
-    "VEX IQ Foundation Classes from Grade 1, VEX IQ and V5RC competition teams, and a summer camp.",
+    "VEX IQ Foundation Classes from Grade 1, and VEX IQ and V5RC competition teams.",
 };
 
 export default function ProgramsPage() {
