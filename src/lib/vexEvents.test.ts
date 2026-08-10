@@ -4,11 +4,7 @@ import {
   formatLocation,
   formatPlace,
   featureBothPrograms,
-  cleanAwardTitle,
-  dedupeAwards,
-  mapAward,
   programFamily,
-  sortAwards,
   remainingAfterFeature,
   mapVexEvent,
   upcomingFirst,
@@ -201,65 +197,6 @@ describe("remainingAfterFeature", () => {
   });
 });
 
-describe("cleanAwardTitle", () => {
-  /* VEX appends the program to award titles; the team number already says it. */
-  it("drops the trailing program suffix", () => {
-    expect(cleanAwardTitle("Excellence Award (VRC/VEXU)")).toBe("Excellence Award");
-    expect(cleanAwardTitle("Design Award (VIQC)")).toBe("Design Award");
-  });
 
-  it("leaves a plain title alone", () => {
-    expect(cleanAwardTitle("Inspire Award")).toBe("Inspire Award");
-  });
 
-  it("keeps brackets that are not a trailing suffix", () => {
-    expect(cleanAwardTitle("Tournament Champions (A) Division")).toBe(
-      "Tournament Champions (A) Division"
-    );
-  });
-});
 
-describe("mapAward", () => {
-  it("credits the award to the team and names the event", () => {
-    expect(
-      mapAward({ id: 1, title: "Judges Award (VRC)", event: { name: "Alberta Provincials" } }, "36467E")
-    ).toEqual({ team: "36467E", award: "Judges Award", event: "Alberta Provincials" });
-  });
-
-  /* A blank row on an awards table is worse than no row. */
-  it("drops an award with no title or no event", () => {
-    expect(mapAward({ id: 1, event: { name: "Provincials" } }, "595C")).toBeNull();
-    expect(mapAward({ id: 1, title: "Design Award" }, "595C")).toBeNull();
-  });
-});
-
-describe("dedupeAwards", () => {
-  it("collapses the same award listed once per division", () => {
-    const a = { team: "595C", award: "Design Award", event: "Provincials" };
-    expect(dedupeAwards([a, { ...a }, { ...a, team: "595Y" }])).toHaveLength(2);
-  });
-
-  it("keeps the same award won at different events", () => {
-    expect(
-      dedupeAwards([
-        { team: "595C", award: "Design Award", event: "Provincials 2025" },
-        { team: "595C", award: "Design Award", event: "Provincials 2026" },
-      ])
-    ).toHaveLength(2);
-  });
-});
-
-describe("sortAwards", () => {
-  it("puts the most recent event first, then orders by team", () => {
-    const out = sortAwards([
-      { team: "595C", award: "Design", event: "Provincials 2024" },
-      { team: "595Y", award: "Excellence", event: "Provincials 2026" },
-      { team: "16688A", award: "Inspire", event: "Provincials 2026" },
-    ]);
-    expect(out.map((a) => `${a.event}/${a.team}`)).toEqual([
-      "Provincials 2026/16688A",
-      "Provincials 2026/595Y",
-      "Provincials 2024/595C",
-    ]);
-  });
-});

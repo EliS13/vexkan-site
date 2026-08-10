@@ -116,17 +116,14 @@ registration data, and the policies are in the migration.
 
 ## Live competition list
 
-The results page pulls three things from the Public VEX Events API and
-refreshes once a day: every award the club's teams have won, and two event
-lists, upcoming competitions in Alberta, and Signature Events worldwide.
+The results page pulls two event lists from the Public VEX Events API and
+refreshes once a day: upcoming competitions in Alberta, and Signature Events worldwide.
 Signature Events are deliberately not filtered to Alberta, since the point of
 that section is the events worth travelling for.
 
-The awards table is the one worth switching on first. Without a token it shows
-the short list recorded by hand in `src/content/club/events.ts`, which has to be
-updated every time a team wins something. With a token it shows VEX's own
-record for every team, going back as far as VEX has data, and it cannot fall out
-of date. Without a token it falls back to the events kept
+Awards are deliberately not fetched. They change rarely, so they live in
+`src/content/club/events.ts` and are edited by hand when a team wins something.
+That keeps the page working with no token at all. Without a token it falls back to the events kept
 by hand in `src/content/club/events.ts`, so the page works either way.
 
 1. Sign in at https://events.vex.com and request an API token for your account.
