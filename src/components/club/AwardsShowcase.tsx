@@ -118,21 +118,13 @@ export function AwardsShowcase() {
   return (
     <div>
       <div
-        className="lift relative overflow-hidden rounded-3xl px-8 py-12 text-center sm:px-12 sm:py-16"
+        className="lift rounded-3xl px-8 py-12 text-center sm:px-12 sm:py-16"
         style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
       >
-        {/*
-         * A watermark, not an illustration: it sits behind the number at low
-         * enough contrast to stay out of the way of reading it.
-         */}
-        <TrophyIcon
-          size={340}
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--purple)] opacity-[0.07]"
-        />
-        <p className="score relative text-[clamp(3.5rem,12vw,7rem)] font-semibold leading-none text-[var(--purple-text)]">
+        <p className="score text-[clamp(3.5rem,12vw,7rem)] font-semibold leading-none text-[var(--purple-text)]">
           {clubAwards.count}
         </p>
-        <p className="club-lead relative mx-auto mt-5 max-w-md">{clubAwards.label}</p>
+        <p className="club-lead mx-auto mt-5 max-w-md">{clubAwards.label}</p>
       </div>
 
       {/*
