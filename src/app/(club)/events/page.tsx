@@ -10,7 +10,6 @@ import {
   awardPhotos,
   eventsHeroPhoto,
   pitPhoto,
-  recognitionPhotos,
 } from "@/content/club/photos";
 import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import {
@@ -295,13 +294,6 @@ export default async function EventsPage() {
          */}
         <div className="mt-10">
           <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
-        </div>
-
-        {/* The rest of a competition day, either side of the ceremony. */}
-        <div className="mt-5 grid gap-5 sm:grid-cols-2">
-          {recognitionPhotos.map((photo) => (
-            <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 50vw" />
-          ))}
         </div>
       </Section>
 

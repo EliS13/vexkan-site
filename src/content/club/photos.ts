@@ -235,14 +235,6 @@ export const teamAwardPhotos: Record<string, Photo> = {
   },
 };
 
-/** Under the awards, from the day rather than the ceremony. */
-export const recognitionPhotos: Photo[] = [
-  {
-    src: "/photos/all/vexkan-robotics-club-image-2.jpg",
-    alt: "Clubbers waiting in the lobby at a competition, one pulling on a pair of safety glasses.",
-  },
-];
-
 /** Awards. The only photographs on the site that carry a caption. */
 export const awardPhotos: Photo[] = [
   {
@@ -258,6 +250,10 @@ export const awardPhotos: Photo[] = [
   {
     src: "/photos/all/171786393714-pic.jpg",
     alt: "Four clubbers at their pit holding up the VEX IQ robot they compete with.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-2.jpg",
+    alt: "Clubbers lined up along the field barrier at a competition, one pulling on a pair of safety glasses.",
   },
 ];
 
