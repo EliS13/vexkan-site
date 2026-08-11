@@ -7,18 +7,19 @@ import { useState } from "react";
 import { org } from "@/content/club/org";
 
 /**
- * Ordered by what a visitor wants first: take something, see what we run, find
- * out who we are, then check the record. Results sit after About on purpose,
- * because leading with placings is asking to be impressed rather than giving.
- * Join is last and is a tab like any other, so no page has to sell it.
+ * Four tabs, and none of them sells anything.
+ *
+ * The two free things come first, in the order a visitor can use them: read the
+ * guides, or have us come and teach. Programs and the competition record are
+ * not tabs at all any more — they live on the home page, so the logo is the way
+ * back to both. Joining is a conversation now rather than a form, which is why
+ * there is no Join tab: Contact is the whole route in.
  */
 const NAV = [
   { href: org.guideHref, label: "Resources" },
-  { href: "/programs", label: "Programs" },
+  { href: "/community", label: "Services" },
   { href: "/about", label: "About" },
-  { href: "/events", label: "Results" },
   { href: "/contact", label: "Contact" },
-  { href: "/register", label: "Join" },
 ];
 
 function isActive(pathname: string, href: string) {

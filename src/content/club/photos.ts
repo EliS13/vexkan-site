@@ -237,6 +237,20 @@ export const teamAwardPhotos: Record<string, Photo> = {
 
 /** Awards. The only photographs on the site that carry a caption. */
 export const awardPhotos: Photo[] = [
+  /*
+   * Both certificates name their team and award outright, so these two are
+   * captioned from what is printed in the frame rather than from memory.
+   */
+  {
+    src: "/photos/all/vexkan-595c-teamwork-champion.jpg",
+    alt: "Three members of 595C in club shirts at the front of the room, the middle one holding up their Teamwork Champion certificate while a coach stands to one side.",
+    caption: "Teamwork Champion, 595C",
+  },
+  {
+    src: "/photos/all/vexkan-595b-innovate-award.jpg",
+    alt: "Three young members of 595B standing together in club shirts, the one in front holding their Innovate Award certificate, with the VEX IQ field in the foreground.",
+    caption: "Innovate Award, 595B",
+  },
   {
     src: "/photos/all/vexkan-robotics-club-edit-site-1.jpg",
     alt: "Three young clubbers holding up their certificates after a summer camp competition.",
@@ -254,6 +268,129 @@ export const awardPhotos: Photo[] = [
   {
     src: "/photos/all/vexkan-robotics-club-image-2.jpg",
     alt: "Clubbers lined up along the field barrier at a competition, one pulling on a pair of safety glasses.",
+  },
+];
+
+/* ----------------------------------------------------------- Community --- */
+
+/**
+ * The community page, where the club is teaching rather than competing.
+ *
+ * An older clubber steadying a build for a younger one is the whole argument
+ * of that page in one frame, which is why it leads there rather than a
+ * competition photograph.
+ */
+export const communityPhoto: Photo = {
+  src: "/photos/all/vexkan-robotics-club-img-8018.jpg",
+  alt: "An older clubber leaning over a table to help a younger student fit a grey beam onto the blue VEX IQ frame she is holding, parts and a build guide spread out in front of them.",
+};
+
+/* ------------------------------------------------------- Where we compete --- */
+
+/**
+ * The competition ladder section. One standing photograph, then the day around
+ * it.
+ *
+ * Nearly all of these are 36467E at Mecha Mayhem in Calgary, which is what a
+ * qualifying weekend actually looks like: a pit with your team's name over it,
+ * a lot of standing at the barrier, and other clubs' students in every frame.
+ * The other teams are the point — an event is a room full of them rather than a
+ * stage for ours — so they are not cropped out.
+ */
+export const competePhoto: Photo = {
+  src: "/photos/all/img-3550.jpg",
+  alt: "Drivers from three teams lined up along the barrier of a V5 field, 36467E's robot on the tiles in front of them and their alliance partners' robots being set down alongside.",
+};
+
+export const competePhotos: Photo[] = [
+  {
+    src: "/photos/all/img-3533.jpg",
+    alt: "Three clubbers and a mentor standing around 36467E's robot in its case, under the pit sign reading 36467E, All Purpose Flour, VexKan Robotics Club, Calgary.",
+  },
+  {
+    src: "/photos/all/img-3576.jpg",
+    alt: "A clubber fitting the 36467E number plate onto the team's metal V5 robot at the pit table, while another watches from across the bench.",
+  },
+  {
+    src: "/photos/all/img-3541.jpg",
+    alt: "Three drive team members standing at the field wall in team jerseys, watching 36467E's robot and an opposing robot on the tiles below.",
+  },
+  {
+    src: "/photos/all/img-3551.jpg",
+    alt: "A 36467E driver holding a controller at the edge of the field, drive teams from two other clubs lined up along the wall beside him.",
+  },
+  {
+    src: "/photos/all/img-3584.jpg",
+    alt: "Drive teams from several clubs standing together in safety glasses, waiting for a match to be called.",
+  },
+  {
+    src: "/photos/all/img-3561.jpg",
+    alt: "A clubber from 36467E talking with a driver from another club between matches, both wearing event lanyards, the field behind them.",
+  },
+  {
+    src: "/photos/all/img-3562.jpg",
+    alt: "Two drive team members standing on the field wall looking down at the tiles, the rest of the competition hall and other clubs' pits stretching out behind.",
+  },
+  {
+    src: "/photos/all/img-3560.jpg",
+    alt: "Two students from different clubs standing side by side in the hall, drive team badges hanging around their necks.",
+  },
+  {
+    src: "/photos/all/img-3558.jpg",
+    alt: "A clubber standing with two adults, one of them an event official, under the 36467E pit sign.",
+  },
+];
+
+/**
+ * Practice, which is where nearly all of the season actually happens: a field
+ * on the floor at home rather than a competition venue.
+ *
+ * Robots and hands rather than faces. A portrait in this set pulls the whole
+ * run toward being about one person, which is the opposite of the point.
+ */
+export const practicePhotos: Photo[] = [
+  {
+    src: "/photos/all/img-3782.jpg",
+    alt: "Four clubbers around a VEX field laid out on the floor of a front room, two robots and several game balls on the tiles, one of them driving.",
+  },
+  {
+    src: "/photos/all/img-3622.jpg",
+    alt: "A clubber holding a stack of blue game rings on the robot's lift, checking how the mechanism holds them.",
+  },
+  {
+    src: "/photos/all/vexkan-practice-field-floor.jpg",
+    alt: "Two clubbers at a VEX IQ field laid out on the floor of the club room, one standing with the controller and the other kneeling at the edge of the tiles watching the robot.",
+  },
+];
+
+/**
+ * A competition day, from the parts of it that are not the match.
+ *
+ * Three of these are other clubs' students as much as ours — the drivers along
+ * the barrier, the queue at the inspection table. That is deliberate: an event
+ * is a room full of teams, and photographs that crop everyone else out say the
+ * opposite.
+ */
+export const competitionDayPhotos: Photo[] = [
+  {
+    src: "/photos/all/vexkan-inspection-table.jpg",
+    alt: "A referee seated at the inspection table measuring a V5 robot against the sizing tool while three students stand around the table waiting.",
+    caption: "Inspection, before a robot is allowed to play",
+  },
+  {
+    src: "/photos/all/mecha-mayhem-drivers-waiting.jpg",
+    alt: "Drivers from several teams standing shoulder to shoulder along the field barrier in a darkened hall, watching the match in front of them.",
+    caption: "Waiting on the match ahead of yours",
+  },
+  {
+    src: "/photos/all/mecha-mayhem-36467e-drivers.jpg",
+    alt: "Three young drivers in safety glasses at the field barrier, one holding a controller, with 36467E's robot on the table behind them and an emcee with a microphone to one side.",
+    caption: "36467E at the field, Mecha Mayhem",
+  },
+  {
+    src: "/photos/all/mecha-mayhem-driver-focus.jpg",
+    alt: "A driver in safety glasses and a competition lanyard watching the field intently, controller held low, the hall dark behind him.",
+    caption: "The last few seconds of a match",
   },
 ];
 
@@ -294,5 +431,22 @@ export const worldsPhotos: Photo[] = [
   {
     src: "/photos/all/111786393307-pic.jpg",
     alt: "The screen above a World Championship field during a VEX IQ practice match, drivers standing around the field below.",
+  },
+  /*
+   * The scale of the thing, from a seat in it. The stage photographs are of
+   * the ceremony rather than of our teams — the division being announced in
+   * the last one is another club's — so nothing here is captioned as ours.
+   */
+  {
+    src: "/photos/all/worlds-arena-crowd.jpg",
+    alt: "The arena at the World Championship seen from the floor seats, every tier filled with teams in their own colours.",
+  },
+  {
+    src: "/photos/all/worlds-opening-ceremony.jpg",
+    alt: "The opening ceremony, with China's name and flag filling the screen behind the stage as that country's teams are welcomed in.",
+  },
+  {
+    src: "/photos/all/worlds-division-stage.jpg",
+    alt: "A division awards ceremony under way, the winning teams on stage and their team numbers listed on the screens either side.",
   },
 ];

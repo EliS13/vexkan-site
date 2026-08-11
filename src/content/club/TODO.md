@@ -8,10 +8,34 @@ a single edit in the file named.
 | Field | Programs affected | What to write |
 | --- | --- | --- |
 | `schedule` | all 4 | Day and time, e.g. `"Tuesdays, 6:00–8:00PM"` |
+| `cost` | all 4 | The figure **and** the term, e.g. `"$220 per term"` |
 
-Cost is deliberately absent. The `fee` field was removed rather than left
-blank, so nothing on the site mentions money. If the club ever needs to publish
-a cost, add the field back rather than writing a figure into a summary.
+`cost` is back, having been removed once. A parent who finds the cost on the
+program page feels informed; a parent who finds it after handing over a name
+feels handled. Until a figure is written, the "What it costs" block says so
+plainly and gives two ways to ask — it never goes silent about money.
+
+Write the number and the term together. A bare `"$220"` makes a family guess
+whether that is a month, a term or a season.
+
+## `community.ts`
+
+| Field | What to write |
+| --- | --- |
+| `upcomingWorkshops` | One entry per booked workshop. Empty is a normal state, not a broken one — the page leads with the request form when there is nothing here. |
+| `pastWorkshops` | One entry per workshop already run, oldest last. `reached` only where somebody actually counted heads. |
+
+Nothing is listed yet. The club has run summer camps — there are photographs of
+the certificates — but no dates or headcounts were written down, and a number
+invented here would be a public claim about the club.
+
+The impact strip needs no maintenance: every figure in it is counted from this
+repository rather than typed, so it cannot drift.
+
+The workshop request form composes an email rather than writing to a table. If
+it ever moves to Supabase, it needs a table somebody actually reads — a request
+landing in an unwatched table is worse than no form at all, because a teacher
+would think they had asked.
 
 ## `events.ts`
 

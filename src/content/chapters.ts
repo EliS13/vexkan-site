@@ -1052,6 +1052,18 @@ export const partLabels: Record<string, string> = {
   "back-matter": "Back Matter",
 };
 
+/**
+ * The chapters a reader can actually open.
+ *
+ * `chapters` also holds entries that are outlined but not written, and only
+ * the ready ones get a page — so this, not `chapters.length`, is the number
+ * any page is allowed to advertise. Counting the whole array promises seven
+ * chapters that are not there yet.
+ */
+export function readyChapters() {
+  return chapters.filter((c) => c.status === "ready");
+}
+
 export function getChapter(slug: string) {
   return chapters.find((c) => c.slug === slug);
 }

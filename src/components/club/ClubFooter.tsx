@@ -43,8 +43,11 @@ export function ClubFooter() {
           <p className="eyebrow text-[var(--muted)]">Club</p>
           <ul className="mt-3 space-y-2 text-sm">
             <li><Link href="/about" className="text-[var(--ink-body)] hover:underline">About us</Link></li>
-            <li><Link href="/events" className="text-[var(--ink-body)] hover:underline">Events</Link></li>
-            <li><Link href="/register" className="text-[var(--ink-body)] hover:underline">Join the club</Link></li>
+            {/* Sections of the home page now, rather than pages of their own. */}
+            <li><Link href="/#teams" className="text-[var(--ink-body)] hover:underline">Our teams and awards</Link></li>
+            <li><Link href="/#where-we-compete" className="text-[var(--ink-body)] hover:underline">Where we compete</Link></li>
+            <li><Link href="/community" className="text-[var(--ink-body)] hover:underline">Free workshops</Link></li>
+            <li><Link href="/contact" className="text-[var(--ink-body)] hover:underline">Contact us</Link></li>
             <li><Link href={org.guideHref} className="text-[var(--ink-body)] hover:underline">Free resources</Link></li>
           </ul>
         </div>

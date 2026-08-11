@@ -25,7 +25,6 @@ export default function AboutPage() {
   return (
     <>
       <Section
-        eyebrow="About us"
         title="How the club started"
         titleAs="h1"
         lead={`${org.name} was founded in ${org.foundedYear} by ${org.foundedBy} and a group of enthusiasts who had started experimenting with robotics. It has grown to around ${org.studentCount} students across ${org.gradesLabel.toLowerCase()}.`}
@@ -36,7 +35,7 @@ export default function AboutPage() {
         </Card>
       </Section>
 
-      <Section tone="surface" eyebrow="In the workshop" title="How the club actually looks">
+      <Section tone="surface" title="How the club actually looks">
         <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <p className="club-lead">
@@ -50,7 +49,7 @@ export default function AboutPage() {
         </div>
       </Section>
 
-      <Section eyebrow="What we value" title="How we run the club">
+      <Section title="How we run the club">
         <div className="grid gap-5 sm:grid-cols-2">
           {VALUES.map((v) => (
             <Card key={v.title} className="lift-hover">
@@ -67,7 +66,6 @@ export default function AboutPage() {
        */}
       <Section
         tone="surface"
-        eyebrow="Where it has got to"
         title="At the World Championship"
         lead="Three of the club's teams have competed at the VEX Robotics World Championship. This is what that week looks like from the floor."
       >
@@ -78,7 +76,7 @@ export default function AboutPage() {
        * One person, so this is a statement rather than a directory. A lone card
        * in a three-column grid reads as a team page with two people missing.
        */}
-      <Section eyebrow="Who runs it" title="Student-founded, student-run">
+      <Section title="Student-founded, student-run">
         <div className="max-w-2xl">
           {people.map((p) => (
             <PersonCard key={p.name} person={p} />
@@ -90,7 +88,7 @@ export default function AboutPage() {
         </p>
       </Section>
 
-      <Section eyebrow="Next step" title="Use what we have written">
+      <Section title="Use what we have written">
         <p className="club-lead max-w-2xl">
           The guides, calculators and notebook templates are open to any team, in our club or
           not. That is the part of this we are most glad to hand over.

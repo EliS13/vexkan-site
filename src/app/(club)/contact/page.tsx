@@ -13,7 +13,6 @@ export default function ContactPage() {
   return (
     <>
       <Section
-        eyebrow="Contact"
         title="Get in touch"
         titleAs="h1"
         lead="Questions about a program, a schedule, or robotics in general are all welcome, whether or not your child ever joins."

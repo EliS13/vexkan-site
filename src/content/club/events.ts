@@ -41,6 +41,23 @@ export const teams: Team[] = [
   { number: "36467E", name: "All Purpose Flour", program: "V5RC", grade: "MS", note: "Middle school V5.", seasons: ["2024–25"] },
 ];
 
+/**
+ * The teams in the order the club actually grew, oldest first.
+ *
+ * The journey on the home page reads as a relay, so it has to run forwards in
+ * time rather than in team-number order — otherwise 16688A, which only exists
+ * because the elementary teams came first, opens the story.
+ *
+ * Sorted on the earliest recorded season, with the team number breaking ties so
+ * the order is stable rather than dependent on the array above.
+ */
+export function teamsInJourneyOrder(): Team[] {
+  return [...teams].sort((a, b) => {
+    const first = (t: Team) => t.seasons[0] ?? "9999";
+    return first(a).localeCompare(first(b)) || a.number.localeCompare(b.number);
+  });
+}
+
 export type ClubEvent = {
   slug: string;
   name: string;
@@ -181,6 +198,36 @@ export const awards: Award[] = [
   { team: "36467E", award: "Tournament Finalists", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
   { team: "36467E", award: "Judges Award", event: "Alberta VEX V5 Robotics Competition Provincial Championships (MS)" },
 ];
+
+/**
+ * What each award is given for, in one or two sentences.
+ *
+ * These describe the award, not the team. That distinction is the whole reason
+ * the file can carry them: saying what a Design Award is judged on is a fact
+ * about VEX, while saying why *this* team won one would be a guess about a
+ * judging conversation nobody outside the room heard.
+ *
+ * Summarised in plain language from how the awards are judged at VEX and REC
+ * Foundation events, in the same way the Inspire Award criteria above are.
+ * Anything not recognised here simply shows no description rather than an
+ * invented one, so adding a new award to `awards` can never fabricate text.
+ */
+export const awardMeanings: Record<string, string> = {
+  "Excellence Award": "The top award at a VEX event, and the hardest to win. It goes to the team judged strongest across everything at once: a high-scoring robot, a thorough engineering notebook, a good interview, and the way the team behaves all day.",
+  "Design Award": "For the team with the clearest design process, shown through the engineering notebook and the interview. It rewards how a robot was arrived at, not how well it scores.",
+  "Innovate Award": "For a specific, clever piece of engineering on the robot — one solution the judges had not seen solved that way.",
+  "Think Award": "For the programming. Judges look for autonomous routines the team can explain, with the thinking behind them written down in the notebook.",
+  "Build Award": "For a robot that is genuinely well made: robust enough to survive a full day of matches, tidily assembled, and efficient with the parts it uses.",
+  "Judges Award": "Chosen by the judges for a team whose story does not fit any other category. There is no scoring sheet for it.",
+  "Energy Award": "For a team that brought noticeable enthusiasm to the event, in the pit and around the field as much as on it.",
+  "Sportsmanship Award": "For how a team treated everybody else — alliance partners, opponents, volunteers — over the whole event.",
+  "Teamwork Champion Award": "Won on the field, not by the judges. In VEX IQ every match is cooperative, so this goes to the two-team alliance with the highest combined score across qualifications.",
+  "Robot Skills Champion": "The highest combined skills score at the event: one run driven, one run autonomous, added together. No alliance partner, so it is the cleanest measure of the robot itself.",
+  "Tournament Champions": "Won the elimination bracket at the end of the day, with an alliance the team helped pick.",
+  "Tournament Finalists": "Reached the final match of the elimination bracket and lost it.",
+  "Inspire Award": inspireAward.summary,
+  "Invitation to the U.S. Open": "Not an award but an invitation: a place at the U.S. Open Robotics Championship, which teams are invited to rather than qualifying for.",
+};
 
 /** Finishing positions, which are not awards and are counted separately. */
 export type Placing = { team: string; place: string; event: string };

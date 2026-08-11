@@ -17,7 +17,6 @@ export default function ProgramsPage() {
   return (
     <>
       <Section
-        eyebrow="Programs"
         title="What we run"
         lead="Foundation classes are where most clubbers start and are open to any student in the grade range. Competition teams are selected from those classes."
         titleAs="h1"
@@ -48,7 +47,6 @@ export default function ProgramsPage() {
        * than one picture at the top of the page.
        */}
       <Section
-        eyebrow="Before any of that"
         title="Most of it is building"
         lead="Sorting parts, fitting beams, taking it apart again."
       >

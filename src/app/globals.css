@@ -261,8 +261,100 @@ body {
 }
 
 /*
- * Reduced motion. Only hover elevation is left to cancel: content is never
- * animated on arrival, so there is no entrance to suppress.
+ * The awards journey: teams arriving one at a time as the page is scrolled.
+ *
+ * Every rule here is keyed off `data-state`, which the component only ever sets
+ * on the client. The markup ships as `unknown`, which has no rules at all, so
+ * with JavaScript disabled or before hydration the whole track is simply
+ * visible — the animation can never be the reason something cannot be read.
+ *
+ * `waiting` is the hidden state and is only ever given to a block below the
+ * fold, so nothing already on screen is hidden and faded back in.
+ */
+.journey-block[data-state="waiting"] .journey-card {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.journey-block[data-state="entered"] .journey-card {
+  animation: journey-in 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.journey-block[data-state="waiting"] .journey-chip {
+  opacity: 0;
+}
+
+/*
+ * Chips arrive as a run rather than together. 70ms is the gap that reads as
+ * one gesture; past about 90 it starts to feel like queueing.
+ *
+ * An animation rather than a transition on purpose. A staggered
+ * transition-delay would also delay the hover colours by up to a second on the
+ * fullest team, so the entrance and the hover state are kept on separate
+ * mechanisms.
+ */
+.journey-block[data-state="entered"] .journey-chip {
+  animation: journey-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* Hover and selection, which must stay instant however long the entrance is. */
+.journey-chip {
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease;
+}
+
+.journey-block[data-state="entered"] .journey-dot {
+  animation: journey-dot-in 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes journey-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes journey-dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * On a phone the track is a single column and the rail is hidden, so vertical
+ * travel has nothing to travel against and just makes the page feel loose. A
+ * plain fade is left.
+ */
+@media (max-width: 640px) {
+  .journey-block[data-state="waiting"] .journey-card {
+    transform: none;
+  }
+
+  @keyframes journey-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+/*
+ * Reduced motion. Hover elevation, and the journey, which renders complete and
+ * static: no entrance, no stagger, nothing withheld until a scroll.
  */
 @media (prefers-reduced-motion: reduce) {
   .lift-hover:hover {
@@ -272,5 +364,13 @@ body {
   /* Nothing is rotating, so the bar would be describing something untrue. */
   .team-progress {
     display: none;
+  }
+
+  .journey-block .journey-card,
+  .journey-block .journey-chip,
+  .journey-block .journey-dot {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
   }
 }

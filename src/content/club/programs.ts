@@ -16,7 +16,52 @@ export type Program = {
   learn: string[];
   prerequisites: string | null;
   schedule: Maybe<string>;
+  /**
+   * What a family pays, and the term that buys.
+   *
+   * The field was removed from this file once, on the reasoning that money
+   * should not be the first thing a parent reads. It is back because the
+   * opposite failure is worse: a parent who finds the cost on the program page
+   * feels informed, and a parent who finds it after filling in a signup form
+   * feels handled.
+   *
+   * TBD until the club publishes a figure. Write the number and the term
+   * together — `"$220 per term"`, not `"$220"` — because a bare figure invites
+   * a family to guess which one it is.
+   */
+  cost: Maybe<string>;
 };
+
+/**
+ * What the fee actually buys, in nouns rather than adjectives.
+ *
+ * The same for every program, so it lives here once. Competition teams consume
+ * all of these; a foundation class consumes the first two.
+ */
+export const COST_COVERS = [
+  "VEX parts, and replacing what breaks",
+  "Field elements to practise on",
+  "Event registration",
+  "Tournament entry fees",
+];
+
+/**
+ * The line that makes the figure make sense. The club is a nonprofit, so the
+ * fee is cost recovery rather than revenue, and saying so is the difference
+ * between a price and an explanation.
+ */
+export const COST_NOTE =
+  "VexKan is a nonprofit. The fee covers what a season actually costs to run rather than " +
+  "producing revenue, and the guides, calculators and community workshops stay free to everyone " +
+  "whether or not anyone in your family ever joins.";
+
+/**
+ * Financial assistance. The club has not published a policy, so the site does
+ * not claim one either way — it says to ask, which is true and costs a family
+ * nothing to act on.
+ */
+export const COST_ASSISTANCE =
+  "If the fee is what is standing in the way, write to us before deciding against it.";
 
 export const TRACK_LABELS: Record<ProgramTrack, string> = {
   "iq-foundation": "VEX IQ Foundation Classes",
@@ -58,6 +103,7 @@ export const programs: Program[] = [
     ],
     prerequisites: "Open to any student in Grades 3 to 6.",
     schedule: TBD,
+    cost: TBD,
   },
   {
     slug: "vex-iq-competition-es",
@@ -82,6 +128,7 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from the Foundation Class.",
     schedule: TBD,
+    cost: TBD,
   },
   {
     slug: "vex-iq-competition-ms",
@@ -104,6 +151,7 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from the Foundation Class.",
     schedule: TBD,
+    cost: TBD,
   },
   {
     slug: "v5rc-competition",
@@ -129,6 +177,7 @@ export const programs: Program[] = [
     ],
     prerequisites: "Selected from previous competitive teams or the IQ Competition Teams.",
     schedule: TBD,
+    cost: TBD,
   },
 ];
 

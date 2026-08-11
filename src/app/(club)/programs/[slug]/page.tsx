@@ -9,6 +9,7 @@ import { Button } from "@/components/club/Button";
 import { DetailRow } from "@/components/club/DetailRow";
 import { PhotoFrame } from "@/components/club/PhotoFrame";
 import { programPhotos } from "@/content/club/photos";
+import { WhatItCosts } from "@/components/club/WhatItCosts";
 
 export function generateStaticParams() {
   return programSlugs().map((slug) => ({ slug }));
@@ -62,17 +63,12 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
             <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{program.title}</h1>
             <p className="club-lead mt-4 max-w-2xl">{program.summary}</p>
             {/*
-             * Asking a question leads, joining is a plain link underneath. The
-             * page is here to explain the program, not to close a signup.
+             * One button, and it starts a conversation. There is no signup form
+             * on the site any more: a family joins by talking to us, so the
+             * page has nothing to close and can just explain the program.
              */}
             <div className="mt-7 flex flex-wrap items-center gap-5">
-              <Button href="/contact" size="lg" variant="secondary">Ask a question</Button>
-              <Link
-                href={`/register?program=${program.slug}`}
-                className="text-sm font-semibold text-[var(--purple-text)] underline underline-offset-4"
-              >
-                Join this program
-              </Link>
+              <Button href="/contact" size="lg" variant="secondary">Ask about this program</Button>
             </div>
           </div>
           {photo && (
@@ -108,8 +104,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
                 <DetailRow label="Grades" value={program.gradeLabel} />
                 <DetailRow label="Schedule" value={program.schedule} />
                 {/*
-                 * No cost row. The club is a nonprofit and does not want money
-                 * to be the first thing a family reads about a program.
+                 * Still no cost row here. Money is not a glanceable fact next
+                 * to a grade range — it needs the sentences about what it pays
+                 * for, so it gets its own block below the description instead.
                  */}
                 {program.prerequisites && (
                   <DetailRow label="Entry" value={program.prerequisites} />
@@ -121,8 +118,19 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         </div>
       </Section>
 
+      {/*
+       * After the description of what the student actually does, and before
+       * anything asks them to join. A family should reach the number by
+       * reading, not by starting a signup.
+       */}
+      <Section title="Before you decide">
+        <div className="max-w-2xl">
+          <WhatItCosts cost={program.cost} />
+        </div>
+      </Section>
+
       {siblings.length > 0 && (
-        <Section title={`Other ${TRACK_LABELS[program.track]}`}>
+        <Section tone="surface" title={`Other ${TRACK_LABELS[program.track]}`}>
           <div className="grid gap-5 sm:grid-cols-3">
             {siblings.map((p) => (
               <Card key={p.slug} className="lift-hover h-full">

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AdminPage() {
   return (
-    <Section eyebrow="Club admin" title="Registrations" titleAs="h1">
+    <Section title="Registrations" titleAs="h1">
       <AdminDashboard />
     </Section>
   );

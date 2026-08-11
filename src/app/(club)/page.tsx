@@ -11,18 +11,39 @@ import { Slideshow } from "@/components/club/Slideshow";
 import { PhotoBand } from "@/components/club/PhotoBand";
 import { PhotoFrame } from "@/components/club/PhotoFrame";
 import {
+  awardPhotos,
+  competePhoto,
+  competePhotos,
+  competitionDayPhotos,
   homeBandPhoto,
   homeClassPhotos,
   homeHeroPhotos,
   homeWorldsPhotos,
+  pitPhoto,
+  practicePhotos,
 } from "@/content/club/photos";
-import { clubAwards } from "@/content/club/events";
+import { inspireAward } from "@/content/club/events";
+import { AwardsCount, AwardsJourney } from "@/components/club/AwardsJourney";
+import {
+  CompetitionLadder,
+  ProgramComparison,
+  SpectatingNote,
+} from "@/components/club/CompetitionLadder";
+import { readyChapters } from "@/content/chapters";
+import { EventsCalendar } from "@/components/club/EventsCalendar";
+import { fetchAlbertaEvents, fetchSignatureEvents } from "@/lib/vexEvents";
 
 export const metadata: Metadata = {
   title: `${org.name}`,
   description:
     "A nonprofit robotics club in Calgary. Free VEX guides, calculators and notebook templates, plus classes and competition teams for Grades 1 to 12.",
 };
+
+/*
+ * The competition calendar is fetched here now that there is no separate
+ * results page. Refetched once a day: calendars move over weeks, not minutes.
+ */
+export const revalidate = 86400;
 
 /**
  * What a visitor can take away today, without asking anyone for anything. The
@@ -32,7 +53,11 @@ const RESOURCES = [
   {
     href: "/guide/chapters",
     title: "The field guide",
-    body: "Seventeen chapters on building, programming and competing, written from the pit rather than from a manual.",
+    /*
+     * Counted rather than written out, so it cannot drift from the guide. Only
+     * the chapters that are actually readable — the array holds outlines too.
+     */
+    body: `${readyChapters().length} chapters on building, programming and competing, written from the pit rather than from a manual.`,
   },
   {
     href: "/guide/tools/gear-ratio",
@@ -51,7 +76,10 @@ const RESOURCES = [
   },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  /* One round trip a day between them, not one per visitor. */
+  const [live, signature] = await Promise.all([fetchAlbertaEvents(), fetchSignatureEvents()]);
+
   return (
     <>
       <div className="tile-grid relative overflow-hidden border-b" style={{ borderColor: "var(--line)" }}>
@@ -78,7 +106,7 @@ export default function HomePage() {
             </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Button href="/guide" size="lg">Start with the free guides</Button>
-              <Button href="/programs" size="lg" variant="secondary">See what we run</Button>
+              <Button href="#what-we-run" size="lg" variant="secondary">See what we run</Button>
             </div>
           </div>
           {/*
@@ -97,8 +125,8 @@ export default function HomePage() {
       <Section
         tone="surface"
         eyebrow="Free, no signup"
-        title="Take what you need"
-        lead="We write this for our own teams and then leave it open. No account, no email, no form in the way."
+        title="Need some help?"
+        lead="We write all of this for our own teams, and then leave it open for anyone. No account, no email, no form in the way."
       >
         <div className="grid gap-5 sm:grid-cols-2">
           {RESOURCES.map((r) => (
@@ -112,15 +140,26 @@ export default function HomePage() {
             </Link>
           ))}
         </div>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap items-center gap-5">
           <Button href="/guide" variant="secondary">Browse everything</Button>
+          {/*
+           * The other free thing, and the only one that involves us turning up
+           * in person. It belongs beside the guides rather than beside the
+           * programs, because neither costs a family anything.
+           */}
+          <Link
+            href="/community"
+            className="text-sm font-semibold text-[var(--purple-text)] underline underline-offset-4"
+          >
+            Or have us run a free workshop for your school
+          </Link>
         </div>
       </Section>
 
       <PhotoBand photo={homeBandPhoto} />
 
       <Section
-        eyebrow="What we run"
+        id="what-we-run"
         title="Classes and competition teams"
         lead="Foundation classes teach the basics hands on. Competition teams are picked from those classes and represent the club against other schools."
       >
@@ -151,6 +190,11 @@ export default function HomePage() {
             <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 33vw" />
           ))}
         </div>
+
+        <p className="mt-8 text-sm text-muted">
+          Each program page says what a student actually does, and what it costs, before anything
+          asks for a name.
+        </p>
       </Section>
 
       {/*
@@ -166,19 +210,6 @@ export default function HomePage() {
           <div className="mt-8">
             <Scoreboard />
           </div>
-          {/*
-           * The placings above are three teams on three days. This is the
-           * longer run, and it counts every team the club has mentored rather
-           * than only the ones competing now.
-           */}
-          <p className="mt-9 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="score text-4xl font-semibold" style={{ color: "var(--purple-on-dark)" }}>
-              {clubAwards.count}
-            </span>
-            <span className="text-[15px]" style={{ color: "rgba(243,239,232,0.78)" }}>
-              {clubAwards.label}
-            </span>
-          </p>
 
           {/*
            * Photographs from those events, unframed: a light card border would
@@ -198,22 +229,191 @@ export default function HomePage() {
             ))}
           </div>
 
-          <p className="mt-9">
-            <Link href="/events" className="underline underline-offset-4" style={{ color: "var(--purple-on-dark)" }}>
-              The full record, and what the Inspire Award takes
-            </Link>
+          {/*
+           * The Inspire Award, in the same band rather than a second one below
+           * it. It was won at this event, by one of the teams in the scoreboard
+           * above, so a seam between them would be inventing a separation that
+           * is not there. It is judged rather than won on the field, which is
+           * why the criteria say more about the club than the trophy does —
+           * summarised in our own words and linked to the REC Foundation
+           * rather than reproduced.
+           */}
+          <hr
+            className="mt-16 border-0"
+            style={{ borderTop: "1px solid rgba(243,239,232,0.14)" }}
+          />
+
+          <p className="eyebrow mt-16">Judged award · {inspireAward.event}</p>
+          <h2 className="mt-3 text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
+            Team {inspireAward.team} won the {inspireAward.name}
+          </h2>
+          <p className="club-lead mt-5 max-w-2xl" style={{ color: "rgba(243,239,232,0.78)" }}>
+            {inspireAward.summary} {inspireAward.meaning}
+          </p>
+
+          <p className="eyebrow mt-10" style={{ color: "rgba(243,239,232,0.5)" }}>
+            {inspireAward.criteriaLabel}
+          </p>
+          <ol className="mt-4 grid gap-px overflow-hidden rounded-2xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
+            {inspireAward.criteria.map((c, i) => (
+              <li key={c} className="flex gap-4 p-6" style={{ background: "var(--ink-deep)" }}>
+                <span className="readout shrink-0 text-sm" style={{ color: "var(--purple-on-dark)" }}>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span style={{ color: "rgba(243,239,232,0.88)" }}>{c}</span>
+              </li>
+            ))}
+          </ol>
+
+          <p className="mt-6 text-sm" style={{ color: "rgba(243,239,232,0.6)" }}>
+            {inspireAward.note} Criteria summarised from the{" "}
+            <a
+              href={inspireAward.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-4"
+              style={{ color: "var(--purple-on-dark)" }}
+            >
+              {inspireAward.sourceLabel}
+            </a>
+            .
           </p>
         </div>
       </div>
 
-      <Section eyebrow="Getting in touch" title="Ask us anything">
+      {/*
+       * Default tone, not surface: the count sits in a surface-coloured box and
+       * would disappear into a surface-coloured band behind it.
+       */}
+      <Section id="teams" title="Meet the teams">
+        {/*
+         * No standing paragraph here. The count says the size of it, the line
+         * under it hands over, and the track itself — oldest team first — makes
+         * the point about handing over better than a sentence describing it.
+         */}
+        <div className="mb-12">
+          <AwardsCount />
+        </div>
+        <AwardsJourney />
+
+        {/*
+         * The one place on the site where photographs carry captions: an award
+         * photograph cannot say which award it was.
+         */}
+        <div className="mt-12">
+          <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+        </div>
+      </Section>
+
+      {/*
+       * The ladder, which almost no parent has seen written down. It sits after
+       * the results rather than before them, so it reads as an explanation of
+       * where those results came from rather than as a boast about reaching the
+       * top of it.
+       */}
+      <Section
+        id="where-we-compete"
+        tone="surface"
+        title="Where we compete"
+        lead="Qualifying tournaments across Alberta, then the provincial championship, then the World Championship. Qualification rules shift a little each season and differ by program, so each step says what usually earns the next rather than promising it."
+      >
+        <CompetitionLadder />
+
+        <h3 className="mt-14 text-xl font-semibold">Which one is my child in?</h3>
+        <p className="club-lead mt-3 max-w-2xl">
+          Two separate competitions, with different kit and different matches. The grades overlap in
+          middle school, where a student could be in either.
+        </p>
+        <div className="mt-7">
+          <ProgramComparison />
+        </div>
+
+        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[1fr_1fr]">
+          <SpectatingNote />
+          <PhotoFrame photo={competePhoto} sizes="(max-width: 1024px) 100vw, 45vw" />
+        </div>
+
+        {/*
+         * A competition weekend, at the size it actually happens. Nine
+         * photographs with nothing to say about any one of them individually,
+         * so they run as a slideshow rather than a wall of thumbnails — one at
+         * a time and large enough to actually read.
+         */}
+        <h3 className="mt-14 text-xl font-semibold">A competition weekend</h3>
+        <p className="club-lead mt-3 max-w-2xl">
+          Mostly this, at a school or a convention centre in Calgary: the pit, the queue for the
+          field, and a few hundred students from other clubs doing exactly the same thing.
+        </p>
+        <div className="mt-8">
+          <Slideshow photos={competePhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+        </div>
+      </Section>
+
+      {/* The live calendar, pulled from VEX rather than kept by hand. */}
+      <EventsCalendar live={live} signature={signature} />
+
+      {/*
+       * Two photographs that each illustrate a specific paragraph, so they are
+       * paired with their text and alternate sides rather than being stacked
+       * into a slideshow. A carousel here would separate a picture from the
+       * sentence that explains it.
+       *
+       * `lg:order-first` on the second row is what does the alternating: the
+       * markup keeps text before image so the reading order is right on a
+       * phone, and only the wide layout swaps them.
+       */}
+      <Section title="What competing looks like">
+        <div className="grid items-center gap-8 lg:grid-cols-2">
+          <div>
+            <p className="club-lead">
+              Most of a competition happens away from the field: fixing what broke in the last
+              match, talking through a strategy with an alliance partner, and explaining a design
+              choice to a judge.
+            </p>
+            <p className="club-lead mt-5">
+              That last one decides the judged awards: a team, its notebook, and two judges asking
+              how the robot got that way.
+            </p>
+          </div>
+          <PhotoFrame photo={pitPhoto} sizes="(max-width: 1024px) 100vw, 45vw" />
+        </div>
+
+        {/*
+         * The day itself, in the order it happens: inspection, the wait at the
+         * barrier, then the match. Captioned, because none of these photographs
+         * can say which part of the day it is.
+         */}
+        <h3 className="mt-16 text-xl font-semibold">A competition day, in order</h3>
+        <p className="club-lead mt-3 max-w-2xl">
+          Inspection first, because a robot that fails it does not play. Then a long wait at the
+          barrier, and about a minute of the thing you came for.
+        </p>
+        <div className="mt-8">
+          <Slideshow photos={competitionDayPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+        </div>
+
+        {/*
+         * And the other 95% of a season. Three photographs with nothing to say
+         * about any one of them, so: slideshow.
+         */}
+        <h3 className="mt-16 text-xl font-semibold">And the rest of the season</h3>
+        <p className="club-lead mt-3 max-w-2xl">
+          A competition is two days. The other few hundred hours are a field on the floor, a robot
+          half apart, and the same mechanism tried again.
+        </p>
+        <div className="mt-8">
+          <Slideshow photos={practicePhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+        </div>
+      </Section>
+
+      <Section tone="surface" title="Ask us anything">
         <p className="club-lead max-w-2xl">
           Questions about robotics are welcome even if your child never joins. We are students
           ourselves, so during build season and competition weekends replies can take a while.
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <Button href="/contact" size="lg">Contact us</Button>
-          <Button href="/register" size="lg" variant="secondary">Join the club</Button>
+          <Button href="/community" size="lg" variant="secondary">Free workshops</Button>
         </div>
       </Section>
     </>

@@ -1,6 +1,10 @@
 /**
- * The club's Worlds placings, set the way an event bracket sets them: the
- * placing carries the weight, the field size stays a quiet denominator.
+ * The club's Worlds placings: three numbers and the teams that earned them.
+ *
+ * Just the placing. The field size and the Inspire Award both used to hang off
+ * 16688A's line and made one of three equal panels louder than the other two —
+ * the award has its own block directly below this anyway, so saying it here as
+ * well was saying it twice.
  *
  * Only teams with a placing appear. A team without one is left out rather than
  * shown as a blank, because an empty slot on a scoreboard reads as a zero.
@@ -9,14 +13,23 @@ type Line = {
   team: string;
   program: string;
   place: string;
-  of?: string;
-  note?: string;
+  /** The World Championship these came from, so a placing dates itself. */
+  year: string;
 };
 
+/*
+ * Not all one trip. The club has been to the World Championship in more than
+ * one year, so each line carries its own — do not "tidy" these to a single
+ * year on the assumption that they went together, which is exactly the wrong
+ * guess that had 595C down as 2026 to begin with.
+ *
+ * 595C's 18th is 2025, from the club. 16688A's 7th is 2026, which matches the
+ * Inspire Award filed against the 2026 World Championship in events.ts.
+ */
 const LINES: Line[] = [
-  { team: "16688A", program: "V5RC", place: "7", of: "84", note: "Inspire Award" },
-  { team: "595C", program: "VEX IQ", place: "18" },
-  { team: "595Y", program: "VEX IQ", place: "31" },
+  { team: "16688A", program: "V5RC", place: "7", year: "2026" },
+  { team: "595C", program: "VEX IQ", place: "18", year: "2025" },
+  { team: "595Y", program: "VEX IQ", place: "31", year: "2026" },
 ];
 
 function ordinal(place: string): string {
@@ -37,30 +50,19 @@ export function Scoreboard() {
             <span className="score text-2xl font-medium" style={{ color: "rgba(243,239,232,0.55)" }}>
               {ordinal(line.place)}
             </span>
-            {line.of && (
-              <span className="score ml-1 text-base" style={{ color: "rgba(243,239,232,0.55)" }}>
-                / {line.of}
-              </span>
-            )}
           </div>
 
-          <p className="mt-4 flex items-center gap-2">
+          <p className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="readout text-sm font-semibold" style={{ color: "var(--purple-on-dark)" }}>
               {line.team}
             </span>
             <span className="eyebrow" style={{ color: "rgba(243,239,232,0.5)" }}>
               {line.program}
             </span>
+            <span className="eyebrow" style={{ color: "rgba(243,239,232,0.5)" }}>
+              · {line.year}
+            </span>
           </p>
-
-          {line.note && (
-            <p
-              className="mt-3 inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold"
-              style={{ background: "rgba(240,132,78,0.16)", color: "var(--purple-on-dark)" }}
-            >
-              {line.note}
-            </p>
-          )}
         </li>
       ))}
     </ul>
