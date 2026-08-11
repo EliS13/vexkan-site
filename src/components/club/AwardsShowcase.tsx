@@ -1,5 +1,5 @@
 import { clubAwards } from "@/content/club/events";
-import { TeamStack } from "./TeamStack";
+import { TeamRotator } from "./TeamRotator";
 
 /**
  * Recognition, arranged around what it says about the club rather than as a
@@ -11,8 +11,8 @@ import { TeamStack } from "./TeamStack";
  * scrolled past, and they also hide which team did what, which is the part
  * that actually means something.
  *
- * The teams hold the screen one at a time as you scroll through them. See
- * TeamStack for how, and for why it is sticky positioning rather than script.
+ * The teams sit behind an index rather than a scroll sequence: all nine are
+ * listed at once and one is shown at a time. See TeamRotator.
  */
 export function AwardsShowcase() {
   return (
@@ -31,7 +31,9 @@ export function AwardsShowcase() {
        * The Inspire Award still appears under 16688A, whose award it is. The
        * dark band above explains what it takes to win; this is the record.
        */}
-      <TeamStack />
+      <div className="mt-8">
+        <TeamRotator />
+      </div>
     </div>
   );
 }

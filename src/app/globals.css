@@ -242,11 +242,35 @@ body {
 }
 
 /*
+ * The bar under the team the rotator is showing, filling across its turn.
+ * Duration is set on the element so it always matches the timer that moves it.
+ */
+.team-progress {
+  animation-name: team-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+@keyframes team-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/*
  * Reduced motion. Only hover elevation is left to cancel: content is never
  * animated on arrival, so there is no entrance to suppress.
  */
 @media (prefers-reduced-motion: reduce) {
   .lift-hover:hover {
     transform: none;
+  }
+
+  /* Nothing is rotating, so the bar would be describing something untrue. */
+  .team-progress {
+    display: none;
   }
 }
