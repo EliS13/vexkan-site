@@ -15,12 +15,17 @@ export function PersonCard({ person }: { person: Person }) {
           className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl"
           style={{ background: "var(--purple)" }}
         >
+          {/*
+           * Anchored to the top. A square crop out of a portrait photograph
+           * takes its window from the middle by default, which on a head and
+           * shoulders shot cuts the face in half.
+           */}
           <Image
             src={founderPhoto.src}
             alt={founderPhoto.alt}
             fill
             sizes="80px"
-            className="object-cover"
+            className="object-cover object-top"
           />
         </span>
         <div>

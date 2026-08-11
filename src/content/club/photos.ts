@@ -28,8 +28,8 @@ export type Photo = {
  * photograph, a band or a program card. The club leads on its members.
  */
 export const founderPhoto: Photo = {
-  src: "/photos/all/img-3590.jpg",
-  alt: "Eli Seeliger in a navy jacket outside the entrance to hall A1, arriving at Mecha Mayhem with the team's gear on a cart.",
+  src: "/photos/all/img-3589.jpg",
+  alt: "Eli Seeliger in a navy jacket outside the entrance to hall A1 at Mecha Mayhem.",
 };
 
 /* ---------------------------------------------------------------- Home --- */
