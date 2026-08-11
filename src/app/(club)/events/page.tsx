@@ -244,21 +244,6 @@ export default async function EventsPage() {
        * more about the club than the trophy does. They are summarised in our
        * own words and linked to the REC Foundation rather than reproduced.
        */}
-      <Section
-        eyebrow="Recognition"
-        title="What our teams have been recognised for"
-        lead="Most of these came from teams we mentored rather than teams we ran, which is the part we are proudest of."
-      >
-        <AwardsShowcase />
-        {/*
-         * The one place on the site where photographs carry captions: an award
-         * photograph cannot say which award it was.
-         */}
-        <div className="mt-10">
-          <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
-        </div>
-      </Section>
-
       <div className="band-dark">
         <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24">
           <p className="eyebrow">Judged award · {inspireAward.event}</p>
@@ -298,6 +283,21 @@ export default async function EventsPage() {
           </p>
         </div>
       </div>
+
+      <Section
+        eyebrow="Recognition"
+        title="What our teams have been recognised for"
+        lead="Most of these came from teams we mentored rather than teams we ran, which is the part we are proudest of."
+      >
+        <AwardsShowcase />
+        {/*
+         * The one place on the site where photographs carry captions: an award
+         * photograph cannot say which award it was.
+         */}
+        <div className="mt-10">
+          <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+        </div>
+      </Section>
 
       <Section tone="surface" eyebrow="At the event" title="What competing looks like">
         <div className="grid items-start gap-8 lg:grid-cols-[1.1fr_1fr]">

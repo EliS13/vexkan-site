@@ -161,7 +161,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
           <p className="eyebrow">Teams from our club</p>
           <h2 className="mt-3 max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
-            How our teams have done at the World Championship
+            How our teams have done
           </h2>
           <div className="mt-8">
             <Scoreboard />

@@ -1,4 +1,5 @@
 import { awards, clubAwards, inspireAward, teamProgram, type Award } from "@/content/club/events";
+import { TrophyIcon } from "./TrophyIcon";
 
 /**
  * Rough order of what an award says about a team, best first.
@@ -25,13 +26,24 @@ function rank(a: Award): number {
 }
 
 /**
- * The few that lead: best first, alternating between the two programs, and one
- * per team before any team gets a second.
+ * Awards this section has to show for each program, if the club has won one.
+ *
+ * Excellence is the award VEX itself treats as the top of the pile, and a
+ * skills ranking is the one result that is purely the robot rather than the
+ * judging. Showing both for IQ and for V5 says the club competes seriously on
+ * both sides, which a merit-ranked list alone would not.
+ */
+const MUST_SHOW = ["Excellence Award", "Robot Skills Champion"];
+
+/**
+ * The ones that lead: the must-shows first, then the strongest of what is
+ * left, alternating between the two programs, a new team before any team gets
+ * a second.
  *
  * Sorting on merit alone puts a run of the same team's awards at the top,
  * which reads as one team's page rather than the club's. Alternating keeps
- * both the IQ and the V5 side visible, and the one-per-team pass stops the
- * strongest team from taking three of the five slots.
+ * both the IQ and the V5 side visible, and the new-team pass stops the
+ * strongest team from taking a third of the slots.
  */
 function leadWith(list: Award[], count: number): Award[] {
   const byProgram = (program: string) =>
@@ -40,25 +52,32 @@ function leadWith(list: Award[], count: number): Award[] {
   const v5 = byProgram("V5RC");
   const iq = byProgram("VEX IQ");
 
+  const picked: Award[] = [];
+  const add = (a: Award | undefined) => {
+    if (a && picked.length < count && !picked.includes(a)) picked.push(a);
+  };
+
+  /* Best instance of each must-show award, in each program. */
+  for (const name of MUST_SHOW) {
+    add(v5.find((a) => a.award === name));
+    add(iq.find((a) => a.award === name));
+  }
+
   const alternating: Award[] = [];
   for (let i = 0; i < Math.max(v5.length, iq.length); i++) {
     if (v5[i]) alternating.push(v5[i]);
     if (iq[i]) alternating.push(iq[i]);
   }
 
-  const picked: Award[] = [];
-  const teamsShown = new Set<string>();
+  const teamsShown = new Set(picked.map((a) => a.team));
   for (const a of alternating) {
-    if (picked.length === count) break;
     if (teamsShown.has(a.team)) continue;
-    picked.push(a);
+    add(a);
     teamsShown.add(a.team);
   }
   /* Fewer teams than slots: fill the rest in the same order. */
-  for (const a of alternating) {
-    if (picked.length === count) break;
-    if (!picked.includes(a)) picked.push(a);
-  }
+  for (const a of alternating) add(a);
+
   return picked;
 }
 
@@ -68,13 +87,16 @@ function AwardTile({ award }: { award: Award }) {
       className="lift lift-hover rounded-2xl px-6 py-5"
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
     >
-      <div className="flex items-baseline justify-between gap-3">
-        <h3 className="text-base font-semibold leading-tight tracking-[-0.01em]">{award.award}</h3>
-        <span className="readout shrink-0 text-xs font-semibold text-[var(--purple-text)]">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-2.5">
+          <TrophyIcon size={17} className="mt-0.5 shrink-0 text-[var(--purple)]" />
+          <h3 className="text-base font-semibold leading-tight tracking-[-0.01em]">{award.award}</h3>
+        </div>
+        <span className="readout shrink-0 pt-0.5 text-xs font-semibold text-[var(--purple-text)]">
           {award.team}
         </span>
       </div>
-      <p className="mt-2 text-[13px] text-muted">{award.event}</p>
+      <p className="mt-2 pl-[27px] text-[13px] text-muted">{award.event}</p>
     </li>
   );
 }
@@ -84,29 +106,37 @@ function AwardTile({ award }: { award: Award }) {
  * trophy shelf.
  *
  * The mentored-teams figure leads, because it is the one number here that is
- * about other people. Then five awards, not thirty: a wall of tiles is read as
+ * about other people. Then nine awards, not thirty: a wall of tiles is read as
  * texture and scrolled past, so the rest fold away behind a disclosure for
  * anyone who does want the full list.
  */
 export function AwardsShowcase() {
   const rest = awards.filter((a) => a.award !== inspireAward.name);
-  const featured = leadWith(rest, 5);
+  const featured = leadWith(rest, 9);
   const folded = rest.filter((a) => !featured.includes(a));
 
   return (
     <div>
       <div
-        className="lift rounded-3xl px-8 py-12 text-center sm:px-12 sm:py-16"
+        className="lift relative overflow-hidden rounded-3xl px-8 py-12 text-center sm:px-12 sm:py-16"
         style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
       >
-        <p className="score text-[clamp(3.5rem,12vw,7rem)] font-semibold leading-none text-[var(--purple-text)]">
+        {/*
+         * A watermark, not an illustration: it sits behind the number at low
+         * enough contrast to stay out of the way of reading it.
+         */}
+        <TrophyIcon
+          size={340}
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[var(--purple)] opacity-[0.07]"
+        />
+        <p className="score relative text-[clamp(3.5rem,12vw,7rem)] font-semibold leading-none text-[var(--purple-text)]">
           {clubAwards.count}
         </p>
-        <p className="club-lead mx-auto mt-5 max-w-md">{clubAwards.label}</p>
+        <p className="club-lead relative mx-auto mt-5 max-w-md">{clubAwards.label}</p>
       </div>
 
       {/*
-       * The Inspire Award is deliberately absent: it gets the dark band below,
+       * The Inspire Award is deliberately absent: it gets the dark band above,
        * where its criteria are explained, and showing it twice would spend the
        * page's one loud moment on the same thing.
        */}
