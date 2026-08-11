@@ -1,5 +1,5 @@
 import { clubAwards } from "@/content/club/events";
-import { TeamCycle } from "./TeamCycle";
+import { TeamStack } from "./TeamStack";
 
 /**
  * Recognition, arranged around what it says about the club rather than as a
@@ -10,6 +10,9 @@ import { TeamCycle } from "./TeamCycle";
  * than as one long list: thirty tiles in a grid are read as texture and
  * scrolled past, and they also hide which team did what, which is the part
  * that actually means something.
+ *
+ * The teams hold the screen one at a time as you scroll through them. See
+ * TeamStack for how, and for why it is sticky positioning rather than script.
  */
 export function AwardsShowcase() {
   return (
@@ -25,13 +28,10 @@ export function AwardsShowcase() {
       </div>
 
       {/*
-       * The Inspire Award is deliberately absent from the team panels' framing
-       * here: it gets the dark band above, where its criteria are explained.
-       * It still appears under 16688A, which is whose award it is.
+       * The Inspire Award still appears under 16688A, whose award it is. The
+       * dark band above explains what it takes to win; this is the record.
        */}
-      <div className="mt-8">
-        <TeamCycle />
-      </div>
+      <TeamStack />
     </div>
   );
 }
