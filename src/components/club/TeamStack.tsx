@@ -30,10 +30,24 @@ export function TeamStack() {
     <ol className="mt-8">
       {teams.map((team, i) => {
         const won = byTeam.get(team.number) ?? [];
+        /*
+         * The last card keeps its margin like the rest. Without it there is no
+         * scroll left after it arrives, so the final team appears and the whole
+         * stack unpins in the same movement, which is the one transition that
+         * felt wrong.
+         */
         return (
-          <li key={team.number} className="sticky top-24 mb-[38vh] last:mb-0">
+          <li key={team.number} className="sticky top-24 mb-[38vh]">
+            {/*
+             * One height for every card, in pixels rather than viewport units,
+             * and sized to the fullest team rather than the average. A card
+             * measured in vh shrinks on a short screen and starts hiding
+             * awards. No `overflow-hidden` either: if the content ever does
+             * outgrow this, it should spill and be seen, not be clipped away
+             * without a trace.
+             */}
             <div
-              className="lift min-h-[clamp(320px,44vh,420px)] overflow-hidden rounded-3xl p-7 sm:p-9"
+              className="lift rounded-3xl p-7 sm:h-[700px] sm:p-8"
               style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
             >
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.35fr)]">
@@ -71,7 +85,7 @@ export function TeamStack() {
                         {won.map((a) => (
                           <li
                             key={`${a.award}-${a.event}`}
-                            className="flex gap-3 break-inside-avoid sm:mb-3"
+                            className="flex gap-3 break-inside-avoid sm:mb-2.5"
                           >
                             <TrophyIcon size={16} className="mt-1 shrink-0 text-[var(--purple)]" />
                             <span>
