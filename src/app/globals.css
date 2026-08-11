@@ -229,6 +229,51 @@ body {
 }
 
 /*
+ * The one scroll effect on the site: the full-width photograph drifts a little
+ * as it passes.
+ *
+ * Driven by the browser's own scroll timeline rather than JavaScript, so there
+ * is no scroll listener, nothing on the main thread, and nothing to load. The
+ * photograph is fully rendered and fully visible from the first paint; the
+ * animation only moves what is already there. A browser without
+ * `animation-timeline` shows a still photograph and loses nothing, which is
+ * why this stays inside the rule against animations that gate content.
+ *
+ * The image is held slightly oversized so the drift never exposes an edge.
+ */
+.band-drift {
+  transform: scale(1.12);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /*
+     * Longhands on purpose. The `animation` shorthand resets duration to 0s,
+     * and a scroll-driven animation needs `auto` to take its length from the
+     * timeline instead of the clock. With 0s it attaches and never runs.
+     */
+    .band-drift {
+      animation-name: band-drift;
+      animation-duration: auto;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+      will-change: transform;
+    }
+
+    @keyframes band-drift {
+      from {
+        transform: translateY(-3.5%) scale(1.12);
+      }
+      to {
+        transform: translateY(3.5%) scale(1.12);
+      }
+    }
+  }
+}
+
+/*
  * Reduced motion. Only hover elevation is left to cancel: content is never
  * animated on arrival, so there is no entrance to suppress.
  */
