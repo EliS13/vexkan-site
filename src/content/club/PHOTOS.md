@@ -20,6 +20,11 @@ Three standing rules on top of those:
 - **Nothing is placed until it has been opened.** Alt text is written from the
   photograph, never from the file name. See the naming trap below.
 
+Every photograph in `public/photos/all` is placed except one:
+`vexkan-robotics-club-img-2120.jpg`, a robot labelled 220H, which is not one of
+our teams. It stays in the folder and off the site. Do not helpfully add it
+back.
+
 ## Not everything is a slideshow
 
 A carousel shows a visitor its first slide and then loses them, so it earns its

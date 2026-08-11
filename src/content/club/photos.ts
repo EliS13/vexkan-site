@@ -47,10 +47,6 @@ export const homeHeroPhotos: Photo[] = [
     src: "/photos/all/101786393305-pic.jpg",
     alt: "A row of clubbers standing along the barrier at a competition, watching a VEX IQ match on the screen above the field.",
   },
-  {
-    src: "/photos/all/vexkan-robotics-club-img-2120.jpg",
-    alt: "A clubber carrying his VEX IQ robot across the competition floor, the team number taped to the front of it.",
-  },
 ];
 
 /** Full width, between the guides and the programs. A change of pace. */
