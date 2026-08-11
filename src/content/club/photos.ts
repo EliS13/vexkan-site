@@ -54,10 +54,10 @@ export const homeHeroPhotos: Photo[] = [
   },
 ];
 
-/** Full width, between the guides and the programs. A change of pace. */
+/** A wide photograph between the guides and the programs. A change of pace. */
 export const homeBandPhoto: Photo = {
   src: "/photos/all/vexkan-robotics-club-image-1-copy.jpg",
-  alt: "A student leaning over a VEX IQ field to set a robot down before a match, with other teams waiting behind him.",
+  alt: "Two students shaking hands across a VEX IQ Rapid Relay field at the World Championship while another sets his robot down on the tiles.",
 };
 
 /**

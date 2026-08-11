@@ -28,16 +28,6 @@ export const teams: Team[] = [
   { number: "36467E", name: "All Purpose Flour", program: "V5RC", grade: "MS", note: "Middle school V5." },
 ];
 
-/**
- * Which program a team number competes in.
- *
- * Read from `teams` rather than guessed from the event name: the same number
- * exists in both programs, so the event string is not a safe source.
- */
-export function teamProgram(number: string): Team["program"] | null {
-  return teams.find((t) => t.number === number)?.program ?? null;
-}
-
 export type ClubEvent = {
   slug: string;
   name: string;

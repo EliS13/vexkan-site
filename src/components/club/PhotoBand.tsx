@@ -13,12 +13,13 @@ import type { Photo } from "@/content/club/photos";
 const DRIFT = 7;
 
 /**
- * A photograph run edge to edge between two sections, drifting slowly as it
- * passes.
+ * A wide photograph between two sections, drifting slowly as it passes.
  *
  * It does one job: break the run of white cards so the page does not read as
- * a single list. Height is capped in viewport units so it stays a band rather
- * than swallowing the screen, with a floor for phones.
+ * a single list. Held to the same column as everything else rather than run
+ * edge to edge, so it reads as part of the page instead of a banner dropped
+ * across it, and its height is clamped so it stays a band on a wide screen
+ * without collapsing to a letterbox slice on a narrow one.
  *
  * The drift is driven here rather than by CSS `animation-timeline`, which only
  * Chrome and a very recent Safari support — most visitors would have seen a
@@ -87,12 +88,20 @@ export function PhotoBand({ photo }: { photo: Photo }) {
   }, []);
 
   return (
-    <div
-      ref={frame}
-      className="photo-band relative h-[26vh] min-h-[180px] max-h-[300px] w-full overflow-hidden border-y"
-      style={{ borderColor: "var(--line)" }}
-    >
-      <Image src={photo.src} alt={photo.alt} fill sizes="100vw" className="object-cover" />
+    <div className="mx-auto max-w-6xl px-5">
+      <div
+        ref={frame}
+        className="photo-band lift relative h-[clamp(200px,30vw,340px)] overflow-hidden rounded-3xl"
+        style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
+      >
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          fill
+          sizes="(max-width: 1152px) 100vw, 1100px"
+          className="object-cover"
+        />
+      </div>
     </div>
   );
 }
