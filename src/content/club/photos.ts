@@ -21,10 +21,15 @@ export type Photo = {
  * the site, so moving between pages always shows new pictures.
  */
 
-/** The founder's photo, used once on the About page and nowhere else. */
+/**
+ * The founder's photo, used as the avatar on the About page.
+ *
+ * Anywhere else it may only appear inside a slideshow, never as a standing
+ * photograph, a band or a program card. The club leads on its members.
+ */
 export const founderPhoto: Photo = {
-  src: "/photos/all/vexkan-robotics-club-img-8018.jpg",
-  alt: "Two clubbers building at a table together, one fitting a beam while the other steadies the frame.",
+  src: "/photos/all/img-3590.jpg",
+  alt: "Eli Seeliger in a navy jacket outside the entrance to hall A1, arriving at Mecha Mayhem with the team's gear on a cart.",
 };
 
 /* ---------------------------------------------------------------- Home --- */

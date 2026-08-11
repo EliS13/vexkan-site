@@ -64,6 +64,16 @@ index and ended up sideways.
 **Name converted files after their source filename, never their position.**
 Adding a photograph must not be able to renumber the ones already placed.
 
+The same trap has a second shape. `Photo.png` and `Photo.jpg` are two different
+pictures, but dropping the extension makes both `photo.jpg`, and the second
+conversion silently overwrites the first. Two photographs were lost that way
+before anyone noticed.
+
+**Where two source files share a stem, put the extension in the name**, as in
+`vexkan-robotics-club-image-png.jpg`. Ugly, and it beats losing a photograph.
+After any import, check that the file count matches the number of source files
+that produced a distinct name.
+
 The same shift is why `founderPhoto` is still wrong: it points at a photograph
 of two clubbers building, not at the founder, and `PersonCard` uses it as his
 avatar. The right file has to be picked by someone who can recognise him.
