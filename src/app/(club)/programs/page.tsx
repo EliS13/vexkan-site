@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { org } from "@/content/club/org";
 import { TRACK_LABELS, TRACK_ORDER, programsByTrack } from "@/content/club/programs";
 import { Section } from "@/components/club/Section";
-import { Card } from "@/components/club/Card";
+import { PhotoFrame } from "@/components/club/PhotoFrame";
+import { ProgramCard } from "@/components/club/ProgramCard";
 import { Slideshow } from "@/components/club/Slideshow";
-import { programPhotos } from "@/content/club/photos";
+import { programPhotos, programsHeroPhoto, workshopPhotos } from "@/content/club/photos";
 
 export const metadata: Metadata = {
   title: `Programs, ${org.name}`,
@@ -22,37 +22,38 @@ export default function ProgramsPage() {
         lead="Foundation classes are where most clubbers start and are open to any student in the grade range. Competition teams are selected from those classes."
         titleAs="h1"
       >
-        {/* What a class actually looks like, before the descriptions of them. */}
-        <Slideshow photos={programPhotos} />
+        {/* One photograph of a class in session, before the descriptions of them. */}
+        <PhotoFrame
+          photo={programsHeroPhoto}
+          ratio="wide"
+          sizes="(max-width: 1152px) 100vw, 1100px"
+          priority
+        />
       </Section>
+
+      {/* Every program carries its own photograph, on its card and on its page. */}
       {TRACK_ORDER.map((track, i) => (
         <Section key={track} tone={i % 2 === 0 ? "surface" : "default"} title={TRACK_LABELS[track]}>
           <div className="grid gap-5 sm:grid-cols-2">
             {programsByTrack(track).map((p) => (
-              <Card key={p.slug} className="lift-hover h-full">
-                <div className="flex items-start justify-between gap-3">
-                  <h3 className="text-lg font-semibold">{p.title}</h3>
-                  <span
-                    className="eyebrow shrink-0 rounded-full px-2.5 py-1"
-                    style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
-                  >
-                    {p.gradeLabel}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-muted">{p.summary}</p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <Link
-                    href={`/programs/${p.slug}`}
-                    className="text-sm font-semibold text-[var(--purple-text)] hover:underline"
-                  >
-                    Details
-                  </Link>
-                </div>
-              </Card>
+              <ProgramCard key={p.slug} program={p} photo={programPhotos[p.slug]} />
             ))}
           </div>
         </Section>
       ))}
+
+      {/*
+       * Building is most of what a clubber actually does, and it is the part a
+       * parent never sees, so it gets a run of photographs of its own rather
+       * than one picture at the top of the page.
+       */}
+      <Section
+        eyebrow="Before any of that"
+        title="Most of it is building"
+        lead="Sorting parts, fitting beams, taking it apart again."
+      >
+        <Slideshow photos={workshopPhotos} />
+      </Section>
     </>
   );
 }

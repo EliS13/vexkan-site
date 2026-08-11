@@ -6,7 +6,8 @@ import { Card } from "@/components/club/Card";
 import { Button } from "@/components/club/Button";
 import { PersonCard } from "@/components/club/PersonCard";
 import { Slideshow } from "@/components/club/Slideshow";
-import { aboutPhotos } from "@/content/club/photos";
+import { PhotoFrame } from "@/components/club/PhotoFrame";
+import { aboutTablePhoto, worldsPhotos } from "@/content/club/photos";
 
 export const metadata: Metadata = {
   title: `About, ${org.name}`,
@@ -25,9 +26,9 @@ export default function AboutPage() {
     <>
       <Section
         eyebrow="About us"
-        title="A robotics club that started at home"
+        title="How the club started"
         titleAs="h1"
-        lead={`${org.name} was founded in ${org.foundedYear} by ${org.foundedBy} and a group of enthusiasts, after he started experimenting with robotics at home. It has grown to around ${org.studentCount} students across ${org.gradesLabel.toLowerCase()}.`}
+        lead={`${org.name} was founded in ${org.foundedYear} by ${org.foundedBy} and a group of enthusiasts who had started experimenting with robotics. It has grown to around ${org.studentCount} students across ${org.gradesLabel.toLowerCase()}.`}
       >
         <Card>
           <p className="eyebrow text-[var(--muted)]">Our mission</p>
@@ -36,15 +37,16 @@ export default function AboutPage() {
       </Section>
 
       <Section tone="surface" eyebrow="In the workshop" title="How the club actually looks">
-        <div className="grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]">
+        <div className="grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <p className="club-lead">
-              Most of the club happens around a kitchen table and a practice field, long before
+              Most of the club happens around a build table and a practice field, long before
               anyone gets to a competition venue. Clubbers build the robot, break it, and build
               it again.
             </p>
           </div>
-          <Slideshow photos={aboutPhotos} />
+          {/* The paragraph describes one scene, so it gets one photograph of it. */}
+          <PhotoFrame photo={aboutTablePhoto} sizes="(max-width: 1024px) 100vw, 55vw" />
         </div>
       </Section>
 
@@ -57,6 +59,19 @@ export default function AboutPage() {
             </Card>
           ))}
         </div>
+      </Section>
+
+      {/*
+       * The far end of the same club. These are all from one event, so they do
+       * belong together in one frame rather than scattered down the page.
+       */}
+      <Section
+        tone="surface"
+        eyebrow="Where it has got to"
+        title="At the World Championship"
+        lead="Three of the club's teams have competed at the VEX Robotics World Championship. This is what that week looks like from the floor."
+      >
+        <Slideshow photos={worldsPhotos} />
       </Section>
 
       {/*

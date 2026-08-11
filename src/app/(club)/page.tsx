@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
@@ -7,7 +8,14 @@ import { Button } from "@/components/club/Button";
 import { Card } from "@/components/club/Card";
 import { Scoreboard } from "@/components/club/Scoreboard";
 import { Slideshow } from "@/components/club/Slideshow";
-import { homePhotos } from "@/content/club/photos";
+import { PhotoBand } from "@/components/club/PhotoBand";
+import { PhotoFrame } from "@/components/club/PhotoFrame";
+import {
+  homeBandPhoto,
+  homeClassPhotos,
+  homeHeroPhotos,
+  homeWorldsPhotos,
+} from "@/content/club/photos";
 import { clubAwards } from "@/content/club/events";
 
 export const metadata: Metadata = {
@@ -73,7 +81,12 @@ export default function HomePage() {
               <Button href="/programs" size="lg" variant="secondary">See what we run</Button>
             </div>
           </div>
-          <Slideshow photos={homePhotos} priority />
+          {/*
+           * Five, not the whole archive. A carousel only ever shows a visitor
+           * its first slide or two, so the rest of the photographs are placed
+           * down the page and across the site instead of stacked in here.
+           */}
+          <Slideshow photos={homeHeroPhotos} priority />
         </div>
       </div>
 
@@ -104,6 +117,8 @@ export default function HomePage() {
         </div>
       </Section>
 
+      <PhotoBand photo={homeBandPhoto} />
+
       <Section
         eyebrow="What we run"
         title="Classes and competition teams"
@@ -127,6 +142,13 @@ export default function HomePage() {
                 ))}
               </ul>
             </Card>
+          ))}
+        </div>
+
+        {/* The same three tracks again, as photographs rather than lists. */}
+        <div className="mt-6 grid gap-5 sm:grid-cols-3">
+          {homeClassPhotos.map((photo) => (
+            <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 33vw" />
           ))}
         </div>
       </Section>
@@ -158,7 +180,25 @@ export default function HomePage() {
             </span>
           </p>
 
-          <p className="mt-7">
+          {/*
+           * Photographs from those events, unframed: a light card border would
+           * cut three holes in the dark band.
+           */}
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {homeWorldsPhotos.map((photo) => (
+              <div key={photo.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 33vw"
+                  className="object-cover"
+                />
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-9">
             <Link href="/events" className="underline underline-offset-4" style={{ color: "var(--purple-on-dark)" }}>
               The full record, and what the Inspire Award takes
             </Link>

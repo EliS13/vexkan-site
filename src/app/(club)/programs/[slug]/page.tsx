@@ -7,6 +7,8 @@ import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 import { Button } from "@/components/club/Button";
 import { DetailRow } from "@/components/club/DetailRow";
+import { PhotoFrame } from "@/components/club/PhotoFrame";
+import { programPhotos } from "@/content/club/photos";
 
 export function generateStaticParams() {
   return programSlugs().map((slug) => ({ slug }));
@@ -40,31 +42,46 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   if (!program) notFound();
 
   const siblings = programsByTrack(program.track).filter((p) => p.slug !== program.slug);
+  const photo = programPhotos[program.slug];
 
   return (
     <>
       <div className="border-b" style={{ borderColor: "var(--line)" }}>
-        <div className="mx-auto max-w-6xl px-5 py-12 sm:py-16">
-          <p className="eyebrow text-[var(--muted)]">
-            <Link href="/programs" className="hover:underline">Programs</Link>
-            {" · "}
-            {TRACK_LABELS[program.track]}
-          </p>
-          <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{program.title}</h1>
-          <p className="club-lead mt-4 max-w-2xl">{program.summary}</p>
-          {/*
-           * Asking a question leads, joining is a plain link underneath. The
-           * page is here to explain the program, not to close a signup.
-           */}
-          <div className="mt-7 flex flex-wrap items-center gap-5">
-            <Button href="/contact" size="lg" variant="secondary">Ask a question</Button>
-            <Link
-              href={`/register?program=${program.slug}`}
-              className="text-sm font-semibold text-[var(--purple-text)] underline underline-offset-4"
-            >
-              Join this program
-            </Link>
+        {/*
+         * The photograph sits in the header rather than further down, because
+         * it answers the first question a parent has about a program: what does
+         * this actually look like.
+         */}
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-5 py-12 sm:py-16 lg:grid-cols-[1.1fr_1fr]">
+          <div>
+            <p className="eyebrow text-[var(--muted)]">
+              <Link href="/programs" className="hover:underline">Programs</Link>
+              {" · "}
+              {TRACK_LABELS[program.track]}
+            </p>
+            <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{program.title}</h1>
+            <p className="club-lead mt-4 max-w-2xl">{program.summary}</p>
+            {/*
+             * Asking a question leads, joining is a plain link underneath. The
+             * page is here to explain the program, not to close a signup.
+             */}
+            <div className="mt-7 flex flex-wrap items-center gap-5">
+              <Button href="/contact" size="lg" variant="secondary">Ask a question</Button>
+              <Link
+                href={`/register?program=${program.slug}`}
+                className="text-sm font-semibold text-[var(--purple-text)] underline underline-offset-4"
+              >
+                Join this program
+              </Link>
+            </div>
           </div>
+          {photo && (
+            <PhotoFrame
+              photo={photo}
+              sizes="(max-width: 1024px) 100vw, 45vw"
+              priority
+            />
+          )}
         </div>
       </div>
 

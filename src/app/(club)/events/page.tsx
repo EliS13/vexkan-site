@@ -5,7 +5,14 @@ import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
 import { Slideshow } from "@/components/club/Slideshow";
-import { eventPhotos } from "@/content/club/photos";
+import { PhotoFrame } from "@/components/club/PhotoFrame";
+import {
+  awardPhotos,
+  communityPhoto,
+  eventsHeroPhoto,
+  pitPhoto,
+  teamPhotos,
+} from "@/content/club/photos";
 import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import {
   featureBothPrograms,
@@ -85,7 +92,12 @@ export default async function EventsPage() {
           by map to find everything running in Alberta this season.
         </p>
         <div className="mt-10">
-          <Slideshow photos={eventPhotos} />
+          <PhotoFrame
+            photo={eventsHeroPhoto}
+            ratio="wide"
+            sizes="(max-width: 1152px) 100vw, 1100px"
+            priority
+          />
         </div>
       </Section>
 
@@ -238,6 +250,13 @@ export default async function EventsPage() {
         lead="Most of these came from teams we mentored rather than teams we ran, which is the part we are proudest of."
       >
         <AwardsShowcase />
+        {/*
+         * The one place on the site where photographs carry captions: an award
+         * photograph cannot say which award it was.
+         */}
+        <div className="mt-10">
+          <Slideshow photos={awardPhotos} />
+        </div>
       </Section>
 
       <div className="band-dark">
@@ -288,10 +307,8 @@ export default async function EventsPage() {
               match, talking through a strategy with an alliance partner, and explaining a design
               choice to a judge.
             </p>
-            <p className="club-lead mt-4">
-              These are our own teams at the Mecha Mayhem Signature Event in Calgary.
-            </p>
           </div>
+          <PhotoFrame photo={pitPhoto} sizes="(max-width: 1024px) 100vw, 45vw" />
         </div>
       </Section>
 
@@ -308,7 +325,13 @@ export default async function EventsPage() {
           ))}
         </div>
 
-        <div className="mt-12 grid items-start gap-8 lg:grid-cols-[1fr_1.1fr]">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          {teamPhotos.map((photo) => (
+            <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 50vw" />
+          ))}
+        </div>
+
+        <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <h3 className="text-lg font-semibold">The rest of the community</h3>
             <p className="club-lead mt-3">
@@ -317,6 +340,7 @@ export default async function EventsPage() {
               worked out.
             </p>
           </div>
+          <PhotoFrame photo={communityPhoto} sizes="(max-width: 1024px) 100vw, 50vw" />
         </div>
       </Section>
     </>
