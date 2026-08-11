@@ -13,6 +13,30 @@
 **DNS is managed at SiteGround, not GoDaddy**, because the nameservers point
 there. Everything below happens in SiteGround's DNS zone editor.
 
+## The zone as it stands, read from public DNS on 2026-08-10
+
+Captured before any change, so it can be rebuilt from scratch if the zone is
+ever lost or has to be recreated at another provider.
+
+| Host | Type | Value |
+| --- | --- | --- |
+| `vexkan.ca` | NS | `ns1.siteground.net`, `ns2.siteground.net` |
+| `vexkan.ca` | A | `35.208.229.19` — **the website, safe to change** |
+| `www` | A | `35.208.229.19` — **the website, safe to change** |
+| `vexkan.ca` | MX | `0 vexkan-ca.mail.protection.outlook.com` |
+| `vexkan.ca` | TXT | `v=spf1 include:spf.protection.outlook.com -all` |
+| `_dmarc` | TXT | `v=DMARC1; p=quarantine; aspf=r; adkim=r;` |
+| `autodiscover` | CNAME | `autodiscover.outlook.com` |
+| `mail` | A | `35.208.229.19` |
+| `ftp` | A | `35.208.229.19` |
+
+Only the first two rows change when the site moves to Vercel. Everything from
+the `MX` row down is club email and stays exactly as written.
+
+No DKIM selectors are published (`selector1._domainkey` and `selector2` both
+return nothing). That is worth fixing in Microsoft 365 one day, but it is not
+part of this move and nothing here depends on it.
+
 ## The rule that matters
 
 **Do not move the nameservers to Vercel.** The `MX` and SPF records that make
