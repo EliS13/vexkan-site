@@ -191,13 +191,37 @@ export const pitPhoto: Photo = {
  * not go here.
  */
 export const teamAwardPhotos: Record<string, Photo> = {
+  /* Team number on the robot's plate. */
   "16688A": {
     src: "/photos/all/wechatimg25.jpg",
     alt: "The four members of 16688A standing behind their V5 robot and its awards, the team number on the robot's plate.",
   },
+  /* Team number on the robot's plate, and the award matches the record. */
   "595B": {
     src: "/photos/all/image-from-vexkan-robotics-club-2.jpg",
     alt: "Three members of 595B in club shirts, one holding their VEX IQ robot, one a controller and one the Judges Award trophy.",
+  },
+  /*
+   * No number in frame, but the award in it is unique in the record: the
+   * Excellence banner and the Robot Skills trophy are both from the Alberta
+   * Mix and Match provincials, and 595Y is the only team that won both there.
+   */
+  "595Y": {
+    src: "/photos/all/image-from-vexkan-robotics-club-5.jpg",
+    alt: "Members of 595Y holding up the Excellence Award banner from the Alberta provincial championship, with the Robot Skills Champion trophy.",
+  },
+  /* Design Award at the Alberta Mix and Match provincials, won only by 595C. */
+  "595C": {
+    src: "/photos/all/image-from-vexkan-robotics-club-4.jpg",
+    alt: "Three members of 595C with their VEX IQ robot and the Design Award trophy at the Alberta provincial championships.",
+  },
+  /*
+   * The trophy reads Middle School Judges Award, VEX V5, Alberta Provincial
+   * Championship, which matches exactly one row in the record.
+   */
+  "36467E": {
+    src: "/photos/all/img-3767.jpg",
+    alt: "A member of 36467E holding the Middle School Judges Award from the Alberta V5 provincial championship, the club's other trophies on the shelf behind.",
   },
 };
 
@@ -216,11 +240,6 @@ export const recognitionPhotos: Photo[] = [
 /** Awards. The only photographs on the site that carry a caption. */
 export const awardPhotos: Photo[] = [
   {
-    src: "/photos/all/image-from-vexkan-robotics-club-5.jpg",
-    alt: "Clubbers holding up an award banner from the Alberta provincial championship.",
-    caption: "Excellence Award, Alberta provincial championships",
-  },
-  {
     src: "/photos/all/vexkan-robotics-club-edit-site-1.jpg",
     alt: "Three young clubbers holding up their certificates after a summer camp competition.",
     caption: "Judges Award, summer camp",
@@ -237,10 +256,6 @@ export const awardPhotos: Photo[] = [
   {
     src: "/photos/all/171786393714-pic.jpg",
     alt: "Four clubbers at their pit holding up the VEX IQ robot they compete with.",
-  },
-  {
-    src: "/photos/all/image-from-vexkan-robotics-club-4.jpg",
-    alt: "Three clubbers with their VEX IQ robot and controller at the provincial championships.",
   },
 ];
 
