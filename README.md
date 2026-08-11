@@ -67,3 +67,4 @@ and past questions. Signing out leaves everything on the device untouched.
 - `src/app/(guide)/guide/tools` — gear ratio calculator, mechanism picker, notebook, season planner
 - `src/lib` — export helpers (Docs, Slides, Markdown, ICS), storage, Supabase
 - `supabase/migrations` — database schema and row level security
+# vexkan-site
