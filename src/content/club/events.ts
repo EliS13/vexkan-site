@@ -7,13 +7,16 @@ export type Team = {
   grade: "ES" | "MS" | "HS";
   note: string;
   /**
-   * Seasons the team has competed in, newest first.
+   * Seasons the team has competed in, newest last.
    *
-   * Hand-kept, like everything else in this file. Where a season is recorded
-   * below it is because the club's own award list proves it: VEX names each
-   * season after its game, so an award won at a "Mix and Match" or "Push Back"
-   * event dates itself. An empty list means nobody has written it down yet,
-   * not that the team never competed, and the panel simply omits the line.
+   * Mostly from the events each team appears in on events.vex.com, but that
+   * record is not complete: it returns no events at all for 565D, and nothing
+   * before 2024-25 for 595C, both of which the club competed in. Those two
+   * come from the club instead.
+   *
+   * So VEX is the source where it has the data and the club is the source
+   * where it does not. Do not "correct" this file against the API and quietly
+   * drop a season the club actually competed in.
    */
   seasons: string[];
 };
@@ -28,10 +31,10 @@ export type Team = {
  */
 export const teams: Team[] = [
   { number: "565A", name: "Arctic Foxes", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2023–24", "2024–25"] },
-  { number: "565D", name: "Future Builders", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: [] },
+  { number: "565D", name: "Future Builders", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2024–25"] },
   { number: "595A", name: "Unicorn Knight", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2025–26"] },
   { number: "595B", name: "RTD", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2023–24", "2024–25", "2025–26"] },
-  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team.", seasons: ["2024–25", "2025–26"] },
+  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team.", seasons: ["2023–24", "2024–25", "2025–26"] },
   { number: "595Y", name: "Croissants", program: "VEX IQ", grade: "MS", note: "Middle school VEX IQ.", seasons: ["2025–26"] },
   { number: "16688A", name: "Blue See 123", program: "V5RC", grade: "MS", note: "Inspire Award winners at the World Championship.", seasons: ["2025–26"] },
   { number: "16688K", name: "FoldX", program: "V5RC", grade: "HS", note: "Our high school V5 team.", seasons: ["2025–26"] },
