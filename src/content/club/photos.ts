@@ -12,118 +12,221 @@ export type Photo = {
  * site about helping other people should show the people being helped.
  */
 export const founderPhoto: Photo = {
-  src: "/photos/IMG_3589.jpg",
+  src: "/photos/all/vexkan-robotics-club-img-8018.jpg",
   alt: "A student in a navy jacket outside the entrance to hall A1, with a Mecha Mayhem banner on the doors behind him.",
   caption: "At Mecha Mayhem",
 };
 
 /**
- * Every set below is disjoint. A photograph appears on exactly one page, so
- * moving between tabs shows new pictures rather than the same ones again.
+ * Every set is disjoint: a photograph appears on exactly one page.
+ *
+ * Descriptions are specific for the photographs that have been opened one by
+ * one. The rest carry a general description that is true of all of them, and
+ * are marked in PHOTOS.md as still needing a proper pass.
  */
 
-/** Home: who the club is, and what its teams have won. */
+/** Home: the highlights. */
 export const homePhotos: Photo[] = [
   {
-    src: "/photos/club/club-25.jpg",
-    alt: "Three young clubbers around a classroom table, one driving a VEX IQ robot with a controller while another steadies it and a third sorts parts.",
-    caption: "A foundation class in session",
+    src: "/photos/all/101786393305-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/iq_IMG_3390.jpg",
-    alt: "Four members of team 595C in VexKan club shirts, three holding VEX IQ trophies and one holding a Teamwork Champion certificate, with their robot held up beside them.",
-    caption: "595C, Teamwork Champion",
+    src: "/photos/all/111786393307-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/iq_IMG_3177.jpg",
-    alt: "Three young clubbers from team 565A holding their Think Award certificate in front of the finals rankings screen.",
-    caption: "565A, Think Award",
+    src: "/photos/all/121786393310-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/iq_IMG_3173.jpg",
-    alt: "Four young clubbers from team 595B standing together with their Energy Award certificate, the match results screen behind them.",
-    caption: "595B, Energy Award",
+    src: "/photos/all/141786393579-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/iq_IMG_3782.jpg",
-    alt: "Four club members around a practice field laid out on a living room floor, two of them driving robots while the others watch the match.",
-    caption: "Practice on the home field",
-  },
-];
-
-/** Programs: what a class actually looks like, and what gets built in one. */
-export const programPhotos: Photo[] = [
-  {
-    src: "/photos/club/club-18.jpg",
-    alt: "A young girl fitting a beam onto a VEX IQ frame at a table spread with parts, working on her own build.",
-    caption: "Building a first frame",
+    src: "/photos/all/151786393676-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/club/club-14.jpg",
-    alt: "Two young clubbers building at a table with VEX IQ beams laid out in front of them and an instruction sheet open beside the parts.",
-    caption: "Sorting parts before a build",
+    src: "/photos/all/161786393696-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/club/club-01.jpg",
-    alt: "Two students sitting at a table going over a V5 robot together, with a scoring sheet and a VexKan Robotics Club pen in front of them.",
-    caption: "Going over a build together",
+    src: "/photos/all/171786393714-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/iq_IMG_3768.jpg",
-    alt: "A VEX IQ robot built from blue, green, yellow and red plastic beams, with gears and a chain drive down one side.",
-    caption: "A finished robot",
+    src: "/photos/all/181786393737-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/IMG_3576.jpg",
-    alt: "A student in the pits at Mecha Mayhem holding a stack of blue VEX rings on a robot's lift arm, checking how it sits.",
-    caption: "In the pits at Mecha Mayhem",
-  },
-];
-
-/** Results: competition days, from the pits to the trophy. */
-export const eventPhotos: Photo[] = [
-  {
-    src: "/photos/club/club-05.jpg",
-    alt: "The three members of team 595B in VexKan club shirts, holding their robot, a controller and their Judges Award trophy at the Alberta provincial championships.",
-    caption: "595B at provincials",
+    src: "/photos/all/191786394009-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/iq_IMG_3858.jpg",
-    alt: "Three young clubbers holding a VEX IQ trophy together in front of the Mecha Mayhem backdrop.",
-    caption: "A trophy at Mecha Mayhem",
+    src: "/photos/all/201786394011-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/club/club-02.jpg",
+    src: "/photos/all/211786394013-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/221786394014-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/231786394016-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/81786393255-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/91786393303-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/heif-to-jpg-vexkan-robotics-club.jpg",
     alt: "Students crowded around a long pit table at a competition, working on V5 robots while a volunteer talks to a team behind them.",
     caption: "In the pits",
   },
   {
-    src: "/photos/IMG_3541.jpg",
-    alt: "Three students in team jerseys standing at the edge of a competition field, watching two V5 robots line up before a match.",
-    caption: "Waiting for the match to start",
+    src: "/photos/all/image-from-vexkan-robotics-club.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/IMG_3562.jpg",
-    alt: "Two students working on team 36467E's robot in the pits, one holding the team number plate while the other steadies the frame.",
-    caption: "Pit work between matches",
+    src: "/photos/all/image-from-vexkan-robotics-club-2.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
   {
-    src: "/photos/IMG_3558.jpg",
-    alt: "A student holding a controller at the driver station beside students from two other teams, with the REC Foundation's Canada leader standing with them.",
-    caption: "With the REC Foundation Canada leader",
+    src: "/photos/all/image-from-vexkan-robotics-club-4.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/image-from-vexkan-robotics-club-5.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-1.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-edit-site-1.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-1-copy.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-2-copy.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-2100.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-3.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-copy.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-2120.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-2128.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-8015.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-8016.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-8018.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-8061.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-pic.jpg",
+    alt: "A photograph from VexKan Robotics Club.",
   },
 ];
 
-/** About: the club away from the field. Its own set, shared with no other page. */
-export const aboutPhotos: Photo[] = [
+/** Programs: building, classes and benches. */
+export const programPhotos: Photo[] = [
   {
-    src: "/photos/club/club-11.jpg",
-    alt: "A young clubber crouched in front of a large VEX Robotics sign in a convention centre concourse at the World Championship.",
-    caption: "At the World Championship",
+    src: "/photos/all/heif-to-jpg-image.jpg",
+    alt: "Two students sitting at a table going over a V5 robot together, with a scoring sheet and a VexKan Robotics Club pen in front of them.",
+    caption: "Going over a build together",
   },
   {
-    src: "/photos/IMG_3564.jpg",
-    alt: "Two students in team lanyards standing at the field wall during a match, with other teams' pits behind them.",
-    caption: "Watching a match",
+    src: "/photos/all/vexkan-robotics-club-image-7934.jpg",
+    alt: "Three young clubbers around a classroom table, one driving a VEX IQ robot with a controller while another steadies it and a third sorts parts.",
+    caption: "A foundation class in session",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-8014.jpg",
+    alt: "Two young clubbers building at a table with VEX IQ beams laid out in front of them and an instruction sheet open beside the parts.",
+    caption: "Sorting parts before a build",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-8060.jpg",
+    alt: "A young girl fitting a beam onto a VEX IQ frame at a table spread with parts, working on her own build.",
+    caption: "Building a first frame",
+  },
+];
+
+/** Results: awards. Trophies and certificates. */
+export const eventPhotos: Photo[] = [
+  {
+    src: "/photos/all/image-from-vexkan-robotics-club-1.jpg",
+    alt: "Four young clubbers holding VEX IQ trophies and certificates together after an awards ceremony.",
+    caption: "After the awards",
+  },
+  {
+    src: "/photos/all/image-from-vexkan-robotics-club-3.jpg",
+    alt: "The three members of team 595B in VexKan club shirts, holding their robot, a controller and their Judges Award trophy at the Alberta provincial championships.",
+    caption: "595B, Judges Award at provincials",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-1.jpg",
+    alt: "Four young clubbers holding VEX IQ trophies after the awards, with other teams standing behind them.",
+    caption: "Trophies after the ceremony",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-2.jpg",
+    alt: "Young clubbers holding up gold trophies and Judges Award certificates together at the end of a summer camp.",
+    caption: "Summer camp awards",
+  },
+];
+
+/** About: the World Championship. */
+export const aboutPhotos: Photo[] = [
+  {
+    src: "/photos/all/vexkan-robotics-club-img-2065.jpg",
+    alt: "A young clubber crouched in front of a large VEX Robotics sign in a convention centre concourse at the World Championship.",
+    caption: "At the World Championship",
   },
 ];
