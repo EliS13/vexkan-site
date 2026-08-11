@@ -196,6 +196,16 @@ export const teamAwardPhotos: Record<string, Photo> = {
     src: "/photos/all/wechatimg25.jpg",
     alt: "The four members of 16688A standing behind their V5 robot and its awards, the team number on the robot's plate.",
   },
+  /*
+   * The certificates name the teams outright: "Think Award, Team 565A" and
+   * "Energy Award, Team 595B", both from the January Showdown, both in the
+   * record. 595B keeps its own photograph below, so clicking between the two
+   * teams does not show the same picture twice.
+   */
+  "565A": {
+    src: "/photos/all/vexkan-robotics-club-1.jpg",
+    alt: "Members of 565A and 595B together after the January Showdown, holding the Think Award and Energy Award certificates.",
+  },
   /* Team number on the robot's plate, and the award matches the record. */
   "595B": {
     src: "/photos/all/image-from-vexkan-robotics-club-2.jpg",
@@ -248,10 +258,6 @@ export const awardPhotos: Photo[] = [
     src: "/photos/all/vexkan-robotics-club-image.jpg",
     alt: "Young clubbers holding gold trophies and certificates above their heads at the end of a summer camp.",
     caption: "Summer camp awards",
-  },
-  {
-    src: "/photos/all/vexkan-robotics-club-1.jpg",
-    alt: "A group of young clubbers holding certificates in a hall, with older clubbers and parents standing behind them.",
   },
   {
     src: "/photos/all/171786393714-pic.jpg",
