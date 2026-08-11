@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="VexKan">
+  <!--
+    A blue V on a rounded tile. Blue rather than the site's safety orange
+    because the club asked for blue, and because the club's own shirts and
+    banners are blue, so the tab icon matches what the teams actually wear.
+
+    Drawn as one filled path rather than text, so it renders identically
+    everywhere and needs no font.
+  -->
+  <rect width="64" height="64" rx="14" fill="#1668d6" />
+  <path d="M16 17h9.6l6.4 21.2L38.4 17H48L36.8 49h-9.6z" fill="#ffffff" />
+</svg>

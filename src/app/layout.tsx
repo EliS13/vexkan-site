@@ -47,9 +47,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </a>
         {children}
         {/*
-         * Real Core Web Vitals from real visitors, which matters here because
-         * the site is photograph-heavy and most of its readers are students on
-         * phones. Reports only from Vercel deployments; locally it is inert.
+         * Real Core Web Vitals and visitor counts. Worth having on a site this
+         * photograph-heavy, read mostly by students on phones. Both report only
+         * from Vercel deployments; locally they are inert.
          */}
         <SpeedInsights />
         <Analytics />
