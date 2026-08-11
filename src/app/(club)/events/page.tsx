@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { org } from "@/content/club/org";
-import { events, inspireAward, teams } from "@/content/club/events";
+import { events, inspireAward } from "@/content/club/events";
 import { isTbd } from "@/content/club/types";
 import { Section } from "@/components/club/Section";
 import { Card } from "@/components/club/Card";
@@ -8,10 +8,9 @@ import { Slideshow } from "@/components/club/Slideshow";
 import { PhotoFrame } from "@/components/club/PhotoFrame";
 import {
   awardPhotos,
-  communityPhoto,
   eventsHeroPhoto,
   pitPhoto,
-  teamPhotos,
+  recognitionPhotos,
 } from "@/content/club/photos";
 import { AwardsShowcase } from "@/components/club/AwardsShowcase";
 import {
@@ -297,6 +296,13 @@ export default async function EventsPage() {
         <div className="mt-10">
           <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
         </div>
+
+        {/* The rest of a competition day, either side of the ceremony. */}
+        <div className="mt-5 grid gap-5 sm:grid-cols-2">
+          {recognitionPhotos.map((photo) => (
+            <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 50vw" />
+          ))}
+        </div>
       </Section>
 
       <Section tone="surface" eyebrow="At the event" title="What competing looks like">
@@ -312,37 +318,6 @@ export default async function EventsPage() {
         </div>
       </Section>
 
-      <Section tone="surface" title="Our teams">
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {teams.map((t) => (
-            <Card key={t.number} className="lift-hover h-full">
-              <span className="readout text-xl font-semibold">{t.number}</span>
-              <p className="mt-1 text-sm font-medium text-[var(--ink-body)]">{t.name}</p>
-              <p className="eyebrow mt-2 text-[var(--muted)]">
-                {t.program} · {t.grade}
-              </p>
-            </Card>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-5 sm:grid-cols-2">
-          {teamPhotos.map((photo) => (
-            <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 50vw" />
-          ))}
-        </div>
-
-        <div className="mt-12 grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
-          <div>
-            <h3 className="text-lg font-semibold">The rest of the community</h3>
-            <p className="club-lead mt-3">
-              Competitions are where our teams meet everyone else doing this. Some of the most
-              useful things we know came from another club being generous with what they had
-              worked out.
-            </p>
-          </div>
-          <PhotoFrame photo={communityPhoto} sizes="(max-width: 1024px) 100vw, 50vw" />
-        </div>
-      </Section>
     </>
   );
 }

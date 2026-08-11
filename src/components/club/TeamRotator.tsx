@@ -1,11 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { awards, teams, type Award, type Team } from "@/content/club/events";
+import { teamAwardPhotos, type Photo } from "@/content/club/photos";
 import { TrophyIcon } from "./TrophyIcon";
 
-/** Seconds a team holds before the next one. Matches the progress bar. */
-const HOLD = 7;
+/**
+ * Seconds a team holds before the next one. The progress bar reads this too,
+ * so the two can never drift apart.
+ *
+ * Five rather than four: the fullest panel is ten awards, and four seconds is
+ * not long enough to finish reading it before it moves. Hovering or tabbing
+ * into the list stops the clock for anyone who wants longer.
+ */
+const HOLD = 5;
 
 /**
  * The club's teams, one at a time, with what each has won.
@@ -125,6 +134,7 @@ export function TeamRotator() {
               key={t.number}
               team={t}
               won={byTeam.get(t.number) ?? []}
+              photo={teamAwardPhotos[t.number]}
               active={i === index}
             />
           ))}
@@ -134,7 +144,17 @@ export function TeamRotator() {
   );
 }
 
-function TeamPanel({ team, won, active }: { team: Team; won: Award[]; active: boolean }) {
+function TeamPanel({
+  team,
+  won,
+  photo,
+  active,
+}: {
+  team: Team;
+  won: Award[];
+  photo?: Photo;
+  active: boolean;
+}) {
   return (
     <section
       id={`team-${team.number}`}
@@ -148,16 +168,38 @@ function TeamPanel({ team, won, active }: { team: Team; won: Award[]; active: bo
        */
       className={`col-start-1 row-start-1 ${active ? "" : "invisible"}`}
     >
-      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className="readout text-[clamp(2.25rem,5vw,3rem)] font-semibold leading-none text-[var(--purple-text)]">
-          {team.number}
-        </span>
-        <h3 className="text-xl font-semibold">{team.name}</h3>
+      <div className="flex items-start justify-between gap-6">
+        <div>
+          <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span className="readout text-[clamp(2.25rem,5vw,3rem)] font-semibold leading-none text-[var(--purple-text)]">
+              {team.number}
+            </span>
+            <h3 className="text-xl font-semibold">{team.name}</h3>
+          </div>
+          <p className="eyebrow mt-3 text-[var(--muted)]">
+            {team.program} · {team.grade}
+          </p>
+          <p className="mt-3 max-w-xl text-sm text-muted">{team.note}</p>
+        </div>
+
+        {/*
+         * The team with what it won, where there is a photograph that names
+         * the team. Small and beside the heading rather than under the awards,
+         * so a team that has one is not twice the height of a team that has
+         * not.
+         */}
+        {photo && (
+          <div className="relative hidden aspect-[4/3] w-40 shrink-0 overflow-hidden rounded-xl sm:block lg:w-48">
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              sizes="192px"
+              className="object-cover"
+            />
+          </div>
+        )}
       </div>
-      <p className="eyebrow mt-3 text-[var(--muted)]">
-        {team.program} · {team.grade}
-      </p>
-      <p className="mt-3 max-w-xl text-sm text-muted">{team.note}</p>
 
       <hr className="my-6" style={{ borderColor: "var(--line)" }} />
 

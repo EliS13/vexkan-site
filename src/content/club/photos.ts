@@ -182,31 +182,39 @@ export const pitPhoto: Photo = {
   alt: "The pit hall at the World Championship, a clubber working at the team's booth under the Engineering sign with team banners down the row.",
 };
 
-/** With the team cards. */
-export const teamPhotos: Photo[] = [
-  {
+/**
+ * A photograph of the team with what it won, shown on that team's panel.
+ *
+ * Only where the team number is legible in the photograph itself. Putting the
+ * wrong team's faces next to an award is exactly the kind of mistake nobody
+ * outside the club would catch, so a photograph that cannot be checked does
+ * not go here.
+ */
+export const teamAwardPhotos: Record<string, Photo> = {
+  "16688A": {
     src: "/photos/all/wechatimg25.jpg",
-    alt: "Four clubbers in club jackets standing behind their V5 robot and its awards in the workshop.",
+    alt: "The four members of 16688A standing behind their V5 robot and its awards, the team number on the robot's plate.",
   },
+  "595B": {
+    src: "/photos/all/image-from-vexkan-robotics-club-2.jpg",
+    alt: "Three members of 595B in club shirts, one holding their VEX IQ robot, one a controller and one the Judges Award trophy.",
+  },
+};
+
+/** Under the awards, from the day rather than the ceremony. */
+export const recognitionPhotos: Photo[] = [
   {
     src: "/photos/all/201786394011-pic.jpg",
     alt: "Clubbers and volunteers around a pit table at the World Championship, working through a binder under a string of Canadian flags.",
   },
+  {
+    src: "/photos/all/vexkan-robotics-club-image-2.jpg",
+    alt: "Clubbers waiting in the lobby at a competition, one pulling on a pair of safety glasses.",
+  },
 ];
-
-/** Beside the paragraph about the rest of the community. */
-export const communityPhoto: Photo = {
-  src: "/photos/all/vexkan-robotics-club-image-2.jpg",
-  alt: "Clubbers waiting in the lobby at a competition, one pulling on a pair of safety glasses.",
-};
 
 /** Awards. The only photographs on the site that carry a caption. */
 export const awardPhotos: Photo[] = [
-  {
-    src: "/photos/all/image-from-vexkan-robotics-club-2.jpg",
-    alt: "Three clubbers in club shirts, one holding their VEX IQ robot, one a controller and one a Judges Award trophy.",
-    caption: "Judges Award, Alberta provincial championships",
-  },
   {
     src: "/photos/all/image-from-vexkan-robotics-club-5.jpg",
     alt: "Clubbers holding up an award banner from the Alberta provincial championship.",
