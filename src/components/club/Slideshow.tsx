@@ -8,6 +8,13 @@ type Props = {
   photos: Photo[];
   /** Milliseconds between slides. Slow on purpose: these are photographs to look at. */
   interval?: number;
+  /**
+   * How much width the layout actually gives this slideshow. The default suits
+   * the half-width column on the home page; a full-width one has to say so, or
+   * the browser is told to fetch an image for half the space and the
+   * photographs come out soft on a retina screen.
+   */
+  sizes?: string;
   priority?: boolean;
 };
 
@@ -24,7 +31,12 @@ type Props = {
  * on hover and on keyboard focus, and never starts at all for a reader who has
  * asked for reduced motion, so a slide can still be held still.
  */
-export function Slideshow({ photos, interval = 9000, priority = false }: Props) {
+export function Slideshow({
+  photos,
+  interval = 9000,
+  sizes = "(max-width: 768px) 100vw, 50vw",
+  priority = false,
+}: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -74,7 +86,7 @@ export function Slideshow({ photos, interval = 9000, priority = false }: Props) 
               src={p.src}
               alt={p.alt}
               fill
-              sizes="(max-width: 768px) 100vw, 50vw"
+              sizes={sizes}
               className="object-cover"
               priority={priority && i === 0}
             />

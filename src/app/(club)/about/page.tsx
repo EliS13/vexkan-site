@@ -71,7 +71,7 @@ export default function AboutPage() {
         title="At the World Championship"
         lead="Three of the club's teams have competed at the VEX Robotics World Championship. This is what that week looks like from the floor."
       >
-        <Slideshow photos={worldsPhotos} />
+        <Slideshow photos={worldsPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
       </Section>
 
       {/*

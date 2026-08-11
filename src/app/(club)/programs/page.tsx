@@ -52,7 +52,7 @@ export default function ProgramsPage() {
         title="Most of it is building"
         lead="Sorting parts, fitting beams, taking it apart again."
       >
-        <Slideshow photos={workshopPhotos} />
+        <Slideshow photos={workshopPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
       </Section>
     </>
   );

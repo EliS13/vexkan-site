@@ -255,7 +255,7 @@ export default async function EventsPage() {
          * photograph cannot say which award it was.
          */}
         <div className="mt-10">
-          <Slideshow photos={awardPhotos} />
+          <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
         </div>
       </Section>
 
