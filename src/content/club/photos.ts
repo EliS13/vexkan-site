@@ -238,10 +238,6 @@ export const teamAwardPhotos: Record<string, Photo> = {
 /** Under the awards, from the day rather than the ceremony. */
 export const recognitionPhotos: Photo[] = [
   {
-    src: "/photos/all/201786394011-pic.jpg",
-    alt: "Clubbers and volunteers around a pit table at the World Championship, working through a binder under a string of Canadian flags.",
-  },
-  {
     src: "/photos/all/vexkan-robotics-club-image-2.jpg",
     alt: "Clubbers waiting in the lobby at a competition, one pulling on a pair of safety glasses.",
   },
