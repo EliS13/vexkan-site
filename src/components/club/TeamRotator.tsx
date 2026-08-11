@@ -178,6 +178,12 @@ function TeamPanel({
           </div>
           <p className="eyebrow mt-3 text-[var(--muted)]">
             {team.program} · {team.grade}
+            {/*
+             * Only where a season has actually been written down. An empty
+             * list means nobody has recorded it, and inventing a year here
+             * would be a claim about the club's own history.
+             */}
+            {team.seasons.length > 0 && <> · {team.seasons.join(", ")}</>}
           </p>
           <p className="mt-3 max-w-xl text-sm text-muted">{team.note}</p>
         </div>

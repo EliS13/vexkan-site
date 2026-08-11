@@ -34,6 +34,22 @@ Add new competitions by appending to the `events` array. Delete a season's
 events once they are past, or change `kind` to `"result"` and rewrite the
 summary with the placing.
 
+## `events.ts`, the `seasons` field on each team
+
+Five teams carry a season because the club's own award list proves it: VEX
+names each season after its game, so an award won at a "Mix and Match" or
+"Push Back" event dates itself, and 36467E's trophy reads High Stakes.
+
+| Team | Seasons recorded |
+| --- | --- |
+| `595B`, `595C`, `595Y`, `16688A`, `16688K` | `2025–26` |
+| `36467E` | `2024–25` |
+| `565A`, `565D`, `595A` | none yet |
+
+Nothing here says a team competed in **only** those seasons — it says that is
+all the record proves. Add the rest by hand; a team with an empty list simply
+shows no season on its panel rather than a wrong one.
+
 ## `people.ts`
 
 | Field | Person affected | What to confirm |

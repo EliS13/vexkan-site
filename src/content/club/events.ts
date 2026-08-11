@@ -6,6 +6,16 @@ export type Team = {
   program: "VEX IQ" | "V5RC";
   grade: "ES" | "MS" | "HS";
   note: string;
+  /**
+   * Seasons the team has competed in, newest first.
+   *
+   * Hand-kept, like everything else in this file. Where a season is recorded
+   * below it is because the club's own award list proves it: VEX names each
+   * season after its game, so an award won at a "Mix and Match" or "Push Back"
+   * event dates itself. An empty list means nobody has written it down yet,
+   * not that the team never competed, and the panel simply omits the line.
+   */
+  seasons: string[];
 };
 
 /**
@@ -17,15 +27,15 @@ export type Team = {
  * else's results to us.
  */
 export const teams: Team[] = [
-  { number: "565A", name: "Arctic Foxes", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
-  { number: "565D", name: "Future Builders", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
-  { number: "595A", name: "Unicorn Knight", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
-  { number: "595B", name: "RTD", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ." },
-  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team." },
-  { number: "595Y", name: "Croissants", program: "VEX IQ", grade: "MS", note: "Middle school VEX IQ." },
-  { number: "16688A", name: "Blue See 123", program: "V5RC", grade: "MS", note: "Inspire Award winners at the World Championship." },
-  { number: "16688K", name: "FoldX", program: "V5RC", grade: "HS", note: "Our high school V5 team." },
-  { number: "36467E", name: "All Purpose Flour", program: "V5RC", grade: "MS", note: "Middle school V5." },
+  { number: "565A", name: "Arctic Foxes", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: [] },
+  { number: "565D", name: "Future Builders", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: [] },
+  { number: "595A", name: "Unicorn Knight", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: [] },
+  { number: "595B", name: "RTD", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2025–26"] },
+  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team.", seasons: ["2025–26"] },
+  { number: "595Y", name: "Croissants", program: "VEX IQ", grade: "MS", note: "Middle school VEX IQ.", seasons: ["2025–26"] },
+  { number: "16688A", name: "Blue See 123", program: "V5RC", grade: "MS", note: "Inspire Award winners at the World Championship.", seasons: ["2025–26"] },
+  { number: "16688K", name: "FoldX", program: "V5RC", grade: "HS", note: "Our high school V5 team.", seasons: ["2025–26"] },
+  { number: "36467E", name: "All Purpose Flour", program: "V5RC", grade: "MS", note: "Middle school V5.", seasons: ["2024–25"] },
 ];
 
 export type ClubEvent = {
