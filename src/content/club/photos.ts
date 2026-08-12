@@ -450,3 +450,144 @@ export const worldsPhotos: Photo[] = [
     alt: "A division awards ceremony under way, the winning teams on stage and their team numbers listed on the screens either side.",
   },
 ];
+
+/**
+ * The rest of a World Championship: the pit, the queue, the walk between halls,
+ * and the meals.
+ *
+ * A separate set from `worldsPhotos` because it is a different argument. That
+ * one is the scale of the event; this one is the week our teams actually had,
+ * most of which was not spent on a field.
+ */
+export const worldsWeekPhotos: Photo[] = [
+  {
+    src: "/photos/all/worlds-595y-pit.jpg",
+    alt: "The four members of 595Y behind their pit table under the Croissants banner, one holding up the robot with 595Y written on its plate and another giving a thumbs up.",
+  },
+  {
+    src: "/photos/all/worlds-croissants-pit-crowd.jpg",
+    alt: "595Y's pit seen from above, Canadian flags and streamers strung across it and a queue of students from other teams crowded around the table to see the robot.",
+  },
+  {
+    src: "/photos/all/worlds-pit-rebuild.jpg",
+    alt: "Three clubbers rebuilding a robot on a table in the concourse, one leaning right over it to reach a part while the other two talk through what to do next.",
+  },
+  {
+    src: "/photos/all/worlds-iq-field-trophies.jpg",
+    alt: "Clubbers waiting beside a VEX IQ field while a referee sets up, a row of Middle School World Championship division trophies laid out on the table behind them.",
+  },
+  {
+    src: "/photos/all/worlds-iq-field-talking.jpg",
+    alt: "Three clubbers standing at the edge of a VEX IQ field between matches, talking through the next one with their robot already on the tiles.",
+  },
+  {
+    src: "/photos/all/worlds-concourse-wagon.jpg",
+    alt: "Three clubbers crossing the empty concourse of the convention centre, pulling the wagon that carries the robot and the toolkit between halls.",
+  },
+  {
+    src: "/photos/all/worlds-lobby-robot.jpg",
+    alt: "Clubbers gathered in the venue lobby, one holding a VEX IQ robot up to show the others, another wearing a lanyard covered in traded team pins.",
+  },
+  {
+    src: "/photos/all/worlds-vex-logo.jpg",
+    alt: "Three clubbers standing together in front of the large lit VEX Robotics sculpture on the competition floor.",
+  },
+  {
+    src: "/photos/all/worlds-team-lunch.jpg",
+    alt: "Two clubbers at a table covered in foil takeaway containers, one giving a thumbs up mid-meal.",
+  },
+  {
+    src: "/photos/all/worlds-team-dinner.jpg",
+    alt: "Six clubbers around a restaurant table sharing plates of sushi at the end of a competition day.",
+  },
+];
+
+/* ----------------------------------------------------------- Club space --- */
+
+/**
+ * The club itself, away from any competition. Most of a season looks like this
+ * rather than like an arena.
+ */
+export const clubSpacePhotos: Photo[] = [
+  {
+    src: "/photos/all/build-session-home.jpg",
+    alt: "Four clubbers around a table at a build session, a part-built VEX IQ robot and sorted parts in front of them and the session's date written on the whiteboard behind.",
+  },
+  {
+    src: "/photos/all/club-space-main-field.jpg",
+    alt: "Five clubbers standing together in the club's practice space in front of the screen that shows the main field.",
+  },
+  {
+    src: "/photos/all/iq-robot-three-clubbers.jpg",
+    alt: "Three clubbers holding up the VEX IQ robot they have just finished, its motors and cabling visible along the front of the chassis.",
+  },
+];
+
+/**
+ * 595Y with the Design Award at the Alberta provincial championships, the
+ * upcoming-matches screen still up behind them.
+ *
+ * The trophy names the award and the season, and the screen names the event, so
+ * this is one of the few photographs that can be captioned without guessing.
+ */
+/**
+ * Certificates and trophies where the photograph itself names the team and the
+ * award, so the caption is read off the paper rather than guessed.
+ *
+ * Every one of these matches a row in `awards`. A photograph whose certificate
+ * cannot be read does not go in here, because a caption crediting the wrong
+ * team is the one mistake nobody outside the club would ever catch.
+ */
+export const certificatePhotos: Photo[] = [
+  {
+    src: "/photos/all/img-3173.jpg",
+    alt: "Four young members of 595B at the January Showdown, one holding the Energy Award certificate, the match schedule on the screen behind them.",
+    caption: "Energy Award, 595B",
+  },
+  {
+    src: "/photos/all/img-3177.jpg",
+    alt: "Three members of 565A holding the Think Award certificate in front of the finals rankings screen at the January Showdown.",
+    caption: "Think Award, 565A",
+  },
+  {
+    src: "/photos/all/img-3390.jpg",
+    alt: "Three members of 595C with their VEX IQ trophies and a Teamwork Champion certificate lined up on the table in front of them.",
+    caption: "Teamwork Champion, 595C",
+  },
+  {
+    src: "/photos/all/img-3858.jpg",
+    alt: "Three young clubbers holding a VEX IQ Competition trophy in front of the Mecha Mayhem backdrop, a shelf of the event's other trophies above them.",
+    caption: "Mecha Mayhem",
+  },
+];
+
+/**
+ * Mecha Mayhem, the Signature Event in Calgary, and the club's own bench.
+ *
+ * Photographs of teams waiting, watching and building rather than winning:
+ * the part of a competition weekend that the award photographs leave out.
+ */
+export const eventFloorPhotos: Photo[] = [
+  {
+    src: "/photos/all/img-3564.jpg",
+    alt: "Two drive team members standing up on the field barrier at Mecha Mayhem, looking down at the field while other teams work at the pits behind them.",
+  },
+  {
+    src: "/photos/all/0bo4k-v208r.jpg",
+    alt: "36467E's pit at Mecha Mayhem, the team's V5 robot up on the table with its toolkit open beside it.",
+  },
+  {
+    src: "/photos/all/vexkan-robotics-club-img-2120.jpg",
+    alt: "A V5 robot on the pit table, its drivetrain and intake visible from the side.",
+  },
+  {
+    src: "/photos/all/img-3750.jpg",
+    alt: "A clubber at the kitchen table building the lift on a V5 robot, an earlier robot on the shelf behind him.",
+  },
+];
+
+export const designAwardPhoto: Photo = {
+  src: "/photos/all/provincials-595y-design-award.jpg",
+  alt: "Three members of 595Y at the Alberta Mix and Match provincial championships, one holding the VEX IQ Design Award trophy and another holding the team's robot, the upcoming-matches screen projected on the wall behind them.",
+  caption: "Design Award, Alberta provincial championships",
+};

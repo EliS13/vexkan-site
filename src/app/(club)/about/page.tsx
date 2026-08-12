@@ -7,7 +7,7 @@ import { Button } from "@/components/club/Button";
 import { PersonCard } from "@/components/club/PersonCard";
 import { Slideshow } from "@/components/club/Slideshow";
 import { PhotoFrame } from "@/components/club/PhotoFrame";
-import { aboutTablePhoto, worldsPhotos } from "@/content/club/photos";
+import { aboutTablePhoto, worldsPhotos, worldsWeekPhotos } from "@/content/club/photos";
 
 export const metadata: Metadata = {
   title: `About, ${org.name}`,
@@ -70,6 +70,18 @@ export default function AboutPage() {
         lead="Three of the club's teams have competed at the VEX Robotics World Championship. This is what that week looks like from the floor."
       >
         <Slideshow photos={worldsPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+      </Section>
+
+      {/*
+       * The same week, told from inside it. The set above is how big the event
+       * is; this is what our teams were actually doing there, which is mostly
+       * fixing a robot, queueing and eating.
+       */}
+      <Section
+        title="The rest of that week"
+        lead="Almost none of a World Championship is spent on a field. It is the pit, the walk between halls, and whatever there is to eat."
+      >
+        <Slideshow photos={worldsWeekPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
       </Section>
 
       {/*

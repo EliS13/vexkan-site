@@ -12,9 +12,13 @@ import { PhotoBand } from "@/components/club/PhotoBand";
 import { PhotoFrame } from "@/components/club/PhotoFrame";
 import {
   awardPhotos,
+  certificatePhotos,
+  clubSpacePhotos,
   competePhoto,
   competePhotos,
   competitionDayPhotos,
+  designAwardPhoto,
+  eventFloorPhotos,
   homeBandPhoto,
   homeClassPhotos,
   homeHeroPhotos,
@@ -301,7 +305,10 @@ export default async function HomePage() {
          * photograph cannot say which award it was.
          */}
         <div className="mt-12">
-          <Slideshow photos={awardPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+          <Slideshow
+            photos={[...awardPhotos, designAwardPhoto, ...certificatePhotos]}
+            sizes="(max-width: 1152px) 100vw, 1100px"
+          />
         </div>
       </Section>
 
@@ -389,7 +396,10 @@ export default async function HomePage() {
           barrier, and about a minute of the thing you came for.
         </p>
         <div className="mt-8">
-          <Slideshow photos={competitionDayPhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+          <Slideshow
+            photos={[...competitionDayPhotos, ...eventFloorPhotos]}
+            sizes="(max-width: 1152px) 100vw, 1100px"
+          />
         </div>
 
         {/*
@@ -402,7 +412,10 @@ export default async function HomePage() {
           half apart, and the same mechanism tried again.
         </p>
         <div className="mt-8">
-          <Slideshow photos={practicePhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+          <Slideshow
+            photos={[...practicePhotos, ...clubSpacePhotos]}
+            sizes="(max-width: 1152px) 100vw, 1100px"
+          />
         </div>
       </Section>
 
