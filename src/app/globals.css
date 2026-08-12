@@ -353,11 +353,31 @@ body {
 }
 
 /*
+ * Back to the top.
+ *
+ * The `hidden` attribute needs saying twice here. Preflight's `[hidden]` rule
+ * and a utility class carry the same specificity, so the later one wins — and
+ * utilities are emitted after preflight, which means `grid` would quietly beat
+ * `hidden` and pin the button on screen at the top of every page. Class plus
+ * attribute outranks both.
+ */
+.back-to-top[hidden] {
+  display: none;
+}
+
+.back-to-top:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lift);
+  color: var(--purple-text);
+}
+
+/*
  * Reduced motion. Hover elevation, and the journey, which renders complete and
  * static: no entrance, no stagger, nothing withheld until a scroll.
  */
 @media (prefers-reduced-motion: reduce) {
-  .lift-hover:hover {
+  .lift-hover:hover,
+  .back-to-top:hover {
     transform: none;
   }
 
