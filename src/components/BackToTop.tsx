@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { durationFor, offsetAt } from "@/lib/backToTop";
 
 /**
  * Back to the top, bottom right.
@@ -22,13 +23,64 @@ import { useEffect, useState } from "react";
 const SHOW_AFTER_PX = 800;
 
 /**
- * How far the smooth animation is worth doing, in screens. Beyond this it stops
- * reading as "going back up" and starts reading as "waiting", so it jumps.
+ * Runs the trip to the top a frame at a time.
+ *
+ * Written out rather than handed to `scrollTo({ behavior: "smooth" })`, because
+ * the native animation cannot be waited on reliably. `scrollend` is not in
+ * every browser, and the obvious substitute — a timeout long enough to "cover"
+ * the animation — is a race against a duration the browser never tells you.
+ * Set it short and it guillotines a scroll still in progress, which is exactly
+ * the jump this button used to end on.
+ *
+ * Driving it here settles that: the animation is over when this says it is.
+ * Each frame writes an absolute offset too, so a lazy photograph loading
+ * further up and nudging the page is corrected on the very next frame instead
+ * of derailing the whole trip — which is what scroll anchoring was doing.
  */
-const SMOOTH_WITHIN_SCREENS = 6;
+function scrollToTop() {
+  const from = window.scrollY;
+  if (from <= 0) return;
 
-/** Long enough for the animation, short enough not to strand scroll anchoring. */
-const SETTLE_MS = 1200;
+  const duration = durationFor(from);
+  const startedAt = performance.now();
+
+  let cancelled = false;
+
+  /*
+   * Any deliberate scroll hands control straight back. Fighting someone for
+   * the scrollbar is the rudest thing a control like this can do.
+   */
+  const cancel = () => {
+    cancelled = true;
+    release();
+  };
+
+  const release = () => {
+    window.removeEventListener("wheel", cancel);
+    window.removeEventListener("touchstart", cancel);
+    window.removeEventListener("keydown", cancel);
+  };
+
+  window.addEventListener("wheel", cancel, { passive: true });
+  window.addEventListener("touchstart", cancel, { passive: true });
+  window.addEventListener("keydown", cancel);
+
+  function frame(now: number) {
+    if (cancelled) return;
+
+    const elapsed = now - startedAt;
+    window.scrollTo(0, offsetAt(from, elapsed, duration));
+
+    if (elapsed < duration) {
+      requestAnimationFrame(frame);
+      return;
+    }
+
+    release();
+  }
+
+  requestAnimationFrame(frame);
+}
 
 export function BackToTop() {
   const [shown, setShown] = useState(false);
@@ -64,51 +116,13 @@ export function BackToTop() {
 
     e.preventDefault();
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    /*
-     * Smooth is a nicety over a screen or two. The home page is forty thousand
-     * pixels tall, and animating the whole way is both a long blur and a fight
-     * this cannot win — see below. Past a few screens, jump.
-     */
-    const farAway = window.scrollY > window.innerHeight * SMOOTH_WITHIN_SCREENS;
-
-    if (reduced || farAway) {
-      window.scrollTo({ top: 0, behavior: "auto" });
+    /* Someone who has asked for less motion gets none of this. */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      window.scrollTo(0, 0);
       return;
     }
 
-    /*
-     * Scroll anchoring has to come off for the duration.
-     *
-     * Nearly every photograph below the fold is lazy. Animating upward loads
-     * them as they are passed, each one inserting its real height into a page
-     * that had been reserving none, and anchoring answers by pushing the scroll
-     * position back down to keep the visible content still. That is exactly the
-     * right behaviour while someone reads, and exactly wrong here: it cancels
-     * the animation out and leaves the page stranded partway up.
-     */
-    const root = document.documentElement;
-    const previousAnchor = root.style.overflowAnchor;
-    root.style.overflowAnchor = "none";
-
-    let timer = 0;
-
-    /* Whichever lands first: the animation settling, or the safety timeout. */
-    const finish = () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("scrollend", finish);
-      root.style.overflowAnchor = previousAnchor;
-
-      /* Land at the top even if something interfered on the way. */
-      if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "auto" });
-    };
-
-    /* `scrollend` is not in every browser yet, hence the timeout underneath. */
-    window.addEventListener("scrollend", finish);
-    timer = window.setTimeout(finish, SETTLE_MS);
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTop();
   }
 
   return (
