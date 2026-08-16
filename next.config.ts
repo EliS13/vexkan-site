@@ -5,37 +5,44 @@ import type { NextConfig } from "next";
  * signin.vexkan.ca. Its pages live under /kiosk so they get their own route
  * group and layout, and the rewrites below map the subdomain onto that prefix.
  *
+ * Because of that mapping, everything inside the kiosk links and fetches
+ * root-relative — "/board", not "/kiosk/board". On the subdomain the rewrite
+ * adds the prefix; a link that carries it already would resolve to
+ * /kiosk/kiosk/board and 404.
+ *
  * beforeFiles rather than afterFiles: afterFiles resolves real pages first,
  * which would serve the club site's own routes on the subdomain. The negative
  * lookahead keeps Next's own asset paths from being rewritten with everything
  * else.
  */
-const kioskRewrites = [
-  {
-    source: "/:path((?!_next|__nextjs).*)",
-    has: [{ type: "host" as const, value: "signin.vexkan.ca" }],
-    destination: "/kiosk/:path*",
-  },
-  /*
-   * Development. There is no subdomain on a dev server, so `localhost:3000`
-   * serves the kiosk and `127.0.0.1:3000` serves the club site — same server,
-   * two hostnames, nothing to toggle by hand.
-   */
-  {
-    source: "/",
-    has: [{ type: "host" as const, value: "localhost" }],
-    destination: "/kiosk",
-  },
-  {
-    source: "/:path(pair|coach)",
-    has: [{ type: "host" as const, value: "localhost" }],
-    destination: "/kiosk/:path",
-  },
-];
+
+/** Every path the kiosk owns, minus the /kiosk prefix. */
+const KIOSK_PAGES = "board|enroll|admin";
+
+const onSubdomain = [{ type: "host" as const, value: "signin.vexkan.ca" }];
+/*
+ * Development. There is no subdomain on a dev server, so `localhost:3000`
+ * serves the kiosk and `127.0.0.1:3000` serves the club site — same server,
+ * two hostnames, nothing to toggle by hand.
+ */
+const onLocalhost = [{ type: "host" as const, value: "localhost" }];
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    return { beforeFiles: kioskRewrites, afterFiles: [], fallback: [] };
+    return {
+      beforeFiles: [
+        {
+          source: "/:path((?!_next|__nextjs).*)",
+          has: onSubdomain,
+          destination: "/kiosk/:path*",
+        },
+        { source: "/", has: onLocalhost, destination: "/kiosk" },
+        { source: `/:page(${KIOSK_PAGES})`, has: onLocalhost, destination: "/kiosk/:page" },
+        { source: "/api/:path*", has: onLocalhost, destination: "/kiosk/api/:path*" },
+      ],
+      afterFiles: [],
+      fallback: [],
+    };
   },
 };
 

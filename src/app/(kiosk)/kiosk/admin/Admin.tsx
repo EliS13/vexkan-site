@@ -1,0 +1,342 @@
+"use client";
+
+import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
+import { describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
+import { isSignedIn } from "@/lib/kiosk/hours";
+import type { KioskState } from "@/lib/kiosk/types";
+
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+export function Admin({ initial, initialNow }: { initial: KioskState; initialNow: number }) {
+  const [state, setState] = useState(initial);
+  const [passcode, setPasscode] = useState("");
+  /*
+   * The passcode is entered once on the lock screen and kept in memory for the
+   * rest of the visit. Deliberately not localStorage: an admin session should
+   * not outlive the tab on an iPad the whole club can pick up.
+   */
+  const [unlocked, setUnlocked] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const [name, setName] = useState("");
+  const [meetsOn, setMeetsOn] = useState<number[]>([2]);
+  const [startsAt, setStartsAt] = useState("16:30");
+  const [endsAt, setEndsAt] = useState("18:00");
+
+  const standings = useMemo(
+    () => orderGroups(state.groups, initialNow),
+    [state.groups, initialNow],
+  );
+
+  const send = useCallback(
+    async (payload: Record<string, unknown>) => {
+      if (passcode.length === 0) {
+        setError("The admin session was locked. Unlock again.");
+        return;
+      }
+      setBusy(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/admin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...payload, passcode }),
+        });
+        const body = await res.json();
+        if (!res.ok) throw new Error(body.error ?? "That did not save.");
+        setState({ members: body.members, sessions: body.sessions, groups: body.groups });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "That did not save.");
+      } finally {
+        setBusy(false);
+      }
+    },
+    [passcode],
+  );
+
+  const unlock = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "unlock", passcode }),
+      });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? "That passcode is not right.");
+      setState({ members: body.members, sessions: body.sessions, groups: body.groups });
+      setUnlocked(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "That passcode is not right.");
+      setPasscode("");
+    } finally {
+      setBusy(false);
+    }
+  }, [passcode]);
+
+  const activeGroups = state.groups.filter((g) => g.active);
+
+  /* Nothing about the roster renders until the passcode is accepted. */
+  if (!unlocked) {
+    return (
+      <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-5 p-6">
+        <div>
+          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+            Administrator
+          </p>
+          <h1 className="font-serif text-3xl font-bold">Enter the passcode</h1>
+        </div>
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (passcode.length > 0 && !busy) unlock();
+          }}
+          className="flex flex-col gap-3"
+        >
+          <input
+            type="password"
+            inputMode="numeric"
+            autoFocus
+            value={passcode}
+            onChange={(e) => setPasscode(e.target.value)}
+            aria-label="Administrator passcode"
+            className="min-h-[72px] rounded-xl border-2 border-[#2e343b] bg-[#1d2126] px-4 text-center font-mono text-3xl tracking-[0.3em] text-[#e8eaed]"
+          />
+          <button
+            type="submit"
+            disabled={busy || passcode.length === 0}
+            className="min-h-[72px] rounded-xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+          >
+            {busy ? "Checking…" : "Unlock"}
+          </button>
+        </form>
+
+        {error && (
+          <p role="alert" className="rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+            {error}
+          </p>
+        )}
+
+        <Link
+          href="/"
+          className="text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+        >
+          Back to kiosk
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-5 p-5">
+      <header className="flex items-end justify-between gap-4">
+        <div>
+          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+            Administrator
+          </p>
+          <h1 className="font-serif text-3xl font-bold">Groups and roster</h1>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => {
+              setUnlocked(false);
+              setPasscode("");
+            }}
+            className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          >
+            Lock
+          </button>
+          <Link
+            href="/"
+            className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          >
+            Back to kiosk
+          </Link>
+        </div>
+      </header>
+
+      {error && (
+        <p role="alert" className="rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+          {error}
+        </p>
+      )}
+
+      <section>
+        <h2 className="mb-2 font-serif text-xl font-semibold">Groups</h2>
+        <ul className="mb-4 flex flex-col gap-2">
+          {standings.map(({ group, phase }) => (
+            <li
+              key={group.id}
+              className="flex items-center gap-3 rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3"
+            >
+              <div className="min-w-0 flex-1">
+                <p className="font-serif text-lg font-semibold">{group.name}</p>
+                <p className="font-mono text-[11px] text-[#8b949e]">
+                  {describeSchedule(group)}
+                  {phase === "in-session" && <span className="text-[#35c17a]"> · on now</span>}
+                </p>
+              </div>
+              <span className="font-mono text-[11px] text-[#8b949e]">
+                {state.members.filter((m) => m.active && m.groupIds.includes(group.id)).length}{" "}
+                members
+              </span>
+              <button
+                onClick={() => send({ action: "deleteGroup", groupId: group.id })}
+                disabled={busy}
+                className="min-h-[44px] rounded-lg border-2 border-[#e04f4f]/50 px-3 font-mono text-[11px] tracking-widest text-[#e04f4f] uppercase disabled:opacity-40"
+              >
+                Retire
+              </button>
+            </li>
+          ))}
+          {standings.length === 0 && (
+            <li className="font-mono text-sm text-[#8b949e]">No groups yet.</li>
+          )}
+        </ul>
+
+        <div className="flex flex-wrap items-end gap-3 rounded-xl border-2 border-dashed border-[#2e343b] p-3">
+          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            New group
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="V5RC Build"
+              className="mt-1 block min-h-[48px] rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-lg text-[#e8eaed]"
+            />
+          </label>
+          <div className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            Meets
+            <div className="mt-1 flex gap-1">
+              {DAYS.map((day, i) => (
+                <button
+                  key={day}
+                  onClick={() =>
+                    setMeetsOn((prev) =>
+                      prev.includes(i) ? prev.filter((d) => d !== i) : [...prev, i],
+                    )
+                  }
+                  className={`min-h-[48px] w-11 rounded-lg border-2 text-[11px] ${
+                    meetsOn.includes(i)
+                      ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
+                      : "border-[#2e343b] text-[#8b949e]"
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            From
+            <input
+              type="time"
+              value={startsAt}
+              onChange={(e) => setStartsAt(e.target.value)}
+              className="mt-1 block min-h-[48px] rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+            />
+          </label>
+          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            To
+            <input
+              type="time"
+              value={endsAt}
+              onChange={(e) => setEndsAt(e.target.value)}
+              className="mt-1 block min-h-[48px] rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+            />
+          </label>
+          <button
+            onClick={() => {
+              send({ action: "createGroup", name, meetsOn, startsAt, endsAt });
+              setName("");
+            }}
+            disabled={busy || name.trim().length === 0}
+            className="min-h-[48px] rounded-lg bg-[#ffb100] px-5 font-serif font-bold text-[#14171a] disabled:opacity-40"
+          >
+            Add group
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="mb-2 font-serif text-xl font-semibold">Roster</h2>
+        {state.members.length === 0 && (
+          <p className="mb-2 font-mono text-sm text-[#8b949e]">
+            Nobody signed up yet. Members are added from the kiosk&rsquo;s Sign up
+            screen, which captures the photo and the face templates.
+          </p>
+        )}
+        <ul className="flex flex-col gap-2">
+          {[...state.members]
+            .sort((a, b) => Number(b.active) - Number(a.active) || a.firstName.localeCompare(b.firstName))
+            .map((member) => {
+              const here = isSignedIn(state.sessions, member.id);
+              return (
+                <li
+                  key={member.id}
+                  className={`rounded-xl border-2 p-3 ${
+                    member.active ? "border-[#2e343b] bg-[#1d2126]" : "border-[#2e343b]/50 opacity-50"
+                  }`}
+                >
+                  <div className="mb-2 flex items-center gap-3">
+                    <p className="min-w-0 flex-1 truncate font-serif text-lg font-semibold">
+                      {member.firstName} {member.lastName}
+                      {here && <span className="ml-2 font-mono text-[11px] text-[#35c17a]">in the room</span>}
+                    </p>
+                    <button
+                      onClick={() =>
+                        send({
+                          action: "setMemberActive",
+                          memberId: member.id,
+                          active: !member.active,
+                        })
+                      }
+                      disabled={busy}
+                      className="min-h-[44px] rounded-lg border-2 border-[#2e343b] px-3 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase disabled:opacity-40"
+                    >
+                      {member.active ? "Deactivate" : "Restore"}
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {activeGroups.map((group) => {
+                      const inGroup = member.groupIds.includes(group.id);
+                      return (
+                        <button
+                          key={group.id}
+                          onClick={() =>
+                            send({
+                              action: "setMemberGroups",
+                              memberId: member.id,
+                              groupIds: inGroup
+                                ? member.groupIds.filter((id) => id !== group.id)
+                                : [...member.groupIds, group.id],
+                            })
+                          }
+                          disabled={busy || !member.active}
+                          className={`min-h-[40px] rounded-lg border-2 px-3 font-mono text-[11px] disabled:opacity-40 ${
+                            inGroup
+                              ? "border-[#ffb100] bg-[#ffb100]/15 text-[#ffb100]"
+                              : "border-[#2e343b] text-[#8b949e]"
+                          }`}
+                        >
+                          {group.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </li>
+              );
+            })}
+        </ul>
+      </section>
+
+      <p className="border-t border-[#2e343b] pt-4 font-mono text-[11px] text-[#8b949e]">
+        Retiring a group and deactivating a member both keep every recorded hour.
+        Nothing here deletes session history.
+      </p>
+    </div>
+  );
+}

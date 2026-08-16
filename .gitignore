@@ -24,6 +24,9 @@
 .DS_Store
 *.pem
 
+# kiosk development store, replaced by Postgres
+/.data/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
