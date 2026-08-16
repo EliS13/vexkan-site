@@ -28,6 +28,24 @@ const onSubdomain = [{ type: "host" as const, value: "signin.vexkan.ca" }];
 const onLocalhost = [{ type: "host" as const, value: "localhost" }];
 
 const nextConfig: NextConfig = {
+  /*
+   * The rewrites below map the subdomain onto /kiosk, but they do not hide the
+   * real paths: without this, vexkan.ca/kiosk/admin would answer on the club
+   * site too. Redirects run before rewrites, and only on the URL as requested,
+   * so this closes the door on every other host without touching the
+   * subdomain's own internal rewrite to /kiosk.
+   */
+  async redirects() {
+    return [
+      {
+        source: "/kiosk/:path*",
+        missing: [{ type: "host", value: "(signin\\.vexkan\\.ca|localhost|127\\.0\\.0\\.1)" }],
+        destination: "/",
+        permanent: false,
+      },
+    ];
+  },
+
   async rewrites() {
     return {
       beforeFiles: [
