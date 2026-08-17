@@ -140,12 +140,23 @@ export function Enroll({ initial }: { initial: KioskState }) {
       setSaved(`${body.member.firstName} ${body.member.lastName}`);
       setRoster(body.members.length);
       setShots([]);
-      setFirstName("");
-      setLastName("");
-      setStatus(PROMPTS[0]);
+      setStatus("Saved. Taking you back…");
+
+      /*
+       * Back to the kiosk, where the new member's tile is the proof it worked.
+       * Staying here after a save left no way to tell a successful sign-up from
+       * a silent failure.
+       *
+       * A full navigation rather than a router push: client-side routing
+       * resolves the path without applying the subdomain rewrite, so on
+       * signin.vexkan.ca a push to "/" lands in the club site instead of the
+       * kiosk. `busy` stays true through the wait so the save cannot be fired
+       * twice while the page is on its way out.
+       */
+      setTimeout(() => window.location.assign("/"), 1200);
+      return;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save.");
-    } finally {
       setBusy(false);
     }
   }, [firstName, lastName, passcode, shots]);
