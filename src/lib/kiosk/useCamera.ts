@@ -75,6 +75,9 @@ export function useCamera(): CameraState {
   const [message, setMessage] = useState<string | null>(null);
   const [facing, setFacing] = useState<Facing>("user");
   const [hasSeveral, setHasSeveral] = useState(false);
+  /* Every video input, so switching can name one rather than describe it. */
+  const cameras = useRef<MediaDeviceInfo[]>([]);
+  const currentDeviceId = useRef<string | null>(null);
 
   const stop = useCallback(() => {
     stream.current?.getTracks().forEach((t) => t.stop());
@@ -90,7 +93,7 @@ export function useCamera(): CameraState {
     stream.current = null;
   }, []);
 
-  const open = useCallback(async (silent: boolean, want: Facing = "user") => {
+  const open = useCallback(async (silent: boolean, want: Facing = "user", deviceId?: string) => {
     if (!secureEnough()) {
       if (silent) return;
       setStatus("insecure");
@@ -130,11 +133,32 @@ export function useCamera(): CameraState {
          * anyway, so a larger stream only costs the iPad decode work and
          * memory on every frame it draws.
          */
-        video: { facingMode: want, width: { ideal: 960 }, height: { ideal: 540 } },
+        /*
+         * A device id when we have one, because facingMode is only a hint:
+         * Safari may quietly return the front camera for "environment", so the
+         * mirror flips while the picture does not. An id is unambiguous.
+         */
+        video: deviceId
+          ? { deviceId: { exact: deviceId }, width: { ideal: 960 }, height: { ideal: 540 } }
+          : { facingMode: want, width: { ideal: 960 }, height: { ideal: 540 } },
         audio: false,
       });
       stream.current = media;
-      setFacing(want);
+
+      /*
+       * Believe the track, not the request. Its own settings say which camera
+       * actually opened, which is what the preview's mirroring must follow.
+       */
+      const track = media.getVideoTracks()[0];
+      const settings = track?.getSettings?.() ?? {};
+      currentDeviceId.current = settings.deviceId ?? deviceId ?? null;
+      const reported = settings.facingMode as Facing | undefined;
+      const byLabel = /back|rear|environment/i.test(track?.label ?? "")
+        ? "environment"
+        : /front|face/i.test(track?.label ?? "")
+          ? "user"
+          : undefined;
+      setFacing(reported ?? byLabel ?? want);
       if (video.current) {
         video.current.srcObject = media;
         // iOS needs both of these set before play() or it opens fullscreen.
@@ -159,7 +183,8 @@ export function useCamera(): CameraState {
        */
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
-        setHasSeveral(devices.filter((d) => d.kind === "videoinput").length > 1);
+        cameras.current = devices.filter((d) => d.kind === "videoinput");
+        setHasSeveral(cameras.current.length > 1);
       } catch {
         setHasSeveral(false);
       }
@@ -187,10 +212,23 @@ export function useCamera(): CameraState {
   const start = useCallback(() => open(false), [open]);
 
   const flip = useCallback(async () => {
+    const list = cameras.current;
     const other: Facing = facing === "user" ? "environment" : "user";
-    await open(false, other);
-    // If the other camera refused, fall back rather than leaving a dead panel.
-    if (!stream.current) await open(true, facing);
+
+    // Next camera in the list, wrapping. On a two-camera iPad that is simply
+    // the other one, and it is named rather than described.
+    let target: string | undefined;
+    if (list.length > 1) {
+      const at = list.findIndex((d) => d.deviceId === currentDeviceId.current);
+      target = list[(at + 1) % list.length]?.deviceId || undefined;
+    }
+
+    await open(false, other, target);
+
+    // Refused, or there was no id to use: try describing it instead, then give
+    // the working camera back rather than leaving a dead panel.
+    if (!stream.current) await open(true, other);
+    if (!stream.current) await open(true, facing, currentDeviceId.current ?? undefined);
   }, [open, facing]);
 
   const resume = useCallback(async () => {
