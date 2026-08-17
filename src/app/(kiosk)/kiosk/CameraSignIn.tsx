@@ -22,8 +22,15 @@ import type { KioskState, Member } from "@/lib/kiosk/types";
  * close together catch a blink — the thing multi-frame sampling is actually for
  * — at roughly half the wait and half the inference.
  */
-const FRAMES = 2;
-const FRAME_GAP_MS = 120;
+/*
+ * One photo. Sampling several frames was insurance against a blink, but it made
+ * the button feel unresponsive: a wait with a live picture still moving, so it
+ * was never clear the tap had registered. Taking a single frame, freezing it on
+ * screen and reading that is both faster and legible — you can see exactly what
+ * the camera judged you on.
+ */
+const FRAMES = 1;
+const FRAME_GAP_MS = 0;
 
 type Mode = { kind: "group" } | { kind: "verify"; member: Member };
 
@@ -50,6 +57,8 @@ export function CameraSignIn({
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [passcode, setPasscode] = useState("");
+  /** The frozen photo being analysed, so the tap visibly did something. */
+  const [shot, setShot] = useState<string | null>(null);
 
   const memberById = useCallback(
     (id: string) => state.members.find((m) => m.id === id) ?? null,
@@ -97,6 +106,7 @@ export function CameraSignIn({
       frames.push(grabFrame(el));
       if (i < FRAMES - 1) await new Promise((r) => setTimeout(r, FRAME_GAP_MS));
     }
+    if (frames[0]) setShot(frames[0].toDataURL("image/jpeg", 0.8));
     return frames;
   }, [getVideo]);
 
@@ -276,17 +286,28 @@ export function CameraSignIn({
       )}
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="relative grid min-h-[40vh] place-items-center overflow-hidden rounded-2xl bg-black">
+        {/*
+         * The video is positioned to fill, not centred by the grid: place-items-center
+         * overrides size-full and leaves it at its natural size in the middle of a
+         * black box. object-cover rather than contain so the picture crops to the
+         * box instead of letterboxing inside it.
+         */}
+        <div className="relative min-h-[40vh] overflow-hidden rounded-2xl bg-black">
           {/* Mirrored for the person standing there; the captured pixels are not. */}
           <video
             ref={attach}
             muted
             playsInline
-            className={`size-full -scale-x-100 object-contain ${
+            className={`absolute inset-0 size-full -scale-x-100 object-cover ${
               camStatus === "live" ? "" : "hidden"
             }`}
           />
+          {shot && (
+            /* eslint-disable-next-line @next/next/no-img-element -- in-memory frame */
+            <img src={shot} alt="" className="absolute inset-0 size-full -scale-x-100 object-cover" />
+          )}
           {camStatus !== "live" && (
+            <div className="absolute inset-0 grid place-items-center">
             <CameraGate
               status={camStatus}
                 message={camMessage}
@@ -298,6 +319,7 @@ export function CameraSignIn({
               }
               onCancel={onClose}
             />
+            </div>
           )}
         </div>
 
@@ -312,7 +334,7 @@ export function CameraSignIn({
             </button>
           )}
 
-          {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setStatus("Ready."); }} />}
+          {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setShot(null); setStatus("Ready."); }} />}
         </div>
       </div>
     </div>

@@ -194,22 +194,24 @@ export function Enroll({ initial }: { initial: KioskState }) {
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
         <div className="flex min-h-0 flex-col gap-3">
-          <div className="relative grid min-h-[40vh] flex-1 place-items-center overflow-hidden rounded-2xl bg-black">
+          <div className="relative min-h-[40vh] flex-1 overflow-hidden rounded-2xl bg-black">
             <video
             ref={attach}
               muted
               playsInline
-              className={`size-full -scale-x-100 object-contain ${
+              className={`absolute inset-0 size-full -scale-x-100 object-cover ${
                 camStatus === "live" ? "" : "hidden"
               }`}
             />
             {camStatus !== "live" && (
+              <div className="absolute inset-0 grid place-items-center">
               <CameraGate
                 status={camStatus}
                 message={camMessage}
                 onStart={camStart}
                 purpose="Signing someone up needs five photos of their face, taken here. They stay on this device."
               />
+              </div>
             )}
           </div>
           <p className="font-serif text-2xl font-semibold">{status}</p>
