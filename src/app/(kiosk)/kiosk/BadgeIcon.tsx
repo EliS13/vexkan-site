@@ -154,7 +154,24 @@ function Shape({
         </>
       );
 
-    /* Returned and Founder: a laurel, for coming back across seasons. */
+    /* Returned and Running it back: a season going round again. */
+    case "replay":
+      return (
+        <>
+          <path
+            d="M16 5 A11 11 0 1 1 5.6 12.4"
+            fill="none"
+            stroke={fill}
+            strokeWidth="3.4"
+            strokeLinecap="round"
+          />
+          <path d="M16 1.5 L16 8.5 L10 5 Z" fill={fill} stroke={metal.dark} strokeWidth="0.8" strokeLinejoin="round" />
+          <circle cx="16" cy="16" r="6.4" fill={ACCENT.face} opacity="0.9" />
+          <path d="M16 11.5 V16 L19.5 18.2" fill="none" stroke={metal.ink} strokeWidth="1.9" strokeLinecap="round" />
+        </>
+      );
+
+    /* Founder and Comeback: a laurel. */
     case "laurel":
       return (
         <>

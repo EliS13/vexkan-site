@@ -19,7 +19,7 @@ export type BadgeTier =
 /** Which drawing to use. The renderer owns the artwork; this owns the meaning. */
 export type BadgeShape =
   | "medal" | "star" | "gem" | "flame" | "laurel" | "clock" | "layers"
-  | "shield" | "crown" | "anvil" | "sun" | "moon";
+  | "shield" | "crown" | "anvil" | "sun" | "moon" | "replay";
 
 export type Badge = {
   /** Stable across renders, so React keys and tests can rely on it. */
@@ -630,7 +630,7 @@ function assemble(member: Member, ctx: Context): Badge[] {
       id: `veteran-${mySeasons.size}`,
       label: mySeasons.size >= 3 ? "Running it back" : "Returned",
       detail: `Came back across ${mySeasons.size} seasons`,
-      shape: "laurel",
+      shape: "replay",
       /* Two seasons bronze, three silver, four or more gold. */
       tier: rungTier(Math.max(0, 4 - mySeasons.size)),
       weight: 75 + mySeasons.size,
@@ -649,7 +649,8 @@ function assemble(member: Member, ctx: Context): Badge[] {
     badges.push({
       id: "worlds",
       label: worlds.length > 1 ? `Worlds ×${worlds.length}` : "Worlds",
-      detail: `VEX World Championship — ${worlds.join(" and ")}`,
+      /* IQ and V5RC are separate championships, so both are named. */
+      detail: `VEX World Championship — ${worlds.join(", ")}`,
       shape: "crown",
       tier: "gold",
       weight: 250,
@@ -954,7 +955,7 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
         how: `Club days in a row without missing one: ${[...STREAK_MILESTONES].reverse().join(", ")}. Days the club was closed do not break it.`,
       },
       {
-        badge: { id: "returned", label: "Returned", detail: "Two seasons", shape: "laurel", tier: "special", weight: 0 },
+        badge: { id: "returned", label: "Returned", detail: "Two seasons", shape: "replay", tier: "bronze", weight: 0 },
         how: "Came back for a second season. Becomes Running it back at three, and the laurel changes colour with each season after.",
       },
       {

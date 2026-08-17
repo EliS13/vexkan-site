@@ -22,25 +22,28 @@ export type Team = {
 };
 
 export const TEAMS: Team[] = [
-  { number: "595C", season: "2023-24", members: ["Eli Seeliger"] },
-  { number: "595C", season: "2024-25", members: ["Eli Seeliger", "Chris Shang", "Nicholas Ma"] },
-  { number: "595C", season: "2025-26", members: ["Eric Lin", "Cyrus Yu", "Alex Fang"] },
-  { number: "595C", season: "2026-27", members: ["Evia Seeliger", "Zhizhi Gao", "Laura Kaastra"] },
+  { program: "IQ", number: "595C", season: "2023-24", members: ["Eli Seeliger"] },
+  { program: "IQ", number: "595C", season: "2024-25", members: ["Eli Seeliger", "Chris Shang", "Nicholas Ma"] },
+  { program: "IQ", number: "595C", season: "2025-26", members: ["Eric Lin", "Cyrus Yu", "Alex Fang"] },
+  { program: "IQ", number: "595C", season: "2026-27", members: ["Evia Seeliger", "Zhizhi Gao", "Laura Kaastra"] },
 
-  { number: "595A", season: "2025-26", members: ["Winston Wei", "Richard Pan", "Max Sun"] },
-  { number: "595B", season: "2025-26", members: ["Turing Xu", "Daniel Huang", "Ryan Shen"] },
+  { program: "IQ", number: "595A", season: "2025-26", members: ["Winston Wei", "Richard Pan", "Max Sun"] },
+  { program: "IQ", number: "595B", season: "2025-26", members: ["Turing Xu", "Daniel Huang", "Ryan Shen"] },
 
-  { number: "565A", season: "2024-25", members: ["Evia Seeliger", "Ryan Feng", "Ella Wang"] },
+  { program: "IQ", number: "565A", season: "2024-25", members: ["Evia Seeliger", "Ryan Feng", "Ella Wang"] },
   {
     number: "565D",
     season: "2024-25",
     members: ["Ethan Han", "Graham Xiong", "Ashton Zhou", "Matthias Liew"],
   },
 
-  { number: "595Y", season: "2025-26", members: ["Eli Seeliger", "Ryan Feng"] },
-  { number: "16688A", season: "2025-26", members: ["Eli Seeliger", "Michael Lian", "Michael Li"] },
-  { number: "16688K", season: "2025-26", members: ["Alex Han", "Michael Li"] },
+  { program: "IQ", number: "595Y", season: "2025-26", members: ["Eli Seeliger", "Ryan Feng"] },
+  { program: "V5RC",
+    number: "16688A", season: "2025-26", members: ["Eli Seeliger", "Michael Lian", "Michael Li"] },
+  { program: "V5RC",
+    number: "16688K", season: "2025-26", members: ["Alex Han", "Michael Li"] },
   {
+    program: "V5RC",
     number: "36467E",
     season: "2024-25",
     members: ["Nicholas Ma", "Michael Li", "Michael Lian", "Eli Seeliger"],
@@ -65,6 +68,11 @@ export const WORLDS: { season: string; program: "IQ" | "V5RC"; members: string[]
     program: "IQ",
     members: ["Eric Lin", "Cyrus Yu", "Luke Shen", "Alex Fang", "Eli Seeliger"],
   },
+  {
+    season: "2025-26",
+    program: "V5RC",
+    members: ["Eli Seeliger", "Michael Lian", "Michael Li"],
+  },
 ];
 
 /** Every team a member has competed for, newest season first. */
@@ -74,7 +82,9 @@ export function teamsFor(fullName: string): Team[] {
   );
 }
 
-/** The seasons a member went to Worlds. */
+/** Every Worlds trip a member made, as "2025-26 V5RC". */
 export function worldsFor(fullName: string): string[] {
-  return WORLDS.filter((w) => w.members.includes(fullName)).map((w) => w.season);
+  return WORLDS.filter((w) => w.members.includes(fullName)).map(
+    (w) => `${w.season} ${w.program}`,
+  );
 }
