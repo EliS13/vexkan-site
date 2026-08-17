@@ -8,7 +8,11 @@ import {
   isSignedIn,
   leaderboard,
   openSessionFor,
+  placeOf,
+  recentVisits,
   rosterOrder,
+  seasonLeaderboard,
+  seasonStart,
   sessionMs,
   totalMsFor,
 } from "./hours";
@@ -24,6 +28,7 @@ function member(id: string, firstName: string, lastName: string, active = true):
     lastName,
     photoUrl: null,
     active,
+    groupIds: [],
     faceEmbedding: null,
     createdAt: "2026-01-01T00:00:00.000Z",
   };
@@ -289,5 +294,83 @@ describe("alphabetical", () => {
   it("keeps deactivated members, unlike the kiosk roster", () => {
     const members = [member("m1", "Gone", "Away", false), member("m2", "Here", "Now")];
     expect(alphabetical(members, [], NOW)).toHaveLength(2);
+  });
+});
+
+describe("seasonStart", () => {
+  it("runs from May 1st of the current year once May has arrived", () => {
+    expect(seasonStart(Date.parse("2026-08-16T19:00:00.000Z"))).toBe("2026-05-01");
+  });
+
+  it("belongs to the previous May while it is still April", () => {
+    expect(seasonStart(Date.parse("2026-04-30T19:00:00.000Z"))).toBe("2025-05-01");
+  });
+
+  it("rolls over on May 1st, read in the club's timezone", () => {
+    // 04:00 UTC on May 1st is still 10pm on April 30th in Edmonton.
+    expect(seasonStart(Date.parse("2026-05-01T04:00:00.000Z"))).toBe("2025-05-01");
+    expect(seasonStart(Date.parse("2026-05-01T18:00:00.000Z"))).toBe("2026-05-01");
+  });
+});
+
+describe("seasonLeaderboard", () => {
+  const members = [member("m1", "Ada", "L"), member("m2", "Bea", "C")];
+
+  it("ignores sessions from before the season", () => {
+    const s = [
+      session("s1", "m1", "2025-11-01T18:00:00.000Z", "2025-11-01T22:00:00.000Z"),
+      session("s2", "m2", "2026-06-01T18:00:00.000Z", "2026-06-01T19:00:00.000Z"),
+    ];
+    const board = seasonLeaderboard(members, s, NOW);
+    expect(board.map((r) => r.member.id)).toEqual(["m2", "m1"]);
+    expect(board[1].totalMs).toBe(0);
+  });
+
+  it("keeps members who have not attended, on zero", () => {
+    const board = seasonLeaderboard(members, [], NOW);
+    expect(board).toHaveLength(2);
+    expect(board.every((r) => r.totalMs === 0)).toBe(true);
+  });
+});
+
+describe("placeOf", () => {
+  const members = [member("m1", "Ada", "L"), member("m2", "Bea", "C"), member("m3", "Cy", "D")];
+
+  it("numbers from one", () => {
+    const s = [session("s1", "m2", "2026-06-01T18:00:00.000Z", "2026-06-01T22:00:00.000Z")];
+    const board = seasonLeaderboard(members, s, NOW);
+    expect(placeOf(board, "m2")).toBe(1);
+  });
+
+  it("gives tied members the same place", () => {
+    const s = [
+      session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T19:00:00.000Z"),
+      session("s2", "m2", "2026-06-02T18:00:00.000Z", "2026-06-02T19:00:00.000Z"),
+    ];
+    const board = seasonLeaderboard(members, s, NOW);
+    expect(placeOf(board, "m1")).toBe(1);
+    expect(placeOf(board, "m2")).toBe(1);
+    expect(placeOf(board, "m3")).toBe(3);
+  });
+
+  it("returns null for somebody not on the board", () => {
+    expect(placeOf(seasonLeaderboard(members, [], NOW), "nobody")).toBeNull();
+  });
+});
+
+describe("recentVisits", () => {
+  it("returns the newest first, capped at the limit", () => {
+    const s = [
+      session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z"),
+      session("s2", "m1", "2026-06-03T18:00:00.000Z", "2026-06-03T20:00:00.000Z"),
+      session("s3", "m1", "2026-06-02T18:00:00.000Z", "2026-06-02T20:00:00.000Z"),
+      session("s4", "m2", "2026-06-04T18:00:00.000Z", null),
+    ];
+    expect(recentVisits(s, "m1", 2).map((v) => v.id)).toEqual(["s2", "s3"]);
+  });
+
+  it("includes an open session", () => {
+    const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", null)];
+    expect(recentVisits(s, "m1")).toHaveLength(1);
   });
 });

@@ -11,7 +11,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "./Avatar";
 import { CameraSignIn } from "./CameraSignIn";
-import { countSignedIn, formatDuration, rosterOrder } from "@/lib/kiosk/hours";
+import {
+  countSignedIn,
+  formatDuration,
+  formatHours,
+  placeOf,
+  rosterOrder,
+  seasonLeaderboard,
+} from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE, describePhase, orderGroups } from "@/lib/kiosk/schedule";
 import { postJson, type SignOutReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
@@ -144,10 +151,21 @@ export function Kiosk({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
 
+  /*
+   * Signing out holds longer than signing in, because it now carries the
+   * season board and a placing to find yourself in. Two seconds is enough to
+   * read your own name; it is not enough to scan a roster. Eight is, and a tap
+   * closes it sooner for anyone already heading for the door.
+   */
   const showConfirmation = useCallback((member: Member, action: "in" | "out") => {
     setConfirmation({ member, action });
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => setConfirmation(null), 2000);
+    timer.current = setTimeout(() => setConfirmation(null), action === "out" ? 8000 : 2000);
+  }, []);
+
+  const dismissConfirmation = useCallback(() => {
+    if (timer.current) clearTimeout(timer.current);
+    setConfirmation(null);
   }, []);
 
   /**
@@ -372,7 +390,15 @@ export function Kiosk({
           onClose={() => setCamera(null)}
         />
       )}
-      {confirmation && <Confirm confirmation={confirmation} />}
+      {confirmation && (
+        <Confirm
+          confirmation={confirmation}
+          members={state.members}
+          sessions={state.sessions}
+          now={now}
+          onDismiss={dismissConfirmation}
+        />
+      )}
     </div>
   );
 }
@@ -437,27 +463,132 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
  * The one animated thing in the kiosk. It names the person and what happened,
  * because "Signed out" alone leaves a member unsure the right tile was hit.
  */
-function Confirm({ confirmation }: { confirmation: NonNullable<Confirmation> }) {
+function Confirm({
+  confirmation,
+  members,
+  sessions,
+  now,
+  onDismiss,
+}: {
+  confirmation: NonNullable<Confirmation>;
+  members: Member[];
+  sessions: KioskState["sessions"];
+  now: number;
+  onDismiss: () => void;
+}) {
   const { member, action } = confirmation;
-  const isIn = action === "in";
+  if (action === "in") {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-[#14171a]/80 motion-safe:animate-[fadeIn_120ms_ease-out]"
+      >
+        <div className="rounded-3xl bg-[#ffb100] px-12 py-10 text-center text-[#14171a] motion-safe:animate-[pop_160ms_cubic-bezier(0.2,0.9,0.3,1.2)]">
+          <p className="font-mono text-sm font-bold tracking-[0.2em] uppercase opacity-70">
+            Signed in
+          </p>
+          <p className="mt-2 font-serif text-5xl font-bold sm:text-6xl">
+            {member.firstName} {member.lastName[0]}.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return <SignedOutBoard member={member} members={members} sessions={sessions} now={now} onDismiss={onDismiss} />;
+}
+
+/**
+ * The board on the way out: where this member stands this season, with their
+ * own row scrolled into view and their placing spelled out along the bottom.
+ *
+ * Ranked over the season rather than all time. After three years of paper went
+ * into the table the all-time order stopped moving, and a member who joined in
+ * June would read their name at the bottom of a list they had no way to climb.
+ */
+function SignedOutBoard({
+  member,
+  members,
+  sessions,
+  now,
+  onDismiss,
+}: {
+  member: Member;
+  members: Member[];
+  sessions: KioskState["sessions"];
+  now: number;
+  onDismiss: () => void;
+}) {
+  const standings = useMemo(
+    () => seasonLeaderboard(members, sessions, now),
+    [members, sessions, now],
+  );
+  const place = placeOf(standings, member.id);
+  const mine = useRef<HTMLLIElement>(null);
+
+  // Their own row, not the top of the list, is what they came to see.
+  useEffect(() => {
+    mine.current?.scrollIntoView({ block: "center" });
+  }, []);
+
   return (
     <div
       role="status"
       aria-live="polite"
-      className="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-[#14171a]/80 motion-safe:animate-[fadeIn_120ms_ease-out]"
+      onClick={onDismiss}
+      className="fixed inset-0 z-50 flex flex-col bg-[#14171a]/95 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
     >
-      <div
-        className={`rounded-3xl px-12 py-10 text-center motion-safe:animate-[pop_160ms_cubic-bezier(0.2,0.9,0.3,1.2)] ${
-          isIn ? "bg-[#ffb100] text-[#14171a]" : "bg-[#e8eaed] text-[#14171a]"
-        }`}
-      >
-        <p className="font-mono text-sm font-bold tracking-[0.2em] uppercase opacity-70">
-          {isIn ? "Signed in" : "Signed out"}
+      <header className="shrink-0 text-center">
+        <p className="font-mono text-xs font-bold tracking-[0.2em] text-[#8b949e] uppercase">
+          Signed out
         </p>
-        <p className="mt-2 font-serif text-5xl font-bold sm:text-6xl">
+        <p className="font-serif text-3xl font-bold sm:text-4xl">
           {member.firstName} {member.lastName[0]}.
         </p>
-      </div>
+      </header>
+
+      <ol className="mx-auto my-4 flex w-full max-w-lg flex-1 flex-col gap-1 overflow-y-auto">
+        {standings.map((standing, index) => {
+          const isMine = standing.member.id === member.id;
+          return (
+            <li
+              key={standing.member.id}
+              ref={isMine ? mine : undefined}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
+                isMine ? "bg-[#ffb100] text-[#14171a]" : "text-[#e8eaed]"
+              }`}
+            >
+              <span className="w-7 shrink-0 text-right font-mono text-sm tabular-nums opacity-60">
+                {index + 1}
+              </span>
+              <span className="min-w-0 flex-1 truncate font-serif text-lg">
+                {standing.member.firstName} {standing.member.lastName[0]}.
+              </span>
+              <span className="shrink-0 font-mono text-sm tabular-nums">
+                {formatHours(standing.totalMs)}h
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+
+      <footer className="shrink-0 rounded-2xl bg-[#ffb100] px-6 py-4 text-center text-[#14171a]">
+        <p className="font-serif text-2xl font-bold sm:text-3xl">
+          {place === null
+            ? "Welcome to the club"
+            : `${ordinal(place)} place this season`}
+        </p>
+        <p className="font-mono text-[11px] tracking-[0.15em] uppercase opacity-70">
+          Season since May 1 · tap to close
+        </p>
+      </footer>
     </div>
   );
+}
+
+/** 1st, 2nd, 3rd, 4th — including the 11th-to-13th exceptions. */
+function ordinal(n: number): string {
+  const lastTwo = n % 100;
+  if (lastTwo >= 11 && lastTwo <= 13) return `${n}th`;
+  return `${n}${["th", "st", "nd", "rd"][n % 10] ?? "th"}`;
 }

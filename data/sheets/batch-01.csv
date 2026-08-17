@@ -1,0 +1,357 @@
+sheet,date,name_raw,name_matched,time_in,time_out,confidence,note
+S03,2025-09-21,Winston,Winston Wei,18:00,20:20,low,in/out both smudged
+S03,2025-09-21,Alex Han,Alex Han,13:30,16:20,high,
+S03,2025-09-21,Michael Li,Michael Li,13:30,16:40,medium,ditto marks for time in
+S03,2025-09-21,Michael Lian,Michael Lian,13:30,16:40,medium,ditto marks both columns
+S03,2025-09-21,Kevin Gu,Kevin Gu,17:30,,medium,NOT IN ROSTER; no time out
+S03,2025-09-22,Cyrus,Cyrus Yu,17:15,20:33,medium,
+S03,2025-09-22,Kevin Gu,Kevin Gu,17:15,17:12,low,NOT IN ROSTER; out before in - misread
+S03,2025-09-22,Michael Li,Michael Li,16:40,20:00,high,
+S03,2025-09-22,Alex Han,Alex Han,16:40,20:00,high,
+S03,2025-09-22,Michael Lian,Michael Lian,16:43,20:00,high,
+S03,2025-09-24,Cyrus,Cyrus Yu,17:31,,high,no time out
+S03,2025-09-24,Alex,Alex Fang,17:10,,low,bare Alex = Fang per Eli; no time out
+S03,2025-09-24,Ryan S.,Ryan Shen,17:30,,low,surname initial S = Shen; no time out
+S03,2025-09-24,Shenglan,Shengyuan Wang,17:31,,low,NOT IN ROSTER; no time out; folded into Shengyuan Wang
+S03,2025-09-24,Max sun,Max Sun,17:32,,high,no time out
+S03,2025-09-24,Winston W,Winston Wei,17:32,,high,no time out
+S03,2025-09-24,Richard. P,Richard Pan,17:32,20:30,high,
+S03,2025-09-24,Daniel. H,Daniel Huang,17:30,20:30,high,
+S03,2025-09-24,Turing. X,Turing Xu,17:35,20:30,medium,
+S03,2025-09-24,Michael Li,Michael Li,18:30,21:15,low,date digit unclear - Sept 24 or 27
+S02,2025-09-27,Kevin Gu,Kevin Gu,19:37,21:26,medium,NOT IN ROSTER; 24h format
+S02,2025-09-27,Alex Han,Alex Han,18:37,21:15,high,out written 21:15pm
+S02,2025-09-27,Michael Lian,Michael Lian,18:37,21:15,high,out written 21:15pm
+S02,2025-09-27,Eli Seeliger,Eli Seeliger,18:45,,high,no time out
+S02,2025-09-28,Richard. P,Richard Pan,17:30,20:18,high,
+S02,2025-09-28,Max Sun,Max Sun,17:30,20:20,high,
+S02,2025-09-28,Daniel H,Daniel Huang,17:30,19:36,low,"out written 7:76pm - impossible, assumed 7:36"
+S02,2025-09-28,Cyrus. Y,Cyrus Yu,17:54,19:27,medium,
+S02,2025-09-28,Alex F,Alex Fang,17:55,19:17,medium,
+S02,2025-09-28,Winston W,Winston Wei,17:55,20:19,low,
+S02,2025-09-28,Shengyuan Wang,Shengyuan Wang,18:10,19:03,medium,NOT IN ROSTER; row circled
+S02,2025-09-28,Turing Xu,Turing Xu,17:30,20:02,high,
+S02,2025-09-28,Sean Xu,,17:30,20:00,low,NOT IN ROSTER; first name unclear
+S02,2025-09-29,Michael Li,Michael Li,16:40,20:20,high,
+S02,2025-09-29,Michael Lian,Michael Lian,16:41,20:20,high,
+S02,2025-09-29,Alex Han,Alex Han,17:20,20:33,high,
+S02,2025-10-01,Kevin Gu,Kevin Gu,17:23,,medium,NOT IN ROSTER; no time out
+S02,2025-10-01,Alex,Alex Fang,17:11,20:40,low,bare Alex = Fang per Eli
+S02,2025-10-01,Cyrus Y,Cyrus Yu,17:29,20:49,medium,
+S02,2025-10-01,Shengyuan Wang,Shengyuan Wang,17:25,,medium,NOT IN ROSTER; no time out
+S02,2025-10-01,Winston Wei,Winston Wei,17:25,,high,no time out
+S04,2025-10-01,Max Sun,Max Sun,17:30,20:34,high,
+S04,2025-10-01,Ryan Shen,Ryan Shen,17:30,20:30,high,
+S04,2025-10-01,Daniel-H,Daniel Huang,17:30,20:30,medium,
+S04,2025-10-04,Winston W,Winston Wei,17:30,20:30,medium,
+S04,2025-10-04,Kevin Gu,Kevin Gu,13:33,16:22,medium,NOT IN ROSTER
+S04,2025-10-04,Alex Han,Alex Han,13:33,16:30,medium,
+S04,2025-10-04,Michael Lian,Michael Lian,13:39,16:50,high,
+S04,2025-10-04,Michael Li,Michael Li,13:40,16:50,high,
+S04,2025-10-04,Winston & Mom (Vivian),Winston Wei,18:00,20:04,medium,GUARDIAN also present
+S04,2025-10-04,Richard.P,Richard Pan,18:00,20:04,high,
+S04,2025-10-04,Max Sun,Max Sun,18:01,20:04,high,
+S04,2025-10-05,Turing Xu,Turing Xu,10:00,12:10,high,morning session
+S04,2025-10-05,Ryan Shen,Ryan Shen,10:00,12:10,high,morning session
+S04,2025-10-05,Jessie S. (Ryan's mom),,10:00,12:10,high,GUARDIAN not a member
+S04,2025-10-05,Daniel-H,Daniel Huang,10:00,12:10,medium,morning session
+S04,2025-10-05,Cyrus-Yu,Cyrus Yu,17:19,19:06,high,
+S04,2025-10-05,Alex,Alex Fang,17:22,19:06,low,bare Alex = Fang per Eli
+S04,2025-10-05,Cyrus' Mom,,17:22,19:06,medium,GUARDIAN not a member
+S04,2025-10-06,Michael Li,Michael Li,16:40,,high,no time out
+S04,2025-10-06,Alex,Alex Fang,18:00,,low,bare Alex = Fang per Eli; no time out
+S01,2025-10-06,Michael Lian,Michael Lian,16:00,,high,no time out
+S01,2025-10-06,Kevin Gu,Kevin Gu,17:36,20:35,low,NOT IN ROSTER; date had 28 struck out
+S01,2025-10-08,Daniel. H,Daniel Huang,17:30,20:30,high,
+S01,2025-10-08,Cyrus. Y,Cyrus Yu,17:30,20:25,high,
+S01,2025-10-08,Richard. P,Richard Pan,17:30,20:25,high,
+S01,2025-10-08,Alex t,Alex Fang,17:30,20:25,low,bare Alex = Fang per Eli
+S01,2025-10-08,Winston,Winston Wei,17:30,20:25,high,
+S01,2025-10-08,Max Sun,Max Sun,17:30,20:25,high,
+S01,2025-10-08,Shengyuan,Shengyuan Wang,17:35,20:25,low,NOT IN ROSTER; folded into Shengyuan Wang
+S01,2025-10-08,Ryan Shen,Ryan Shen,17:30,20:24,high,
+S01,2025-10-08,Turing,Turing Xu,17:31,20:27,high,
+S01,2025-10-11,Alex Han,Alex Han,13:26,,high,no time out
+S01,2025-10-11,Michael Li,Michael Li,13:26,,high,no time out
+S01,2025-10-11,Michael Lian,Michael Lian,13:26,,high,no time out
+S01,2025-10-12,Alex. F,Alex Fang,10:30,12:21,medium,morning session
+S01,2025-10-12,Cyrus. Y,Cyrus Yu,10:38,12:26,medium,morning session
+S01,2025-10-12,Shengyuan,Shengyuan Wang,16:20,19:20,low,NOT IN ROSTER; both times unclear; folded into Shengyuan Wang
+S01,2025-10-12,Max Sun,Max Sun,18:05,20:20,low,time out partly illegible
+S01,2025-10-12,Winston,Winston Wei,18:05,20:40,medium,
+S01,2025-10-12,Richard. P,Richard Pan,18:05,18:40,low,35 min session - verify
+S05,2025-10-20,Alex Han,Alex Han,16:50,19:03,high,
+S05,2025-10-20,Michael Li,Michael Li,16:50,19:03,high,
+S05,2025-10-20,Michael Lian,Michael Lian,16:50,19:30,medium,
+S05,2025-10-21,Alex P,Alex Fang,17:00,18:20,low,"raw reads ""Alex P"" but is Alex F, per Eli"
+S05,2025-10-21,Eric,Eric Lin,17:20,18:20,low,AMBIGUOUS Lin/Huang
+S05,2025-10-21,Cyrus,Cyrus Yu,17:15,18:20,medium,
+S05,2025-10-21,Jessie (Eric's Mom),,17:20,18:20,high,GUARDIAN not a member
+S05,2025-10-21,Daniel. H,Daniel Huang,18:40,20:33,high,
+S05,2025-10-21,Jessica (Ryan's mom) + Ryan Shen,Ryan Shen,18:00,20:00,medium,GUARDIAN also present
+S05,2025-10-22,Turing Xu,Turing Xu,18:45,20:00,high,
+S05,2025-10-22,Eric Lin,Eric Lin,18:57,21:00,medium,
+S05,2025-10-22,Alex F,Alex Fang,17:15,21:35,low,4h20 session - verify
+S05,2025-10-22,Max Sun,Max Sun,17:26,20:34,high,
+S05,2025-10-22,Winston,Winston Wei,17:28,20:40,high,
+S05,2025-10-22,Daniel. H,Daniel Huang,17:28,20:35,high,
+S05,2025-10-22,Cyrus. Y,Cyrus Yu,17:30,,high,no time out
+S05,2025-10-22,Turing Xu,Turing Xu,17:34,20:35,medium,second Turing row same day
+S05,2025-10-22,Richard. P,Richard Pan,17:10,20:35,low,
+S05,2025-10-24,Ryan S.,Ryan Shen,15:05,15:55,low,surname initial S = Shen
+S15,2025-11-02,Michael Li,Michael Li,13:18,17:40,medium,name struck through
+S15,2025-11-02,Michael Lian,Michael Lian,13:18,17:40,high,
+S15,2025-11-02,Alex Han,Alex Han,13:18,17:40,high,
+S15,2025-11-02,Winston & Mom,Winston Wei,10:00,12:00,high,GUARDIAN also present; morning
+S15,2025-11-02,Richard,Richard Pan,10:00,12:00,medium,morning session
+S15,2025-11-02,Max,Max Sun,10:00,12:00,medium,morning session
+S15,2025-11-03,Michael Li,Michael Li,17:12,20:38,high,
+S15,2025-11-03,Michael Lian,Michael Lian,17:12,20:38,high,
+S15,2025-11-03,Alex,Alex Fang,17:12,20:38,low,bare Alex = Fang per Eli
+S15,2025-11-03,Eric Lin,Eric Lin,19:04,21:02,medium,
+S15,2025-11-03,Cyrus Y,Cyrus Yu,18:50,21:02,medium,
+S15,2025-11-03,Alex,Alex Fang,18:56,21:00,low,bare Alex = Fang per Eli
+S15,2025-11-04,Daniel,Daniel Huang,18:40,20:24,medium,
+S15,2025-11-04,Ryan S.,Ryan Shen,18:39,20:30,low,surname initial S = Shen
+S15,2025-11-04,Turing,Turing Xu,18:57,20:45,medium,
+S15,2025-11-05,Eric L,Eric Lin,17:12,20:45,low,adjacent cell may read Cyrus' mom
+S15,2025-11-05,Alex,Alex Fang,17:27,20:46,low,bare Alex = Fang per Eli
+S15,2025-11-05,Daniel. H,Daniel Huang,17:20,20:37,low,
+S15,2025-11-05,Richard,Richard Pan,17:28,20:40,medium,
+S14,2025-11-05,Max sun,Max Sun,17:26,20:42,high,
+S14,2025-11-05,Ryan S.,Ryan Shen,17:32,20:35,low,surname initial S = Shen
+S14,2025-11-05,Winston W,Winston Wei,17:32,20:42,high,
+S14,2025-11-06,Cyrus + Alex,Cyrus Yu,15:36,17:29,low,two names one row; Alex ambiguous
+S14,2025-11-06,Turing,Turing Xu,17:16,20:36,medium,
+S14,2025-11-06,Winston W,Winston Wei,17:23,18:15,medium,
+S14,2025-11-06,Ryan F,Ryan Feng,18:00,18:33,low,out reads 6:30 or 6:33
+S14,2025-11-06,Daniel,Daniel Huang,17:47,20:30,medium,
+S14,2025-11-06,Cyrus,Cyrus Yu,19:03,20:00,medium,
+S14,2025-11-07,Cyrus,Cyrus Yu,15:38,16:04,medium,
+S14,2025-11-07,Eric Lin,Eric Lin,16:30,17:59,low,time in struck and rewritten
+S14,2025-11-07,Turing xu,Turing Xu,17:14,19:15,low,
+S14,2025-11-07,Winston W,Winston Wei,18:13,19:28,medium,
+S14,2025-11-07,Alex F,Alex Fang,18:00,19:40,medium,
+S14,2025-11-07,Richard.P,Richard Pan,18:50,20:11,medium,
+S14,2025-11-07,Alex Han,Alex Han,13:27,17:20,medium,
+S14,2025-11-08,Michael Lian,Michael Lian,13:27,18:20,medium,
+S14,2025-11-08,Michael Li,Michael Li,13:27,17:20,medium,
+S14,2025-11-08,Daniel,Daniel Huang,13:58,17:30,medium,
+S13,2025-11-08,Cyrus Y,Cyrus Yu,14:57,18:00,medium,
+S13,2025-11-08,Eric L,Eric Lin,14:58,18:00,medium,
+S13,2025-11-08,Max sun,Max Sun,18:03,20:02,high,
+S13,2025-11-08,Winston,Winston Wei,18:00,20:00,low,time out struck through
+S13,2025-11-08,Richard. P,Richard Pan,18:10,,low,time out struck out entirely
+S13,2025-11-08,Turing Xu,Turing Xu,18:00,20:16,low,both cells struck through
+S13,2025-11-09,Ryan F,Ryan Feng,09:17,,low,no time out
+S13,2025-11-09,Richard. P,Richard Pan,10:00,12:00,high,morning session
+S13,2025-11-09,Max. Sun,Max Sun,10:10,12:00,high,morning session
+S13,2025-11-09,Winston W,Winston Wei,10:10,12:00,high,morning session
+S13,2025-11-09,Daniel + mom,Daniel Huang,17:10,19:14,medium,GUARDIAN also present
+S13,2025-11-09,(struck out),,17:02,19:15,low,name illegible - struck through
+S13,2025-11-09,Ryan,Ryan Feng,18:30,19:14,low,bare Ryan = Feng per Eli
+S13,2025-11-10,Daniel,Daniel Huang,16:34,18:31,medium,
+S13,2025-11-10,Alex Han,Alex Han,17:00,20:00,medium,time out just 8
+S13,2025-11-10,Michael Lian,Michael Lian,17:00,20:00,low,name struck through
+S13,2025-11-10,Michael Li,Michael Li,17:00,20:00,low,name struck through
+S13,2025-11-10,Daniel Huang,Daniel Huang,17:27,18:31,low,name partly struck
+S13,2025-11-10,Ryan S.,Ryan Shen,16:45,17:45,low,surname initial S = Shen
+S12,2025-11-11,Alex P,Alex Fang,18:46,20:40,low,"raw reads ""Alex P"" but is Alex F, per Eli"
+S12,2025-11-11,Eric L,Eric Lin,19:00,20:40,medium,
+S12,2025-11-11,Cyrus. Y,Cyrus Yu,19:10,20:40,medium,
+S12,2025-11-11,Max S,Max Sun,15:15,16:02,medium,
+S12,2025-11-11,Ryan Shen,Ryan Shen,16:00,16:02,low,2 min session - verify
+S12,2025-11-11,Ryan Feng,Ryan Feng,16:06,17:15,low,time out struck and rewritten
+S12,2025-11-11,Cyrus. Yu,Cyrus Yu,17:32,20:30,medium,
+S12,2025-11-11,Daniel. H,Daniel Huang,17:47,20:32,medium,
+S12,2025-11-11,Ryan Shen,Ryan Shen,18:35,20:29,medium,
+S12,2025-11-11,Eric Lin,Eric Lin,19:00,20:20,medium,
+S12,2025-11-11,Max S,Max Sun,17:10,20:35,medium,
+S12,2025-11-12,Alex,Alex Fang,17:15,20:15,low,bare Alex = Fang per Eli; time in struck
+S12,2025-11-12,Max S,Max Sun,17:22,20:35,medium,
+S12,2025-11-12,Daniel,Daniel Huang,18:22,20:35,medium,
+S12,2025-11-12,Winston W,Winston Wei,17:30,20:35,medium,
+S12,2025-11-12,Eric L,Eric Lin,17:25,20:35,low,
+S12,2025-11-12,Richard. P,Richard Pan,18:25,20:35,medium,
+S12,2025-11-12,Turing Xu,Turing Xu,17:35,20:35,medium,
+S12,2025-11-12,Ryan Shen,Ryan Shen,17:35,20:35,medium,
+S12,2025-11-13,Eric Lin,Eric Lin,16:30,20:35,low,
+S11,2025-11-13,Ryan Feng,Ryan Feng,17:00,18:15,medium,
+S11,2025-11-13,Winston & Mom,Winston Wei,17:25,18:56,high,GUARDIAN also present
+S11,2025-11-13,Cyrus + Mom,Cyrus Yu,19:05,19:44,medium,GUARDIAN also present
+S11,2025-11-14,Ryan Shen + mom,Ryan Shen,19:38,20:00,medium,GUARDIAN also present
+S11,2025-11-14,Eric 3,Eric Lin,10:36,12:04,low,surname unclear; morning session
+S11,2025-11-14,Alex,Alex Fang,17:05,17:44,low,bare Alex = Fang per Eli; both times unclear
+S11,2025-11-14,Ryan,Ryan Feng,16:30,17:50,low,bare Ryan = Feng per Eli
+S11,2025-11-14,Winston + Mom,Winston Wei,18:20,20:20,high,GUARDIAN also present
+S11,2025-11-15,Richard,Richard Pan,19:00,20:20,medium,
+S11,2025-11-15,Alex Han,Alex Han,09:25,13:00,high,morning session
+S11,2025-11-15,Michael Li,Michael Li,09:25,13:00,high,morning session
+S11,2025-11-15,Michael Lian,Michael Lian,09:25,13:00,medium,morning session
+S11,2025-11-15,Cyrus,Cyrus Yu,10:40,11:15,medium,
+S11,2025-11-15,Cyrus,Cyrus Yu,14:55,16:59,low,second Cyrus row same day
+S11,2025-11-15,Eric 3,Eric Lin,14:55,16:59,low,surname unclear
+S11,2025-11-15,Alex,Alex Fang,14:55,16:59,low,bare Alex = Fang per Eli
+S11,2025-11-15,"Max S, Winston",Max Sun,17:00,20:22,low,two names one row; times unclear
+S11,2025-11-16,Richard.p,Richard Pan,10:10,,low,time out struck out
+S11,2025-11-16,Max S,Max Sun,10:10,12:36,low,
+S11,2025-11-16,Winston,Winston Wei,10:01,12:30,medium,morning session
+S10,2025-11-16,Daniel-H,Daniel Huang,16:12,19:17,medium,
+S10,2025-11-16,Turing Xu,Turing Xu,17:20,19:16,low,time in struck and rewritten
+S10,2025-11-16,Ryan Shen & mom,Ryan Shen,17:20,19:16,medium,GUARDIAN also present
+S10,2025-11-17,Alex Han,Alex Han,17:00,20:40,high,
+S10,2025-11-17,Michael Li,Michael Li,17:00,20:40,high,
+S10,2025-11-17,Ryan Feng,Ryan Feng,17:00,18:00,low,name hard to read
+S10,2025-11-17,Cyrus Y,Cyrus Yu,19:00,20:55,medium,
+S10,2025-11-17,Eric L,Eric Lin,19:00,20:55,medium,
+S10,2025-11-17,Alex,Alex Fang,18:55,20:55,low,bare Alex = Fang per Eli
+S10,2025-11-18,Ryan F,Ryan Feng,16:05,17:20,medium,
+S10,2025-11-18,Daniel,Daniel Huang,17:30,20:30,medium,
+S10,2025-11-18,Turing Xu,Turing Xu,18:40,20:50,medium,
+S10,2025-11-19,Ryan F,Ryan Feng,17:05,17:01,low,out before in; B-Day note beside name
+S10,2025-11-19,Max S,Max Sun,17:22,20:32,medium,
+S10,2025-11-19,Daniel,Daniel Huang,17:28,20:36,medium,
+S10,2025-11-19,Eric L,Eric Lin,17:36,20:30,medium,
+S10,2025-11-19,Winston W,Winston Wei,17:33,20:42,medium,
+S10,2025-11-19,Cyrus Yu,Cyrus Yu,17:35,20:30,medium,
+S10,2025-11-19,Ryan Shen,Ryan Shen,17:35,20:42,medium,
+S09,2025-11-19,Richard. P,Richard Pan,17:35,20:35,medium,
+S09,2025-11-21,Michael Li,Michael Li,14:40,18:20,medium,
+S09,2025-11-21,Michael Lian,Michael Lian,14:40,18:20,medium,
+S09,2025-11-21,Alex Han,Alex Han,14:40,18:20,medium,
+S09,2025-11-22,Cyrus,Cyrus Yu,14:45,18:00,medium,
+S09,2025-11-22,Eric,Eric Lin,15:00,18:00,low,AMBIGUOUS Lin/Huang; out struck
+S09,2025-11-22,Alex,Alex Fang,15:05,17:30,low,bare Alex = Fang per Eli
+S09,2025-11-22,Winston & Mom,Winston Wei,18:24,19:20,medium,GUARDIAN also present
+S09,2025-11-23,Daniel H,Daniel Huang,17:30,20:00,medium,
+S09,2025-11-23,Turing Xu,Turing Xu,17:32,20:00,medium,
+S09,2025-11-24,Eric L,Eric Lin,18:58,,medium,no time out
+S09,2025-11-24,Alex,Alex Fang,18:57,,low,bare Alex = Fang per Eli; no time out
+S09,2025-11-24,Cyrus,Cyrus Yu,19:03,,medium,no time out
+S09,2025-11-24,Alex Han,Alex Han,17:15,20:35,medium,
+S09,2025-11-24,Michael,Michael Lian,17:15,20:35,low,"paired Michael rows = one Lian one Li, per Eli"
+S09,2025-11-24,Michael,Michael Li,17:15,20:35,low,"paired Michael rows = one Lian one Li, per Eli"
+S09,2025-11-25,Ryan,Ryan Feng,16:05,17:20,low,bare Ryan = Feng per Eli; time in struck
+S09,2025-11-25,Turing,Turing Xu,17:38,20:30,medium,
+S09,2025-11-25,Daniel,Daniel Huang,17:15,20:35,low,
+S09,2025-11-26,Daniel,Daniel Huang,17:22,20:41,low,
+S08,2025-11-26,Winston. W,Winston Wei,17:25,20:40,high,
+S08,2025-11-26,Max S,Max Sun,17:29,20:35,medium,
+S08,2025-11-26,Eric L,Eric Lin,17:29,20:52,low,out struck and rewritten
+S08,2025-11-26,Cyrus P,Cyrus Yu,17:30,20:52,low,initial reads P not Y
+S08,2025-11-26,Richard. p,Richard Pan,18:00,20:40,medium,
+S08,2025-11-28,Ryan F.,Ryan Feng,16:20,18:15,medium,
+S08,2025-11-29,Eric Lin,Eric Lin,14:57,18:00,medium,
+S08,2025-11-29,Alex P,Alex Fang,14:58,17:55,low,"raw reads ""Alex P"" but is Alex F, per Eli"
+S08,2025-11-29,Cyrus. S. Y,Cyrus Yu,15:00,18:00,medium,
+S08,2025-11-29,Max S,Max Sun,17:58,21:56,low,4h session - verify
+S08,2025-11-29,Alex Han,Alex Han,15:30,19:00,medium,
+S08,2025-11-29,Michael Li,Michael Li,15:30,19:00,medium,
+S08,2025-11-29,Michael Lian,Michael Lian,15:30,19:00,medium,
+S08,2025-11-30,Max S,Max Sun,10:30,12:00,medium,morning session
+S08,2025-11-30,Winston,Winston Wei,10:35,12:00,medium,morning session
+S08,2025-11-30,Turing Xu,Turing Xu,17:36,19:30,medium,
+S08,2025-11-30,Daniel Huang,Daniel Huang,17:00,19:30,low,
+S08,2025-11-30,Ryan Shen,Ryan Shen,17:15,19:30,medium,
+S08,2025-12-01,Eli/Cecilia - Teach,Eli Seeliger,16:40,,low,two people one row; teaching note
+S08,2025-12-01,Alex Han,Alex Han,17:00,,medium,no time out
+S07,2025-12-01,Michael Lian,Michael Lian,17:10,20:15,high,date written 2025/12/1
+S07,2025-12-01,Michael Li,Michael Li,17:10,20:15,high,
+S07,2025-12-01,Alex,Alex Fang,16:10,20:15,low,bare Alex = Fang per Eli
+S07,2025-12-01,Alex Fang,Alex Fang,17:57,21:00,low,time in unclear
+S07,2025-12-01,Cyrus,Cyrus Yu,18:55,21:00,medium,
+S07,2025-12-01,Eric Lin,Eric Lin,18:54,21:00,medium,
+S07,2025-12-02,Ryan F,Ryan Feng,18:15,21:10,low,
+S07,2025-12-02,Turing Xu,Turing Xu,18:30,20:30,medium,
+S07,2025-12-02,Daniel,Daniel Huang,17:30,20:35,low,
+S07,2025-12-03,Ryan S.,Ryan Shen,17:30,19:32,medium,
+S07,2025-12-03,Alex,Alex Fang,17:22,19:32,low,bare Alex = Fang per Eli
+S07,2025-12-03,Daniel,Daniel Huang,17:30,19:32,medium,
+S07,2025-12-03,Cyrus,Cyrus Yu,17:30,19:33,medium,
+S07,2025-12-03,Eric Lin,Eric Lin,17:40,19:36,medium,
+S07,2025-12-03,Turing xu,Turing Xu,17:33,20:00,medium,
+S07,2025-12-06,Cyrus,Cyrus Yu,15:00,17:00,medium,
+S07,2025-12-06,Alex,Alex Fang,15:00,17:00,low,bare Alex = Fang per Eli
+S07,2025-12-06,Eric,Eric Lin,15:20,17:00,low,AMBIGUOUS Lin/Huang
+S07,2025-12-06,Michael Li,Michael Li,14:40,19:40,medium,
+S07,2025-12-06,Michael Lian,Michael Lian,14:40,19:40,medium,
+S06,2025-12-06,Alex Han,Alex Han,15:40,20:30,medium,
+S06,2025-12-06,Max Sun,Max Sun,18:03,,low,time out struck through entirely
+S06,2025-12-06,Winston W,Winston Wei,18:00,20:01,medium,
+S06,2025-12-06,Richard. P,Richard Pan,18:02,,low,time out struck through entirely
+S06,2025-12-07,"Max S, Winston",Max Sun,10:01,12:01,low,two names one row; morning
+S06,2025-12-07,Richard P,Richard Pan,10:05,12:01,medium,morning session
+S06,2025-12-07,Max S,Max Sun,18:16,20:18,medium,
+S06,2025-12-07,Richard. P,Richard Pan,18:14,20:18,medium,
+S06,2025-12-07,Daniel,Daniel Huang,18:00,20:05,medium,
+S06,2025-12-07,Ryan,Ryan Feng,18:00,20:15,low,bare Ryan = Feng per Eli
+S06,2025-12-07,Turing,Turing Xu,18:00,20:46,medium,
+S06,2025-12-08,Michael Li,Michael Li,17:20,20:45,low,time in reads 5:20cm
+S06,2025-12-08,Michael Lian,Michael Lian,17:00,20:45,medium,
+S06,2025-12-08,Alex Han,Alex Han,17:20,20:45,low,
+S06,2025-12-08,Alex Fang,Alex Fang,17:27,,low,name and time out both unclear
+S06,2025-12-09,Eric L,Eric Lin,17:29,19:46,low,date column reads Dec 9 amid Dec 10 rows
+S06,2025-12-10,Max S,Max Sun,17:29,19:45,low,
+S06,2025-12-10,Cyrus Y,Cyrus Yu,17:29,19:46,medium,
+S06,2025-12-10,Daniel,Daniel Huang,17:35,19:46,medium,
+S06,2025-12-10,Ryan S.,Ryan Shen,17:34,19:46,low,surname initial S = Shen
+S17,2025-10-25,Alex Han,Alex Han,13:30,17:00,high,
+S17,2025-10-25,Michael Li,Michael Li,13:30,17:00,high,
+S17,2025-10-25,Michael Lian,Michael Lian,13:30,17:00,high,
+S17,2025-10-25,Alex t,Alex Fang,14:30,14:30,low,bare Alex = Fang per Eli; in struck and rewritten; in=out
+S17,2025-10-25,Eric Lin,Eric Lin,15:00,18:03,medium,
+S17,2025-10-25,Cyrus. Y,Cyrus Yu,15:00,18:03,medium,
+S17,2025-10-26,Max sun,Max Sun,10:01,11:45,low,written 10:01pm; out struck
+S17,2025-10-26,Richard. P,Richard Pan,10:00,11:35,low,written 10:00pm - morning session
+S17,2025-10-26,Winston,Winston Wei,10:00,11:54,low,written 10:00Pm - morning session
+S17,2025-10-26,Daniel. H,Daniel Huang,17:15,19:15,medium,
+S17,2025-10-26,Turing Xu,Turing Xu,17:15,20:21,medium,
+S17,2025-10-26,Ryan Shen,Ryan Shen,17:20,20:15,medium,
+S17,2025-10-27,Alex Han,Alex Han,16:50,,low,name struck through; no time out
+S17,2025-10-27,Michael Li,Michael Li,16:52,,medium,no time out
+S17,2025-10-27,Michael Lian,Michael Lian,16:50,20:40,medium,
+S17,2025-10-27,Cyrus,Cyrus Yu,19:00,,medium,no time out
+S17,2025-10-27,Alex,Alex Fang,19:00,20:40,low,bare Alex = Fang per Eli
+S17,2025-10-27,Eric Lin,Eric Lin,19:01,20:40,medium,
+S17,2025-10-28,Daniel,Daniel Huang,18:30,20:42,medium,
+S17,2025-10-28,Turing,Turing Xu,18:32,20:42,medium,
+S16,2025-10-28,Ryan S.,Ryan Shen,18:28,,low,surname initial S = Shen; no time out; row above struck
+S16,2025-10-29,Eric L,Eric Lin,17:14,20:32,medium,
+S16,2025-10-29,Cyrus - Y,Cyrus Yu,17:23,20:30,low,out reads 8:58 or 8:30
+S16,2025-10-29,Winston Wei,Winston Wei,17:27,20:30,medium,
+S16,2025-10-29,Alex Fang,Alex Fang,17:21,20:30,medium,
+S16,2025-10-29,Daniel,Daniel Huang,17:27,,medium,no time out
+S16,2025-10-29,Max sun,Max Sun,17:30,20:30,high,
+S16,2025-10-29,Ryan Shen,Ryan Shen,17:34,20:30,high,
+S16,2025-10-29,Turing,Turing Xu,17:35,20:30,high,
+S16,2025-10-29,Richard,Richard Pan,18:33,20:30,medium,
+S16,2025-11-01,Eric L,Eric Lin,14:56,,medium,no time out
+S16,2025-11-01,Cyrus. Y,Cyrus Yu,15:05,,medium,no time out
+S16,2025-11-01,Alex,Alex Fang,15:01,17:31,low,bare Alex = Fang per Eli
+S16,2025-11-01,Winston W,Winston Wei,18:05,,low,time out cell holds a date annotation not a time
+S16,2025-11-01,Max sun,Max Sun,18:05,20:02,medium,
+S16,2025-11-01,Richard. P,Richard Pan,18:03,,low,time out struck through
+S16,2025-11-02,Max sun,Max Sun,10:01,12:00,medium,morning session
+S16,2025-11-02,Daniel. H,Daniel Huang,17:15,19:35,medium,
+S16,2025-11-02,Ryan S.,Ryan Shen,17:15,19:35,low,surname initial S = Shen
+S18,2025-12-16,Winston. W,Winston Wei,17:30,19:33,high,
+S18,2025-12-16,Max S,Max Sun,17:29,19:33,medium,
+S18,2025-12-17,Eric Lin,Eric Lin,17:36,19:23,medium,
+S18,2025-12-17,Ryan Shen,Ryan Shen,17:25,19:33,medium,
+S18,2025-12-17,Turing xu,Turing Xu,17:35,19:33,low,name struck through
+S18,2025-12-17,Cyrus,Cyrus Yu,17:36,19:33,medium,
+S18,2025-12-17,Daniel,Daniel Huang,17:36,19:30,medium,
+S18,2025-12-19,Turing,Turing Xu,17:35,20:25,medium,
+S18,2025-12-19,Alex,Alex Fang,17:25,19:36,low,bare Alex = Fang per Eli
+S18,2025-12-19,Winston,Winston Wei,17:30,19:33,medium,
+S18,2025-12-19,Michael Li,Michael Li,14:39,19:00,low,
+S18,2025-12-19,Alex Han,Alex Han,14:39,23:30,low,"out written 11:30pm - verify, likely 11:30am"
+S18,2025-12-19,Richard,Richard Pan,18:00,19:51,medium,
+S18,2025-12-19,Max. S,Max Sun,18:08,19:48,medium,
+S18,2025-12-19,Winston. W,Winston Wei,18:03,19:51,medium,
+S18,2025-12-20,Alex,Alex Fang,13:57,17:46,low,bare Alex = Fang per Eli
+S18,2025-12-20,Eric L,Eric Lin,14:07,17:59,medium,
+S18,2025-12-20,Cyrus Y,Cyrus Yu,14:08,17:59,medium,
+S18,2025-12-22,Daniel,Daniel Huang,16:56,12:00,low,"out before in - misread, verify"
+S18,2025-12-23,Turing xu,Turing Xu,10:05,12:00,medium,morning session
+S18,2025-12-23,Ryan S.,Ryan Shen,10:05,12:00,low,surname initial S = Shen; morning

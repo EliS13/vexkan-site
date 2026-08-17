@@ -1,0 +1,38 @@
+sheet,date,name_raw,name_matched,time_in,time_out,confidence,note
+U1,2025-10-13,Alex Han,Alex Han,17:05,,high,"24h format sheet; no time out"
+U1,2025-10-13,Michael Li,Michael Li,17:05,,high,"24h format; no time out"
+U1,2025-10-13,Michael Lian,Michael Lian,17:35,,medium,"24h format; no time out"
+U1,2025-10-15,Ryan Shen,Ryan Shen,17:25,20:20,medium,
+U1,2025-10-15,Daniel. H,Daniel Huang,18:25,,low,"no time out; 607 pencilled beside"
+U1,2025-10-15,Max sun,Max Sun,17:25,20:30,high,
+U1,2025-10-15,Winston,Winston Wei,17:25,20:30,high,
+U1,2025-10-15,Alex,Alex Fang,17:25,20:30,medium,"bare Alex = Fang"
+U1,2025-10-15,Turing,Turing Xu,17:25,20:30,medium,
+U1,2025-10-15,Cyrus,Cyrus Yu,17:30,20:30,medium,
+U1,2025-10-15,Richard,Richard Pan,17:30,19:30,medium,
+U1,2025-10-15,Shengyuan Wang,Shengyuan Wang,17:34,20:30,low,
+U1,2025-10-18,Alex Han,Alex Han,13:26,16:50,high,
+U1,2025-10-18,Michael Li,Michael Li,13:26,16:50,high,
+U1,2025-10-18,Michael Lian,Michael Lian,13:26,16:50,high,
+U1,2025-10-18,Max Sun,Max Sun,18:01,20:00,medium,
+U1,2025-10-18,Richard P,Richard Pan,18:03,20:00,medium,"ditto mark for time out"
+U1,2025-10-18,Winston Wei,Winston Wei,18:03,20:00,medium,"ditto mark for time out"
+U1,2025-10-18,Alex. F,Alex Fang,17:23,19:30,medium,
+U1,2025-10-18,Cyrus. Y,Cyrus Yu,17:19,19:30,medium,
+U2,2025-12-10,Winston. Wei,Winston Wei,17:34,19:46,high,
+U2,2025-12-10,Ryan F.,Ryan Feng,17:30,20:15,medium,
+U2,2025-12-10,Alex,Alex Fang,17:30,20:20,low,"bare Alex = Fang; out struck and rewritten"
+U2,2025-12-12,Max S,Max Sun,18:01,19:00,low,"row may name two people - Max S and Ethan?"
+U2,2025-12-12,Richard. P,Richard Pan,18:03,19:00,medium,"written 7:00:01 with seconds"
+U2,2025-12-12,Winston,Winston Wei,18:00,19:00,medium,"written 7:00:30 with seconds"
+U2,2025-12-13,Richard.P,Richard Pan,18:16,19:28,high,
+U2,2025-12-13,Max. S,Max Sun,18:10,19:28,high,
+U2,2025-12-13,Winston. Wei,Winston Wei,18:09,19:28,high,
+U2,2025-12-14,Eric Lin,Eric Lin,10:00,11:20,high,"morning session"
+U2,2025-12-14,Cyrus Yu,Cyrus Yu,10:00,11:20,high,"morning session"
+U2,2025-12-14,Daniel,Daniel Huang,09:57,11:20,medium,"morning session"
+U2,2025-12-14,"Winston, Wei",Winston Wei,10:05,11:20,high,"morning session"
+U2,2025-12-14,Max S,Max Sun,10:06,11:20,high,"morning session"
+U2,2025-12-14,Richard,Richard Pan,10:11,11:20,high,"morning session"
+U2,2025-12-14,Alex,Alex Fang,10:00,11:20,medium,"bare Alex = Fang; morning"
+U2,2025-12-14,Ryan S,Ryan Shen,10:00,11:20,medium,"morning session"

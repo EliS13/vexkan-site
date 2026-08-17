@@ -1,3 +1,4 @@
+import { CLUB_TIMEZONE } from "./schedule";
 import type { Member, Session } from "./types";
 
 /**
@@ -140,6 +141,83 @@ export function leaderboard(
     .filter((m) => m.active)
     .map((m) => standingFrom(m, byMember.get(m.id) ?? EMPTY, now))
     .sort((a, b) => b.totalMs - a.totalMs || byName(a, b));
+}
+
+/*
+ * The club's year runs May 1st to April 30th, and rolls over on its own.
+ *
+ * All-time hours stopped being a live ranking once three years of paper went
+ * in: the order barely moves, and somebody who joined in June reads their name
+ * at the bottom of a list they cannot climb. Season hours reset with the club's
+ * own year, so a member who keeps showing up rises.
+ */
+const SEASON_START_MONTH = 5; // May, 1-indexed as Intl reports it.
+
+/** Club-local calendar date for an instant, as { year, month, day }. */
+function clubDate(now: number, timeZone: string = CLUB_TIMEZONE) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date(now));
+  const value = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? "0");
+  return { year: value("year"), month: value("month"), day: value("day") };
+}
+
+/**
+ * The instant the current season began, as an ISO string to compare against
+ * `signedInAt` directly. String comparison rather than parsing every row: the
+ * timestamps are ISO and sort lexicographically, and this runs over thousands
+ * of sessions on every kiosk render.
+ */
+export function seasonStart(now: number, timeZone: string = CLUB_TIMEZONE): string {
+  const { year, month } = clubDate(now, timeZone);
+  const startYear = month >= SEASON_START_MONTH ? year : year - 1;
+  return `${startYear}-05-01`;
+}
+
+/** Only the sessions that began in the season containing `now`. */
+export function seasonSessions(sessions: Session[], now: number): Session[] {
+  const start = seasonStart(now);
+  return sessions.filter((s) => s.signedInAt >= start);
+}
+
+/**
+ * The board shown when somebody signs out: this season only, whole active
+ * roster. Members who have not come yet sit at the bottom on zero rather than
+ * being hidden, so the list is the club rather than a subset of it.
+ */
+export function seasonLeaderboard(
+  members: Member[],
+  sessions: Session[],
+  now: number,
+): MemberStanding[] {
+  return leaderboard(members, seasonSessions(sessions, now), now);
+}
+
+/**
+ * Where a member stands, 1-indexed, with ties sharing a place. Two members on
+ * 12 hours are both 3rd and the next is 5th — the ordinary way a scoreboard
+ * reads, and the alternative would tell one of them they beat somebody they
+ * did not.
+ */
+export function placeOf(standings: MemberStanding[], memberId: string): number | null {
+  const index = standings.findIndex((s) => s.member.id === memberId);
+  if (index === -1) return null;
+  const mine = standings[index].totalMs;
+  return standings.findIndex((s) => s.totalMs === mine) + 1;
+}
+
+/**
+ * A member's most recent visits, newest first, for the roster's expanded row.
+ * Open sessions are included: "here now" is the most recent visit there is.
+ */
+export function recentVisits(sessions: Session[], memberId: string, limit = 5): Session[] {
+  return sessions
+    .filter((s) => s.memberId === memberId)
+    .sort((a, b) => b.signedInAt.localeCompare(a.signedInAt))
+    .slice(0, limit);
 }
 
 export function countSignedIn(members: Member[], sessions: Session[]): number {

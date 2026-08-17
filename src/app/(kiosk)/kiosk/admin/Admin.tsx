@@ -9,8 +9,16 @@
  */
 
 import { useCallback, useMemo, useState } from "react";
-import { describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
-import { alphabetical, clubTotals, formatDuration, formatHours, isSignedIn } from "@/lib/kiosk/hours";
+import { CLUB_TIMEZONE, describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
+import {
+  alphabetical,
+  clubTotals,
+  formatDuration,
+  formatHours,
+  isSignedIn,
+  recentVisits,
+  sessionMs,
+} from "@/lib/kiosk/hours";
 import { postJson, type AdminReply } from "@/lib/kiosk/postJson";
 import { AddPhoto } from "./AddPhoto";
 import type { Group, KioskState, Member } from "@/lib/kiosk/types";
@@ -30,6 +38,12 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
   const [photoFor, setPhotoFor] = useState<Member | null>(null);
   /** Which row's menu is open. One at a time, so the list stays readable. */
   const [menuFor, setMenuFor] = useState<string | null>(null);
+  /** Free text filter over the roster. A list of 37 is too long to scan. */
+  const [search, setSearch] = useState("");
+  /** Which member's visit history is expanded. One at a time. */
+  const [visitsFor, setVisitsFor] = useState<string | null>(null);
+  /** The group whose membership is being edited, if any. */
+  const [membersOf, setMembersOf] = useState<Group | null>(null);
   const [renaming, setRenaming] = useState<Member | null>(null);
   const [groupMenuFor, setGroupMenuFor] = useState<string | null>(null);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
@@ -88,6 +102,24 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
   }, [passcode]);
 
   const activeGroups = state.groups.filter((g) => g.active);
+
+  /*
+   * The roster, filtered and in the order it has always been: everyone active
+   * first, then by first name. Matching on the full name rather than the first
+   * alone, so "Lian" finds Michael Lian without knowing which Michael he is.
+   */
+  const matching = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    return [...state.members]
+      .filter((m) =>
+        needle === "" ||
+        `${m.firstName} ${m.lastName}`.toLowerCase().includes(needle),
+      )
+      .sort(
+        (a, b) =>
+          Number(b.active) - Number(a.active) || a.firstName.localeCompare(b.firstName),
+      );
+  }, [state.members, search]);
 
   /* Nothing about the roster renders until the passcode is accepted. */
   if (!unlocked) {
@@ -242,6 +274,21 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                     >
                       Rename and set the time
                     </button>
+                    {/*
+                      * Membership is edited from the group, not from each
+                      * member. A chip per group on every member row meant
+                      * scanning 37 rows to answer "who is on 595Y", and the
+                      * strip grew wider every time a group was added.
+                      */}
+                    <button
+                      onClick={() => {
+                        setMembersOf(group);
+                        setGroupMenuFor(null);
+                      }}
+                      className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b]"
+                    >
+                      Add or remove members
+                    </button>
                     <button
                       onClick={() => {
                         send({ action: "deleteGroup", groupId: group.id });
@@ -333,9 +380,25 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             screen, which captures the photo and the face templates.
           </p>
         )}
+        {state.members.length > 0 && (
+          <div className="mb-2 flex items-center gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              type="search"
+              placeholder="Search the roster"
+              aria-label="Search the roster"
+              className="min-h-[48px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-base"
+            />
+            {search && (
+              <span className="shrink-0 font-mono text-[11px] text-[#8b949e]">
+                {matching.length} of {state.members.length}
+              </span>
+            )}
+          </div>
+        )}
         <ul className="flex flex-col gap-2">
-          {[...state.members]
-            .sort((a, b) => Number(b.active) - Number(a.active) || a.firstName.localeCompare(b.firstName))
+          {matching
             .map((member) => {
               const here = isSignedIn(state.sessions, member.id);
               return (
@@ -411,33 +474,24 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {activeGroups.map((group) => {
-                      const inGroup = member.groupIds.includes(group.id);
-                      return (
-                        <button
-                          key={group.id}
-                          onClick={() =>
-                            send({
-                              action: "setMemberGroups",
-                              memberId: member.id,
-                              groupIds: inGroup
-                                ? member.groupIds.filter((id) => id !== group.id)
-                                : [...member.groupIds, group.id],
-                            })
-                          }
-                          disabled={busy || !member.active}
-                          className={`min-h-[40px] rounded-lg border-2 px-3 font-mono text-[11px] disabled:opacity-40 ${
-                            inGroup
-                              ? "border-[#ffb100] bg-[#ffb100]/15 text-[#ffb100]"
-                              : "border-[#2e343b] text-[#8b949e]"
-                          }`}
-                        >
-                          {group.name}
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {/*
+                    * Tapping a member opens their last five visits. This is the
+                    * question actually asked of the roster screen — "has she
+                    * been coming?" — and it used to need the analytics tab and
+                    * a total that answers it only in aggregate.
+                    */}
+                  <button
+                    onClick={() => setVisitsFor(visitsFor === member.id ? null : member.id)}
+                    aria-expanded={visitsFor === member.id}
+                    className="w-full rounded-lg border-2 border-[#2e343b] px-3 py-2 text-left font-mono text-[11px] text-[#8b949e]"
+                  >
+                    {visitsFor === member.id ? "Hide visits" : "Recent visits"}
+                    <span className="float-right">{visitsFor === member.id ? "−" : "+"}</span>
+                  </button>
+
+                  {visitsFor === member.id && (
+                    <Visits sessions={state.sessions} memberId={member.id} now={initialNow} />
+                  )}
                 </li>
               );
             })}
@@ -608,12 +662,172 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         />
       )}
 
+      {membersOf && (
+        <GroupMembers
+          group={membersOf}
+          members={state.members}
+          busy={busy}
+          onClose={() => setMembersOf(null)}
+          onToggle={(member, inGroup) =>
+            send({
+              action: "setMemberGroups",
+              memberId: member.id,
+              groupIds: inGroup
+                ? member.groupIds.filter((id) => id !== membersOf.id)
+                : [...member.groupIds, membersOf.id],
+            })
+          }
+        />
+      )}
+
       <p className="border-t border-[#2e343b] pt-4 font-mono text-[11px] text-[#8b949e]">
         Retiring a group and deactivating a member both keep every recorded hour.
         Nothing here deletes session history.
       </p>
       </>
       )}
+    </div>
+  );
+}
+
+/**
+ * One member's last five visits, newest first.
+ *
+ * Dates are formatted in the club's timezone rather than the iPad's, so a
+ * session that ran past 5pm reads on the evening it happened rather than the
+ * next morning in UTC.
+ */
+function Visits({
+  sessions,
+  memberId,
+  now,
+}: {
+  sessions: KioskState["sessions"];
+  memberId: string;
+  now: number;
+}) {
+  const visits = recentVisits(sessions, memberId);
+  if (visits.length === 0) {
+    return (
+      <p className="rounded-lg bg-[#14171a] px-3 py-2 font-mono text-[11px] text-[#8b949e]">
+        No visits recorded yet.
+      </p>
+    );
+  }
+  return (
+    <ul className="flex flex-col gap-px overflow-hidden rounded-lg bg-[#14171a]">
+      {visits.map((visit) => {
+        const open = visit.signedOutAt === null;
+        return (
+          <li key={visit.id} className="flex items-baseline gap-3 px-3 py-2">
+            <span className="w-28 shrink-0 font-mono text-[11px] text-[#8b949e]">
+              {new Date(visit.signedInAt).toLocaleDateString("en-CA", {
+                timeZone: CLUB_TIMEZONE,
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
+            <span className="flex-1 font-mono text-[11px] tabular-nums text-[#e8eaed]">
+              {new Date(visit.signedInAt).toLocaleTimeString("en-CA", {
+                timeZone: CLUB_TIMEZONE,
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </span>
+            <span
+              className={`shrink-0 font-mono text-[11px] tabular-nums ${
+                open ? "text-[#35c17a]" : "text-[#8b949e]"
+              }`}
+            >
+              {open ? "here now" : formatDuration(sessionMs(visit, now))}
+              {visit.autoClosed && !open && <span className="text-[#ffb100]"> ·est</span>}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/**
+ * Membership for one group, edited from the group's own menu.
+ *
+ * Deactivated members are left out: they cannot sign in, so putting them on a
+ * team only makes the list longer.
+ */
+function GroupMembers({
+  group,
+  members,
+  busy,
+  onClose,
+  onToggle,
+}: {
+  group: Group;
+  members: Member[];
+  busy: boolean;
+  onClose: () => void;
+  onToggle: (member: Member, inGroup: boolean) => void;
+}) {
+  const [search, setSearch] = useState("");
+  const needle = search.trim().toLowerCase();
+  const shown = members
+    .filter((m) => m.active)
+    .filter((m) => needle === "" || `${m.firstName} ${m.lastName}`.toLowerCase().includes(needle))
+    .sort((a, b) => a.firstName.localeCompare(b.firstName));
+  const count = members.filter((m) => m.active && m.groupIds.includes(group.id)).length;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-[#14171a]/95 p-4 sm:p-8">
+      <header className="mx-auto flex w-full max-w-lg shrink-0 items-center gap-3 pb-3">
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate font-serif text-xl font-semibold">{group.name}</h2>
+          <p className="font-mono text-[11px] text-[#8b949e]">{count} members</p>
+        </div>
+        <button
+          onClick={onClose}
+          className="min-h-[44px] shrink-0 rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+        >
+          Done
+        </button>
+      </header>
+
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        type="search"
+        placeholder="Search"
+        aria-label="Search members"
+        className="mx-auto mb-2 min-h-[48px] w-full max-w-lg shrink-0 rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-base"
+      />
+
+      <ul className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-1 overflow-y-auto">
+        {shown.map((member) => {
+          const inGroup = member.groupIds.includes(group.id);
+          return (
+            <li key={member.id}>
+              <button
+                onClick={() => onToggle(member, inGroup)}
+                disabled={busy}
+                aria-pressed={inGroup}
+                className={`flex min-h-[52px] w-full items-center gap-3 rounded-lg border-2 px-3 text-left disabled:opacity-40 ${
+                  inGroup
+                    ? "border-[#ffb100] bg-[#ffb100]/15 text-[#ffb100]"
+                    : "border-[#2e343b] text-[#8b949e]"
+                }`}
+              >
+                <span className="w-5 shrink-0 text-center font-mono">{inGroup ? "✓" : ""}</span>
+                <span className="min-w-0 flex-1 truncate font-serif text-base">
+                  {member.firstName} {member.lastName}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+        {shown.length === 0 && (
+          <li className="font-mono text-sm text-[#8b949e]">Nobody matches that.</li>
+        )}
+      </ul>
     </div>
   );
 }
