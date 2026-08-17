@@ -75,8 +75,17 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
     [visibleMembers, state.sessions, now],
   );
   // Counted across the whole club, not the filtered view: the header answers
-  // "how many are in the room", which a filter should not change.
-  const inRoom = countSignedIn(state.members, state.sessions);
+  // "how many are in the room", which a filter should not change. Memoised
+  // because the clock re-renders this component every ten seconds and neither
+  // figure depends on the time.
+  const activeCount = useMemo(
+    () => state.members.filter((m) => m.active).length,
+    [state.members],
+  );
+  const inRoom = useMemo(
+    () => countSignedIn(state.members, state.sessions),
+    [state.members, state.sessions],
+  );
 
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
@@ -104,6 +113,25 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
 
     setPending(member.id);
     setError(null);
+
+    /*
+     * Optimistic. Closing the session locally and showing the confirmation
+     * before the round trip is what makes a tap feel instant; the request still
+     * has to reach Postgres and come back, and waiting on that read as lag on
+     * a wall-mounted iPad. The server's reply replaces this a moment later, and
+     * a failure puts the old state back with the reason.
+     */
+    const previous = state;
+    setState({
+      ...state,
+      sessions: state.sessions.map((s) =>
+        s.memberId === member.id && s.signedOutAt === null
+          ? { ...s, signedOutAt: new Date(now).toISOString() }
+          : s,
+      ),
+    });
+    showConfirmation(member, "out");
+
     try {
       const res = await fetch("/api/signout", {
         method: "POST",
@@ -116,13 +144,14 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
       anchor.current = { serverNow: body.now, at: Date.now() };
       setNow(body.now);
       setState({ members: body.members, sessions: body.sessions, groups: body.groups });
-      showConfirmation(body.member, body.action);
     } catch (err) {
+      setState(previous);
+      setConfirmation(null);
       setError(err instanceof Error ? err.message : "That did not save. Try again.");
     } finally {
       setPending(null);
     }
-  }, [pending, showConfirmation]);
+  }, [pending, showConfirmation, state, now]);
 
   const cameraDone = useCallback(
     (next: KioskState & { now: number }, signedIn: Member[]) => {
@@ -137,7 +166,7 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
 
   return (
     <div className="flex min-h-dvh flex-col p-5 select-none">
-      <Header inRoom={inRoom} total={state.members.filter((m) => m.active).length} now={now} />
+      <Header inRoom={inRoom} total={activeCount} now={now} />
 
       {groupStandings.length > 0 && (
         <nav className="mb-3 flex flex-wrap gap-2">
@@ -152,7 +181,7 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
           >
             <span className="block font-serif font-semibold">Everyone</span>
             <span className="block font-mono text-[10px] opacity-70">
-              {state.members.filter((m) => m.active).length} members
+              {activeCount} members
             </span>
           </button>
 
@@ -222,7 +251,7 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
           <button
             key={member.id}
             onClick={() => tap(member, signedIn)}
-            disabled={pending !== null}
+            disabled={pending === member.id}
             aria-pressed={signedIn}
             aria-label={`${member.firstName} ${member.lastName}, ${
               signedIn ? "signed in. Tap to sign out." : "signed out. Tap to sign in with the camera."
@@ -260,6 +289,10 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
               }`}
             >
               <span>{signedIn ? `here ${formatDuration(currentMs ?? 0)}` : "—"}</span>
+              {/* Two durations side by side read as one number without this. */}
+              <span aria-hidden className={signedIn ? "text-[#14171a]/35" : "text-[#4a525b]"}>
+                |
+              </span>
               <span title="Total time this season">{formatDuration(totalMs)}</span>
             </div>
           </button>

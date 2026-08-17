@@ -27,6 +27,18 @@ export function isSupabaseConfigured(): boolean {
   return config() !== null;
 }
 
+/**
+ * Percent-encodes a value going into a REST filter.
+ *
+ * An id with a stray character produces a URL that fetch rejects outright, and
+ * Safari words that rejection as "the string did not match the expected
+ * pattern" — which says nothing about where it came from. Encoding removes the
+ * class of failure entirely.
+ */
+function q(value: string): string {
+  return encodeURIComponent(value);
+}
+
 async function rest(path: string, init: RequestInit = {}): Promise<unknown> {
   const cfg = config();
   if (!cfg) throw new Error("Supabase is not configured.");
@@ -118,7 +130,7 @@ export async function addMember(input: {
 
 export async function signOutMember(memberId: string, now = new Date()) {
   const open = (await rest(
-    `kiosk_sessions?member_id=eq.${memberId}&signed_out_at=is.null&order=signed_in_at.desc`,
+    `kiosk_sessions?member_id=eq.${q(memberId)}&signed_out_at=is.null&order=signed_in_at.desc`,
   )) as SessionRow[];
   if (open.length === 0) throw new Error("They are not signed in.");
 
@@ -128,7 +140,7 @@ export async function signOutMember(memberId: string, now = new Date()) {
     body: JSON.stringify({ signed_out_at: now.toISOString() }),
   })) as SessionRow[];
 
-  const members = (await rest(`kiosk_members?id=eq.${memberId}`)) as MemberRow[];
+  const members = (await rest(`kiosk_members?id=eq.${q(memberId)}`)) as MemberRow[];
   return { action: "out" as const, member: toMember(members[0]), session: toSession(rows[0]) };
 }
 
@@ -141,11 +153,11 @@ export async function signInMembers(
   const alreadyIn: Member[] = [];
 
   for (const memberId of new Set(memberIds)) {
-    const members = (await rest(`kiosk_members?id=eq.${memberId}&active=is.true`)) as MemberRow[];
+    const members = (await rest(`kiosk_members?id=eq.${q(memberId)}&active=is.true`)) as MemberRow[];
     if (members.length === 0) continue;
 
     const open = (await rest(
-      `kiosk_sessions?member_id=eq.${memberId}&signed_out_at=is.null`,
+      `kiosk_sessions?member_id=eq.${q(memberId)}&signed_out_at=is.null`,
     )) as SessionRow[];
     if (open.length > 0) {
       alreadyIn.push(toMember(members[0]));
@@ -184,11 +196,11 @@ export async function createGroup(input: {
 
 /** Retired, not deleted: sessions and members reference it. */
 export async function deleteGroup(groupId: string): Promise<void> {
-  await rest(`kiosk_groups?id=eq.${groupId}`, {
+  await rest(`kiosk_groups?id=eq.${q(groupId)}`, {
     method: "PATCH",
     body: JSON.stringify({ active: false }),
   });
-  const members = (await rest(`kiosk_members?group_ids=cs.{${groupId}}`)) as MemberRow[];
+  const members = (await rest(`kiosk_members?group_ids=cs.%7B${q(groupId)}%7D`)) as MemberRow[];
   for (const m of members) {
     await rest(`kiosk_members?id=eq.${m.id}`, {
       method: "PATCH",
@@ -198,7 +210,7 @@ export async function deleteGroup(groupId: string): Promise<void> {
 }
 
 export async function setMemberGroups(memberId: string, groupIds: string[]): Promise<Member> {
-  const rows = (await rest(`kiosk_members?id=eq.${memberId}`, {
+  const rows = (await rest(`kiosk_members?id=eq.${q(memberId)}`, {
     method: "PATCH",
     headers: { Prefer: "return=representation" },
     body: JSON.stringify({ group_ids: [...new Set(groupIds)] }),
@@ -213,7 +225,7 @@ export async function setMemberActive(
   now = new Date(),
 ): Promise<Member> {
   if (!active) {
-    await rest(`kiosk_sessions?member_id=eq.${memberId}&signed_out_at=is.null`, {
+    await rest(`kiosk_sessions?member_id=eq.${q(memberId)}&signed_out_at=is.null`, {
       method: "PATCH",
       body: JSON.stringify({
         signed_out_at: now.toISOString(),
@@ -222,7 +234,7 @@ export async function setMemberActive(
       }),
     });
   }
-  const rows = (await rest(`kiosk_members?id=eq.${memberId}`, {
+  const rows = (await rest(`kiosk_members?id=eq.${q(memberId)}`, {
     method: "PATCH",
     headers: { Prefer: "return=representation" },
     body: JSON.stringify({ active }),

@@ -62,6 +62,45 @@ export function standingFor(
 }
 
 /**
+ * Sessions bucketed by member, built once per pass.
+ *
+ * standingFor walks the whole session list three times for every member, so a
+ * roster of 24 with a season of 2,000 sessions did ~144,000 comparisons on each
+ * render — and the clock re-renders every ten seconds. Bucketing first makes it
+ * one pass over the sessions plus one pass over each member's own.
+ *
+ * Every function below returns exactly what the per-member version did; the
+ * tests are unchanged and still pass.
+ */
+function bucketByMember(sessions: Session[]): Map<string, Session[]> {
+  const byMember = new Map<string, Session[]>();
+  for (const session of sessions) {
+    const bucket = byMember.get(session.memberId);
+    if (bucket) bucket.push(session);
+    else byMember.set(session.memberId, [session]);
+  }
+  return byMember;
+}
+
+function standingFrom(member: Member, mine: Session[], now: number): MemberStanding {
+  let totalMs = 0;
+  let open: Session | undefined;
+  for (const session of mine) {
+    totalMs += sessionMs(session, now);
+    if (session.signedOutAt === null) open = session;
+  }
+  return {
+    member,
+    totalMs,
+    currentMs: open ? sessionMs(open, now) : null,
+    visits: mine.length,
+    signedIn: open !== undefined,
+  };
+}
+
+const EMPTY: Session[] = [];
+
+/**
  * By first name, not surname. Tiles read "Ben C.", so a member hunting for
  * their own tile is scanning first names; ordering by surname would send them
  * looking in the wrong place.
@@ -80,9 +119,10 @@ export function rosterOrder(
   sessions: Session[],
   now: number,
 ): MemberStanding[] {
+  const byMember = bucketByMember(sessions);
   return members
     .filter((m) => m.active)
-    .map((m) => standingFor(m, sessions, now))
+    .map((m) => standingFrom(m, byMember.get(m.id) ?? EMPTY, now))
     .sort((a, b) => {
       if (a.signedIn !== b.signedIn) return a.signedIn ? -1 : 1;
       return byName(a, b);
@@ -95,14 +135,18 @@ export function leaderboard(
   sessions: Session[],
   now: number,
 ): MemberStanding[] {
+  const byMember = bucketByMember(sessions);
   return members
     .filter((m) => m.active)
-    .map((m) => standingFor(m, sessions, now))
+    .map((m) => standingFrom(m, byMember.get(m.id) ?? EMPTY, now))
     .sort((a, b) => b.totalMs - a.totalMs || byName(a, b));
 }
 
 export function countSignedIn(members: Member[], sessions: Session[]): number {
-  return members.filter((m) => m.active && isSignedIn(sessions, m.id)).length;
+  // One pass over the open sessions instead of a scan per member.
+  const open = new Set<string>();
+  for (const s of sessions) if (s.signedOutAt === null) open.add(s.memberId);
+  return members.filter((m) => m.active && open.has(m.id)).length;
 }
 
 /**
@@ -174,5 +218,8 @@ export function alphabetical(
   sessions: Session[],
   now: number,
 ): MemberStanding[] {
-  return members.map((m) => standingFor(m, sessions, now)).sort(byName);
+  const byMember = bucketByMember(sessions);
+  return members
+    .map((m) => standingFrom(m, byMember.get(m.id) ?? EMPTY, now))
+    .sort(byName);
 }
