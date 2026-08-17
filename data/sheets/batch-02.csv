@@ -1,0 +1,113 @@
+sheet,date,name_raw,name_matched,time_in,time_out,confidence,note
+T1,2024-12-30,Nicholas Ma,Nicholas Ma,15:00,17:00,high,NEW; signed Nicholas Ma
+T1,2024-12-30,Chris Shang,Chris Shang,15:00,17:00,high,NEW; signed Chris Shang
+T1,2024-12-30,Eli Seeliger,Eli Seeliger,15:00,17:00,high,
+T1,2025-01-03,Mathews,Matthias Liew,10:20,12:20,low,NEW; name reads Mathews - Matthias?
+T1,2025-01-03,Graham,Graham Xiong,10:20,12:20,medium,NEW; ditto marks
+T1,2025-01-03,Ethan,Ethan Han,10:20,12:20,medium,NEW; ditto marks
+T1,2025-01-03,Ryan Feng,Ryan Feng,10:20,16:30,medium,signed Ryan Feng
+T1,2025-01-03,Nicholas Ma,Nicholas Ma,14:30,18:30,high,NEW
+T1,2025-01-03,Chris,Chris Shang,14:30,16:35,medium,NEW
+T1,2025-01-03,Eli Seeliger,Eli Seeliger,10:20,20:30,low,10h day - verify
+T1,2025-01-05,Nicholas Ma,Nicholas Ma,13:30,16:30,high,NEW
+T1,2025-01-05,Eli Seeliger,Eli Seeliger,13:30,17:30,medium,
+T1,2025-01-05,Graham Xiong,Graham Xiong,13:30,16:53,medium,NEW
+T1,2025-01-05,Ethan Han,Ethan Han,13:30,16:30,low,NEW; out unclear
+T1,2025-01-05,Chris Shang,Chris Shang,14:30,16:30,medium,NEW
+T1,2025-01-05,Matthias Liew,Matthias Liew,14:30,16:53,medium,NEW; signed Natalie Zhao
+T1,2025-01-01,Ryan Feng,Ryan Feng,16:00,18:30,low,date reads Jan 1 amid Jan 5 rows - verify
+T1,2025-01-10,Graham X,Graham Xiong,16:00,20:00,low,NEW; out unclear
+T1,2025-01-10,Ethan H,Ethan Han,16:00,17:00,low,NEW; out written just 5
+T1,2025-01-10,Chris S,Chris Shang,16:00,17:30,medium,NEW
+T1,2025-01-10,Nicholas Ma,Nicholas Ma,16:00,17:00,high,NEW
+T2,2025-01-17,Chris Shang,Chris Shang,16:00,17:30,high,NEW
+T2,2025-01-17,Nicholas Ma,Nicholas Ma,16:00,17:00,high,NEW
+T2,2025-01-17,Ethan Han,Ethan Han,16:00,18:00,medium,NEW
+T2,2025-01-17,Graham Xiong,Graham Xiong,16:00,18:00,medium,NEW
+T2,2025-01-17,Ashton Zhou,Ashton Zhou,16:30,,low,NEW; sheet says 2024 - almost certainly 2025
+T2,2025-01-17,Ella Wang,Ella Wang,18:30,,low,NEW; sheet says 2024 - almost certainly 2025
+T2,2025-01-18,Matthias Liew,Matthias Liew,09:00,10:45,medium,NEW; morning; signed Natalie
+T2,2025-01-18,Chris Shang,Chris Shang,09:00,,medium,NEW; morning; no time out
+T2,2025-01-18,Ashton Zhou,Ashton Zhou,09:45,,medium,NEW; morning; no time out
+T2,2025-01-18,Ella Wang,Ella Wang,10:30,10:30,low,NEW; in equals out - misread
+T2,2025-01-18,Graham,Graham Xiong,08:30,,low,NEW; morning; no time out
+T2,2025-01-19,Ethan Han,Ethan Han,15:00,,medium,NEW; no time out
+T2,2025-01-19,Matthias,Matthias Liew,15:15,18:42,medium,NEW; signed Natalie
+T2,2025-01-19,Ashton Zhou,Ashton Zhou,16:15,,medium,NEW; no time out
+T2,2025-01-19,Nicholas Ma,Nicholas Ma,16:30,18:30,high,NEW
+T2,2025-01-19,Ella Wang,Ella Wang,16:35,18:43,medium,NEW
+T2,2025-01-19,Chris Shang,Chris Shang,17:00,18:30,medium,NEW
+T2,2025-01-19,Ryan Feng,Ryan Feng,16:30,18:44,medium,signed Ryan
+T2,2025-01-23,Matthias Liew,Matthias Liew,16:08,,medium,NEW; no time out
+T2,2025-01-23,Ryan Feng,Ryan Feng,16:10,,medium,no time out
+T3,2025-01-31,Chris Shang,Chris Shang,16:00,17:30,high,NEW
+T3,2025-01-31,Ethan H,Ethan Han,16:00,,medium,NEW; no time out
+T3,2025-01-31,Ashton Zhou,Ashton Zhou,16:08,,medium,NEW; no time out
+T3,2025-01-31,Ryan Feng,Ryan Feng,16:30,,medium,no time out
+T3,2025-02-02,Ashton Zhou,Ashton Zhou,16:20,,medium,NEW; no time out
+T3,2025-02-02,Ryan,Ryan Feng,16:20,,medium,bare Ryan = Feng
+T3,2025-02-02,Ethan,Ethan Han,16:25,,medium,NEW; no time out
+T3,2025-02-02,Chris Shang,Chris Shang,16:30,,medium,NEW; no time out
+T3,2025-02-02,Pellin,,16:30,,low,"name unreadable, single appearance - held back pending the paper"
+T3,2025-02-06,Nicholas Ma,Nicholas Ma,19:00,21:00,low,NEW; date reads Feb 6 or Feb P
+T3,2025-02-07,Ethan,Ethan Han,16:00,20:45,low,NEW; out unclear
+T3,2025-02-07,Ashton Zhou,Ashton Zhou,16:30,,medium,NEW; no time out
+T3,2025-02-13,Ryan Feng,Ryan Feng,16:00,,medium,no time out
+T3,2025-02-13,Ashton Zhou,Ashton Zhou,16:00,,medium,NEW; no time out
+T3,2025-02-13,Ethan H,Ethan Han,17:00,16:40,low,NEW; out before in - misread
+T3,2025-02-14,Ethan,Ethan Han,14:40,16:40,medium,NEW
+T3,2025-02-14,Ashton Zhou,Ashton Zhou,14:42,16:42,low,NEW
+T3,2025-02-19,Ryan Feng,Ryan Feng,16:00,18:10,medium,
+T3,2025-02-20,Ashton Zhou,Ashton Zhou,16:45,18:05,medium,NEW
+T3,2025-02-21,Ethan,Ethan Han,16:00,18:10,medium,NEW
+T3,2025-02-21,Graham,Graham Xiong,16:00,18:00,medium,NEW
+T4,2025-02-23,Ethan Han,Ethan Han,16:45,18:45,medium,NEW; date written 2025/02/23
+T4,2025-02-23,Ashton,Ashton Zhou,17:00,19:00,medium,NEW; ditto date
+T4,2025-02-25,Ryan Feng,Ryan Feng,18:00,19:00,medium,
+T4,2025-02-25,Daniel,Daniel Huang,18:00,18:45,low,
+T4,2025-02-27,Ryan F.,Ryan Feng,16:00,18:45,medium,ditto date
+T4,2025-02-27,Daniel,Daniel Huang,16:00,17:00,low,ditto date
+T4,2025-02-28,Ashton Zhou,Ashton Zhou,16:40,18:00,medium,NEW
+T4,2025-02-28,Ryan,Ryan Feng,16:30,18:00,medium,bare Ryan = Feng
+T4,2025-02-28,Ethan,Ethan Han,16:00,18:00,medium,NEW; signed Ethan
+T4,2025-03-01,Chris Shang,Chris Shang,17:43,19:30,medium,NEW; signed Chris
+T4,2025-03-02,Ryan,Ryan Feng,16:30,18:30,medium,bare Ryan = Feng; signed Ryan
+T4,2025-03-02,Nicholas Ma,Nicholas Ma,16:00,17:30,high,NEW
+T4,2025-03-02,Ethan,Ethan Han,17:00,19:30,medium,NEW; signed Ethan
+T4,2025-03-02,Chris,Chris Shang,16:00,17:30,medium,NEW; signed Chris
+T4,2025-03-03,Daniel,Daniel Huang,16:30,18:00,low,
+T4,2025-03-03,Ethan,Ethan Han,18:30,,medium,NEW; no time out
+T4,2025-03-04,Nicholas Ma,Nicholas Ma,16:00,18:00,medium,NEW
+T4,2025-03-06,Chris,Chris Shang,16:00,18:00,medium,NEW; ditto date
+T4,2025-03-06,Ryan,Ryan Feng,16:00,18:30,medium,bare Ryan = Feng
+T4,2025-03-06,Nicholas,Nicholas Ma,16:00,18:30,medium,NEW
+T4,2025-03-07,Ashton,Ashton Zhou,16:39,,low,NEW; no time out
+T5,2025-03-07,Chris S,Chris Shang,15:10,17:00,high,NEW
+T5,2025-03-07,Ethan,Ethan Han,16:30,,medium,NEW; no time out
+T5,2025-03-07,Graham,Graham Xiong,16:30,17:40,medium,NEW
+T5,2025-03-07,Ryan,Ryan Feng,16:30,18:30,medium,bare Ryan = Feng
+T5,2025-03-07,Daniel,Daniel Huang,16:50,,low,no time out
+T5,2025-03-08,Ashton,Ashton Zhou,,,low,NEW; both times blank - row unusable
+T5,2025-03-08,Chris S,Chris Shang,09:35,11:30,high,NEW; morning
+T5,2025-03-08,Nicholas Ma,Nicholas Ma,09:30,11:30,high,NEW; morning
+T6,2025-01-10,Matheaus,Matthias Liew,16:00,18:00,low,NEW; name reads Matheaus - Matthias?
+T6,2025-01-12,Nicholas Ma,Nicholas Ma,16:15,18:15,high,NEW
+T6,2025-01-12,Chris Shang,Chris Shang,16:15,18:20,high,NEW
+T6,2025-01-12,Ethan Han,Ethan Han,16:15,,medium,NEW; no time out
+T6,2025-01-12,Matthias Liew,Matthias Liew,16:10,18:10,medium,NEW
+T6,2025-01-12,Ashton Zhou,Ashton Zhou,16:12,,medium,NEW; no time out
+T6,2025-01-12,Ella Wang,Ella Wang,16:15,18:20,medium,NEW
+T6,2025-01-12,Ryan Feng,Ryan Feng,16:00,18:18,medium,
+T6,2025-01-14,Evia Seeliger,Evia Seeliger,16:00,18:30,high,signed Evia
+T6,2025-01-14,Ella Wang,Ella Wang,18:45,18:30,low,NEW; out before in - misread
+T6,2025-01-14,Nicholas Ma,Nicholas Ma,16:00,,medium,NEW; no time out
+T6,2025-01-16,Ryan Feng,Ryan Feng,16:30,,medium,no time out
+T6,2025-01-16,Ashton Zhou,Ashton Zhou,17:00,,medium,NEW; no time out
+T6,2025-01-16,Evia Seeliger,Evia Seeliger,16:30,18:30,high,signed Evia
+T6,2025-01-16,Ethan H,Ethan Han,17:10,19:00,medium,NEW
+T6,2025-01-16,Graham,Graham Xiong,17:10,19:00,medium,NEW
+T6,2025-01-16,Matthias Liew,Matthias Liew,17:15,19:00,medium,NEW; signed Natalie Khoo
+T6,2025-01-16,Ella Wang,Ella Wang,15:45,19:25,medium,NEW
+T6,2025-01-16,Nicholas Ma,Nicholas Ma,19:45,20:30,medium,NEW
+T6,2025-01-17,Matthias Liew,Matthias Liew,16:00,18:00,medium,NEW
+T6,2025-01-17,Ryan Feng,Ryan Feng,16:04,,medium,no time out
