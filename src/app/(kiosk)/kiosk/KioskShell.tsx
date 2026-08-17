@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Kiosk } from "./Kiosk";
 import { VisitorGate } from "./VisitorGate";
 import type { KioskState } from "@/lib/kiosk/types";
+import type { TeamAward } from "@/lib/kiosk/vexAwards";
 
 /**
  * Decides whether the roster is shown at all.
@@ -18,11 +19,13 @@ export function KioskShell({
   initialNow,
   initialRosterVersion,
   canSign,
+  vexAwards,
 }: {
   initial: KioskState;
   initialNow: number;
   initialRosterVersion: string;
   canSign: boolean;
+  vexAwards: TeamAward[];
 }) {
   /* On the club's network the room is the credential, so this starts open. */
   const [allowed, setAllowed] = useState(canSign);
@@ -35,6 +38,7 @@ export function KioskShell({
       initialNow={initialNow}
       initialRosterVersion={initialRosterVersion}
       canSign={canSign}
+      vexAwards={vexAwards}
     />
   );
 }

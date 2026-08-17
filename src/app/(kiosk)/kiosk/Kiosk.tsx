@@ -26,6 +26,7 @@ import {
 import { badgeBook, topBadges, type Badge } from "@/lib/kiosk/badges";
 import { BadgeIcon } from "./BadgeIcon";
 import { MemberProfile } from "./MemberProfile";
+import { awardsForMember, type TeamAward } from "@/lib/kiosk/vexAwards";
 import { CLUB_TIMEZONE, describePhase, orderGroups } from "@/lib/kiosk/schedule";
 import { postJson, type SignOutReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
@@ -38,12 +39,15 @@ export function Kiosk({
   initialNow,
   initialRosterVersion,
   canSign,
+  vexAwards,
 }: {
   initial: KioskState;
   initialNow: number;
   initialRosterVersion: string;
   /** False when this device is not on the club's network. Read-only then. */
   canSign: boolean;
+  /** Competition awards for the whole club, filtered per member on open. */
+  vexAwards: TeamAward[];
 }) {
   const [state, setState] = useState(initial);
   const [confirmation, setConfirmation] = useState<Confirmation>(null);
@@ -497,6 +501,7 @@ export function Kiosk({
           recent={recentVisits(state.sessions, profileFor.id)}
           now={now}
           alongside={alongsideMs(profileFor, state.members, state.sessions, now)}
+          vexAwards={awardsForMember(vexAwards, `${profileFor.firstName} ${profileFor.lastName}`)}
           maySign={maySign}
           busy={pending === profileFor.id}
           onClose={() => setProfileFor(null)}
@@ -744,6 +749,7 @@ function Profile({
   recent,
   now,
   alongside,
+  vexAwards,
   maySign,
   busy,
   onClose,
@@ -756,6 +762,7 @@ function Profile({
   recent: KioskState["sessions"];
   now: number;
   alongside: number;
+  vexAwards: TeamAward[];
   maySign: boolean;
   busy: boolean;
   onClose: () => void;
@@ -780,6 +787,7 @@ function Profile({
           recent={recent}
           now={now}
           alongside={alongside}
+          vexAwards={vexAwards}
           action={
             !maySign ? (
               <p className="rounded-2xl border-2 border-dashed border-[#2e343b] px-4 py-3 text-center font-mono text-[11px] leading-relaxed text-[#8b949e]">
