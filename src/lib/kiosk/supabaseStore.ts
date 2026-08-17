@@ -112,7 +112,7 @@ export async function getState(): Promise<KioskState & { now: number }> {
 /* ---------------------------------------------------------------- writes */
 
 export async function addMember(input: {
-  firstName: string; lastName: string; photoUrl: string; groupIds?: string[];
+  firstName: string; lastName: string; photoUrl?: string | null; groupIds?: string[];
 }): Promise<Member> {
   const rows = (await rest("kiosk_members", {
     method: "POST",
@@ -120,7 +120,7 @@ export async function addMember(input: {
     body: JSON.stringify({
       first_name: input.firstName.trim(),
       last_name: input.lastName.trim(),
-      photo_url: input.photoUrl,
+      photo_url: input.photoUrl ?? null,
       group_ids: input.groupIds ?? [],
       face_embedding: null,
     }),

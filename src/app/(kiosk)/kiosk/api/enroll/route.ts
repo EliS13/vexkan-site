@@ -33,6 +33,11 @@ export async function POST(request: Request) {
   if (typeof firstName !== "string" || typeof lastName !== "string") {
     return NextResponse.json({ error: "A first and last name are required." }, { status: 400 });
   }
+  /*
+   * Sign-up still insists on a photo — it is a camera flow, and a tile with no
+   * face cannot be found across a room. Imported members are allowed to have
+   * none, and get one later from the roster screen.
+   */
   if (typeof photoUrl !== "string" || !photoUrl.startsWith("data:image/")) {
     return NextResponse.json({ error: "A photo is required." }, { status: 400 });
   }

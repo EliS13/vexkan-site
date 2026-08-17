@@ -157,7 +157,7 @@ export function signOutMember(memberId: string, now: Date = new Date()): Promise
 export function addMember(input: {
   firstName: string;
   lastName: string;
-  photoUrl: string;
+  photoUrl?: string | null;
   groupIds?: string[];
 }): Promise<Member> {
   if (writesToDatabase()) return db.addMember(input);
@@ -165,7 +165,6 @@ export function addMember(input: {
     const firstName = input.firstName.trim();
     const lastName = input.lastName.trim();
     if (!firstName || !lastName) throw new Error("A first and last name are both required.");
-    if (!input.photoUrl) throw new Error("A photo is required to sign someone up.");
 
     const state = await readState();
     const known = new Set(state.groups.filter((g) => g.active).map((g) => g.id));
@@ -173,7 +172,7 @@ export function addMember(input: {
       id: randomUUID(),
       firstName,
       lastName,
-      photoUrl: input.photoUrl,
+      photoUrl: input.photoUrl ?? null,
       active: true,
       groupIds: [...new Set(input.groupIds ?? [])].filter((id) => known.has(id)),
       // Stays null on purpose. Templates live on the iPad, not in the database,
