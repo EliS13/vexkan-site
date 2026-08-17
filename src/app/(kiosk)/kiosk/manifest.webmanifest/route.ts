@@ -21,7 +21,17 @@ export function GET() {
       orientation: "any",
       background_color: "#14171a",
       theme_color: "#14171a",
-      icons: [{ src: "/logo-vexkan.png", sizes: "996x248", type: "image/png", purpose: "any" }],
+      /*
+       * The V mark, not the wordmark. A 996x248 logo gets letterboxed into a
+       * square homescreen tile with most of it empty; the V is the club's mark
+       * at the size a tile actually is. Maskable is a separate, unrounded copy
+       * so Android's circle crop cannot clip the letter.
+       */
+      icons: [
+        { src: "/icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+        { src: "/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+        { src: "/icon-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      ],
     },
     { headers: { "Content-Type": "application/manifest+json" } },
   );

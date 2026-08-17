@@ -6,6 +6,18 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VexKan" },
   formatDetection: { telephone: false },
   manifest: "/manifest.webmanifest",
+  /*
+   * Static files in public/, so the dot in each name keeps them clear of the
+   * subdomain rewrite. iOS gets an unrounded square: it applies its own corner
+   * mask, and a pre-rounded tile inside that mask reads as a shrunken sticker.
+   */
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
   /* A kiosk is not a document. Nothing here should be indexed or shared. */
   robots: { index: false, follow: false },
 };
