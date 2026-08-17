@@ -1,5 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
+  alphabetical,
+  clubTotals,
   countSignedIn,
   formatDuration,
   formatHours,
@@ -224,5 +226,68 @@ describe("formatting", () => {
   it("reports decimal hours for the coach's column", () => {
     expect(formatHours(2.5 * HOUR)).toBe("2.5");
     expect(formatHours(0)).toBe("0.0");
+  });
+});
+
+describe("clubTotals", () => {
+  const members = [member("m1", "Priya", "Anand"), member("m2", "Ben", "Cardoso"), member("m3", "Zoe", "White")];
+
+  it("sums every session across the club", () => {
+    const s = [
+      session("s1", "m1", "2026-08-10T15:00:00.000Z", "2026-08-10T17:00:00.000Z"),
+      session("s2", "m2", "2026-08-10T15:00:00.000Z", "2026-08-10T18:00:00.000Z"),
+    ];
+    expect(clubTotals(members, s, NOW).totalMs).toBe(5 * HOUR);
+  });
+
+  it("counts distinct attendees, not sessions", () => {
+    const s = [
+      session("s1", "m1", "2026-08-10T15:00:00.000Z", "2026-08-10T17:00:00.000Z"),
+      session("s2", "m1", "2026-08-12T15:00:00.000Z", "2026-08-12T17:00:00.000Z"),
+    ];
+    const totals = clubTotals(members, s, NOW);
+    expect(totals.attendees).toBe(1);
+    expect(totals.sessions).toBe(2);
+    expect(totals.neverAttended).toBe(2);
+  });
+
+  it("includes a visit in progress in the total", () => {
+    const s = [session("s1", "m1", "2026-08-16T18:00:00.000Z")];
+    const totals = clubTotals(members, s, NOW);
+    expect(totals.totalMs).toBe(HOUR);
+    expect(totals.openSessions).toBe(1);
+  });
+
+  it("reports auto-closed sessions so estimated hours are visible", () => {
+    const closed = { ...session("s1", "m1", "2026-08-10T15:00:00.000Z", "2026-08-10T17:00:00.000Z"), autoClosed: true };
+    expect(clubTotals(members, [closed], NOW).autoClosed).toBe(1);
+  });
+
+  it("averages session length, and does not divide by zero", () => {
+    const s = [
+      session("s1", "m1", "2026-08-10T15:00:00.000Z", "2026-08-10T17:00:00.000Z"),
+      session("s2", "m2", "2026-08-10T15:00:00.000Z", "2026-08-10T19:00:00.000Z"),
+    ];
+    expect(clubTotals(members, s, NOW).averageSessionMs).toBe(3 * HOUR);
+    expect(clubTotals(members, [], NOW).averageSessionMs).toBe(0);
+  });
+
+  it("is all zeroes for a club that has never met", () => {
+    expect(clubTotals(members, [], NOW)).toMatchObject({
+      totalMs: 0, attendees: 0, sessions: 0, openSessions: 0, neverAttended: 3,
+    });
+  });
+});
+
+describe("alphabetical", () => {
+  it("orders by first name regardless of hours", () => {
+    const members = [member("m1", "Zoe", "Adams"), member("m2", "Ben", "Young")];
+    const s = [session("s1", "m1", "2026-08-10T15:00:00.000Z", "2026-08-10T20:00:00.000Z")];
+    expect(alphabetical(members, s, NOW).map((r) => r.member.firstName)).toEqual(["Ben", "Zoe"]);
+  });
+
+  it("keeps deactivated members, unlike the kiosk roster", () => {
+    const members = [member("m1", "Gone", "Away", false), member("m2", "Here", "Now")];
+    expect(alphabetical(members, [], NOW)).toHaveLength(2);
   });
 });

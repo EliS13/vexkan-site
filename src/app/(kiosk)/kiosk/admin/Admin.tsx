@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
-import { isSignedIn } from "@/lib/kiosk/hours";
+import { alphabetical, clubTotals, formatDuration, formatHours, isSignedIn } from "@/lib/kiosk/hours";
 import type { KioskState } from "@/lib/kiosk/types";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -17,6 +17,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
    * not outlive the tab on an iPad the whole club can pick up.
    */
   const [unlocked, setUnlocked] = useState(false);
+  const [tab, setTab] = useState<"roster" | "analytics">("roster");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -159,12 +160,33 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         </div>
       </header>
 
+      <nav className="flex gap-2">
+        {(["roster", "analytics"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            aria-pressed={tab === t}
+            className={`min-h-[52px] rounded-xl border-2 px-5 font-serif font-semibold capitalize ${
+              tab === t
+                ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
+                : "border-[#2e343b] bg-[#1d2126] text-[#8b949e]"
+            }`}
+          >
+            {t === "roster" ? "Groups & roster" : "Analytics"}
+          </button>
+        ))}
+      </nav>
+
       {error && (
         <p role="alert" className="rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
           {error}
         </p>
       )}
 
+      {tab === "analytics" && <Analytics state={state} now={initialNow} />}
+
+      {tab === "roster" && (
+      <>
       <section>
         <h2 className="mb-2 font-serif text-xl font-semibold">Groups</h2>
         <ul className="mb-4 flex flex-col gap-2">
@@ -337,6 +359,85 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         Retiring a group and deactivating a member both keep every recorded hour.
         Nothing here deletes session history.
       </p>
+      </>
+      )}
     </div>
+  );
+}
+
+/**
+ * Season totals.
+ *
+ * Everything is derived from the session rows, so the club total and the sum of
+ * the rows below it cannot disagree. Deactivated members stay in the table:
+ * their hours happened, and a season report that silently dropped someone who
+ * left in March would be wrong rather than tidy.
+ */
+function Analytics({ state, now }: { state: KioskState; now: number }) {
+  const totals = clubTotals(state.members, state.sessions, now);
+  const rows = alphabetical(state.members, state.sessions, now);
+
+  const stats: [string, string, string?][] = [
+    ["Total hours", formatHours(totals.totalMs) + "h", formatDuration(totals.totalMs)],
+    ["People who came", String(totals.attendees), totals.neverAttended + " never signed in"],
+    ["Sessions", String(totals.sessions), totals.openSessions + " open now"],
+    ["Average visit", formatDuration(totals.averageSessionMs)],
+  ];
+
+  return (
+    <>
+      <section className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        {stats.map(([label, value, sub]) => (
+          <div key={label} className="rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3">
+            <p className="font-mono text-[10px] tracking-widest text-[#8b949e] uppercase">{label}</p>
+            <p className="font-serif text-3xl font-bold tabular-nums">{value}</p>
+            {sub && <p className="font-mono text-[10px] text-[#8b949e]">{sub}</p>}
+          </div>
+        ))}
+      </section>
+
+      {totals.autoClosed > 0 && (
+        <p className="rounded-lg border-2 border-[#ffb100]/40 bg-[#ffb100]/10 px-4 py-3 font-mono text-[11px] text-[#ffb100]">
+          {totals.autoClosed} {totals.autoClosed === 1 ? "session was" : "sessions were"} closed
+          automatically rather than by a real sign-out, so those hours are estimates.
+        </p>
+      )}
+
+      <section>
+        <h2 className="mb-2 font-serif text-xl font-semibold">Hours per member</h2>
+        {rows.length === 0 ? (
+          <p className="font-mono text-sm text-[#8b949e]">Nobody is signed up yet.</p>
+        ) : (
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="border-b-2 border-[#2e343b] font-mono text-[10px] tracking-widest text-[#8b949e] uppercase">
+                <th className="py-2">Member</th>
+                <th className="py-2 text-right">Visits</th>
+                <th className="py-2 text-right">Hours</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ member, totalMs, visits, signedIn }) => (
+                <tr key={member.id} className="border-b border-[#2e343b]">
+                  <td className="py-2 font-serif">
+                    {member.firstName} {member.lastName}
+                    {!member.active && (
+                      <span className="ml-2 font-mono text-[10px] text-[#8b949e]">inactive</span>
+                    )}
+                    {signedIn && (
+                      <span className="ml-2 font-mono text-[10px] text-[#35c17a]">here now</span>
+                    )}
+                  </td>
+                  <td className="py-2 text-right font-mono tabular-nums text-[#8b949e]">{visits}</td>
+                  <td className="py-2 text-right font-mono font-bold tabular-nums">
+                    {formatHours(totalMs)}h
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </section>
+    </>
   );
 }

@@ -123,3 +123,56 @@ export function formatDuration(ms: number): string {
 export function formatHours(ms: number): string {
   return (ms / 3_600_000).toFixed(1);
 }
+
+export type ClubTotals = {
+  /** Every recorded minute, including visits still in progress. */
+  totalMs: number;
+  /** Members who have attended at least once. */
+  attendees: number;
+  /** Members on the roster who have never signed in. */
+  neverAttended: number;
+  sessions: number;
+  /** Sessions still open right now. */
+  openSessions: number;
+  /** Sessions a job closed rather than a real sign-out, so hours are estimates. */
+  autoClosed: number;
+  averageSessionMs: number;
+};
+
+/**
+ * The numbers a coach reports at the end of a season.
+ *
+ * Deactivated members are counted here even though the kiosk hides them: their
+ * hours happened, and dropping them would make the club total disagree with the
+ * sum of the per-member rows below it.
+ */
+export function clubTotals(
+  members: Member[],
+  sessions: Session[],
+  now: number,
+): ClubTotals {
+  const attended = new Set(sessions.map((s) => s.memberId));
+  const totalMs = sessions.reduce((sum, s) => sum + sessionMs(s, now), 0);
+  return {
+    totalMs,
+    attendees: attended.size,
+    neverAttended: members.filter((m) => !attended.has(m.id)).length,
+    sessions: sessions.length,
+    openSessions: sessions.filter((s) => s.signedOutAt === null).length,
+    autoClosed: sessions.filter((s) => s.autoClosed).length,
+    averageSessionMs: sessions.length === 0 ? 0 : Math.round(totalMs / sessions.length),
+  };
+}
+
+/**
+ * Every member by name, for the analytics table. Unlike the kiosk roster this
+ * keeps deactivated members, so a season's report still accounts for someone
+ * who left in March.
+ */
+export function alphabetical(
+  members: Member[],
+  sessions: Session[],
+  now: number,
+): MemberStanding[] {
+  return members.map((m) => standingFor(m, sessions, now)).sort(byName);
+}
