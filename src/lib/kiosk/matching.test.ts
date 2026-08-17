@@ -216,3 +216,21 @@ describe("voteAcrossFrames", () => {
     expect(vote).toMatchObject({ memberId: "m1", decision: "accept", agreeing: 2 });
   });
 });
+
+describe("checkQuality edge tolerance", () => {
+  const frame = { width: 640, height: 480 };
+  const overEdge = { score: 0.95, box: { x: 560, y: 100, width: 160, height: 180 } };
+
+  it("still rejects an edge face for group identification", () => {
+    expect(checkQuality(overEdge, frame)).toMatchObject({ ok: false });
+  });
+
+  it("allows a face filling the frame when one person confirms their own tile", () => {
+    expect(checkQuality(overEdge, frame, undefined, { allowEdge: true })).toEqual({ ok: true });
+  });
+
+  it("still enforces size and confidence even with edges allowed", () => {
+    const tiny = { score: 0.95, box: { x: 0, y: 0, width: 30, height: 30 } };
+    expect(checkQuality(tiny, frame, undefined, { allowEdge: true })).toMatchObject({ ok: false });
+  });
+});

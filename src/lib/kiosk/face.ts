@@ -61,6 +61,7 @@ function toDetected(
   descriptor: Float32Array,
   frame: { width: number; height: number },
   minPx?: number,
+  quality: { allowEdge?: boolean } = {},
 ): DetectedFace {
   const box = {
     x: detection.detection.box.x,
@@ -72,7 +73,7 @@ function toDetected(
     descriptor: Array.from(descriptor),
     box,
     score: detection.detection.score,
-    quality: checkQuality({ score: detection.detection.score, box }, frame, minPx),
+    quality: checkQuality({ score: detection.detection.score, box }, frame, minPx, quality),
   };
 }
 
@@ -85,6 +86,7 @@ function toDetected(
  */
 export async function detectOne(
   source: Source,
+  options: { allowEdge?: boolean } = {},
 ): Promise<{ face: DetectedFace | null; extraFaces: number }> {
   const faceapi = await loadFaceEngine();
   const frame = frameSizeOf(source);
@@ -102,7 +104,7 @@ export async function detectOne(
       a.detection.box.width * a.detection.box.height,
   );
   return {
-    face: toDetected(sorted[0], sorted[0].descriptor, frame),
+    face: toDetected(sorted[0], sorted[0].descriptor, frame, undefined, options),
     extraFaces: results.length - 1,
   };
 }

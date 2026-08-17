@@ -178,7 +178,7 @@ export function CameraSignIn({
       let hits = 0;
       let closest = Infinity;
       for (const frame of frames) {
-        const { face } = await detectOne(frame);
+        const { face } = await detectOne(frame, { allowEdge: true });
         if (!face || !face.quality.ok) continue;
         /*
          * One claimed identity, so this is the 0.6 verification threshold

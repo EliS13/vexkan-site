@@ -83,7 +83,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
     setError(null);
     try {
       const frame = grabFrame(el);
-      const { face, extraFaces } = await detectOne(frame);
+      const { face, extraFaces } = await detectOne(frame, { allowEdge: true });
 
       if (!face) {
         setError("No face in frame. Move closer and try again.");

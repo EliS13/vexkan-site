@@ -144,6 +144,7 @@ export function checkQuality(
   detection: DetectionQuality,
   frame: { width: number; height: number },
   minPx: number = MIN_FACE_PX,
+  options: { allowEdge?: boolean } = {},
 ): QualityVerdict {
   if (detection.score < MIN_DETECTION_SCORE) {
     return { ok: false, reason: "Not clearly a face" };
@@ -152,7 +153,15 @@ export function checkQuality(
   if (Math.min(width, height) < minPx) {
     return { ok: false, reason: "Too far from the camera" };
   }
-  if (x < 0 || y < 0 || x + width > frame.width || y + height > frame.height) {
+  /*
+   * Skipped when one person is confirming their own tile. Standing close enough
+   * to fill the frame — which is exactly what you do at a kiosk — puts the
+   * detection box over an edge, and rejecting that told members holding the iPad
+   * at arm's length that their face was "partly out of frame" while it filled
+   * the screen. Group shots keep the check, where a half-visible face at the
+   * edge really is someone walking past.
+   */
+  if (!options.allowEdge && (x < 0 || y < 0 || x + width > frame.width || y + height > frame.height)) {
     return { ok: false, reason: "Partly out of frame" };
   }
   return { ok: true };
