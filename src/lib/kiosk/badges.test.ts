@@ -195,32 +195,27 @@ describe("secret achievements", () => {
   }
   const has = (s: Session[], id: string) => badgesFor(m1, s, NOW).some((b) => b.id === id);
 
-  it("gives Early Bird for signing in before 9am", () => {
-    expect(has([at("a", "m1", "2026-06-01", 8)], "early-bird")).toBe(true);
-    expect(has([at("a", "m1", "2026-06-01", 10)], "early-bird")).toBe(false);
+
+
+
+
+
+  it("gives Dawn Patrol only before 8am", () => {
+    expect(has([at("a", "m1", "2026-06-01", 7)], "dawn-patrol")).toBe(true);
+    expect(has([at("b", "m1", "2026-06-01", 9)], "dawn-patrol")).toBe(false);
   });
 
-  it("gives Night Owl only after five late nights", () => {
-    const four = [1, 2, 3, 4].map((d, i) => at(`a${i}`, "m1", `2026-06-0${d}`, 20, 2));
-    expect(has(four, "night-owl")).toBe(false);
-    expect(has([...four, at("a5", "m1", "2026-06-05", 20, 2)], "night-owl")).toBe(true);
+  it("gives All Nighter when the sign-out lands on the next day", () => {
+    const s = [at("a", "m1", "2026-06-01", 20, 6)];
+    expect(has(s, "all-nighter")).toBe(true);
+    expect(has([at("b", "m1", "2026-06-01", 18, 2)], "all-nighter")).toBe(false);
   });
 
-  it("gives Double Dip for three visits in one day, not two", () => {
-    const day = "2026-06-01";
-    const two = [at("a", "m1", day, 9, 1), at("b", "m1", day, 13, 1)];
-    expect(has(two, "double-dip")).toBe(false);
-    expect(has([...two, at("c", "m1", day, 18, 1)], "double-dip")).toBe(true);
-  });
-
-  it("gives Comeback after ninety days away", () => {
-    const s = [at("a", "m1", "2026-01-05", 17), at("b", "m1", "2026-06-01", 17)];
-    expect(has(s, "comeback")).toBe(true);
-  });
-
-  it("does not give Comeback for a normal gap", () => {
-    const s = [at("a", "m1", "2026-05-01", 17), at("b", "m1", "2026-06-01", 17)];
-    expect(has(s, "comeback")).toBe(false);
+  it("gives Half-day sittings the top rung of the ladder", () => {
+    const badges = badgesFor(m1, [at("a", "m1", "2026-06-01", 6, 15)], NOW);
+    const sitting = badges.find((b) => b.shape === "clock");
+    expect(sitting?.label).toBe("Super Ultramarathon");
+    expect(sitting?.tier).toBe("gold");
   });
 
   it("gives Ironclad only for hours and a streak together", () => {

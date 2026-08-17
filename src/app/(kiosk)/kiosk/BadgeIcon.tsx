@@ -24,6 +24,28 @@ const METAL: Record<BadgeTier, { light: string; mid: string; dark: string; ink: 
   secret: { light: "#8ee9ff", mid: "#33b6d8", dark: "#155e75", ink: "#04222b" },
 };
 
+/*
+ * Accents, so a badge is not one hue with a highlight on it.
+ *
+ * The metal above says what rung a badge is; these say what it is about. A
+ * medal's ribbon is club colours whatever the disc is made of, a crown's jewels
+ * are red and blue, a flame runs orange into yellow. Without them a wall of
+ * badges reads as a wall of the same object in three finishes.
+ */
+const ACCENT = {
+  ribbon: "#c8453d",
+  ribbonDark: "#8f2f29",
+  jewelA: "#e0483f",
+  jewelB: "#3f7fd8",
+  leaf: "#3f9e63",
+  leafDark: "#256b41",
+  ember: "#ffd166",
+  sky: "#7cc6ff",
+  night: "#2a3f66",
+  iron: "#5b6470",
+  face: "#f4f1e8",
+};
+
 export function BadgeIcon({ badge, className = "" }: { badge: Badge; className?: string }) {
   const metal = METAL[badge.tier];
   const id = `g-${badge.tier}-${badge.shape}`;
@@ -61,8 +83,8 @@ function Shape({
     case "medal":
       return (
         <>
-          <path d="M9 2 L14 14 L11 16 L6 5 Z" fill={metal.dark} />
-          <path d="M23 2 L18 14 L21 16 L26 5 Z" fill={metal.mid} />
+          <path d="M9 2 L14 14 L11 16 L6 5 Z" fill={ACCENT.ribbonDark} />
+          <path d="M23 2 L18 14 L21 16 L26 5 Z" fill={ACCENT.ribbon} />
           <circle cx="16" cy="21" r="9.5" fill={fill} stroke={metal.dark} strokeWidth="1.2" />
           <circle cx="16" cy="21" r="6.6" fill="none" stroke={metal.light} strokeWidth="0.9" opacity="0.55" />
           <text
@@ -91,7 +113,7 @@ function Shape({
             strokeWidth="1.1"
             strokeLinejoin="round"
           />
-          <path d="M16 6.5 L18.6 12.8 L25 13.3 L20.2 17.4" fill="none" stroke={metal.light} strokeWidth="1" opacity="0.6" />
+          <path d="M16 9 L17.7 13.2 L22 13.5 L18.6 16.3 L19.8 20.5 L16 18 L12.2 20.5 L13.4 16.3 L10 13.5 L14.3 13.2 Z" fill={ACCENT.ember} opacity="0.85" />
         </>
       );
 
@@ -108,7 +130,8 @@ function Shape({
           />
           <path d="M9 4 L12.5 12 L16 29 L19.5 12 L23 4" fill="none" stroke={metal.dark} strokeWidth="0.9" opacity="0.5" />
           <path d="M2 12 H30" stroke={metal.dark} strokeWidth="0.9" opacity="0.5" />
-          <path d="M10.5 5.5 L13.5 11.5" stroke={metal.light} strokeWidth="1" opacity="0.65" />
+          <path d="M10.5 5.5 L13.5 11.5" stroke={metal.light} strokeWidth="1" opacity="0.7" />
+          <path d="M16 12 L19.5 12 L16 29 Z" fill={ACCENT.sky} opacity="0.35" />
         </>
       );
 
@@ -125,8 +148,8 @@ function Shape({
           />
           <path
             d="M16 15 C18 17.6 19.4 19 19.4 21.3 C19.4 23.9 17.9 25.6 16 25.6 C14.1 25.6 12.6 23.9 12.6 21.3 C12.6 19.2 14 17.6 16 15 Z"
-            fill={metal.light}
-            opacity="0.75"
+            fill={ACCENT.ember}
+            opacity="0.9"
           />
         </>
       );
@@ -138,14 +161,14 @@ function Shape({
           <path
             d="M12 4 C6 8 4.5 14 6.5 20 C8 24.5 11.5 27 16 28.5"
             fill="none"
-            stroke={fill}
+            stroke={ACCENT.leafDark}
             strokeWidth="3.2"
             strokeLinecap="round"
           />
           <path
             d="M20 4 C26 8 27.5 14 25.5 20 C24 24.5 20.5 27 16 28.5"
             fill="none"
-            stroke={fill}
+            stroke={ACCENT.leaf}
             strokeWidth="3.2"
             strokeLinecap="round"
           />
@@ -159,8 +182,9 @@ function Shape({
       return (
         <>
           <circle cx="16" cy="16" r="13" fill={fill} stroke={metal.dark} strokeWidth="1.3" />
-          <circle cx="16" cy="16" r="9.6" fill="none" stroke={metal.light} strokeWidth="0.9" opacity="0.5" />
-          <path d="M16 8.5 V16 L21.5 19.5" fill="none" stroke={metal.ink} strokeWidth="2.2" strokeLinecap="round" />
+          <circle cx="16" cy="16" r="9.6" fill={ACCENT.face} opacity="0.9" />
+          <path d="M16 9 V16 L21 19" fill="none" stroke={metal.ink} strokeWidth="2.2" strokeLinecap="round" />
+          <path d="M16 16 L16 11.5" stroke={ACCENT.jewelA} strokeWidth="1.6" strokeLinecap="round" />
         </>
       );
 
@@ -175,8 +199,9 @@ function Shape({
             strokeWidth="1.3"
             strokeLinejoin="round"
           />
+          <path d="M4 13 H28" stroke={ACCENT.ribbon} strokeWidth="3" />
           <path d="M16 2 V30" stroke={metal.dark} strokeWidth="0.9" opacity="0.45" />
-          <path d="M7 8 L16 5 V13 L7 15.5 Z" fill={metal.light} opacity="0.45" />
+          <path d="M7 8 L16 5 V13 L7 15.5 Z" fill={metal.light} opacity="0.4" />
         </>
       );
 
@@ -192,9 +217,9 @@ function Shape({
             strokeLinejoin="round"
           />
           <rect x="3" y="24" width="26" height="4.5" rx="1.4" fill={fill} stroke={metal.dark} strokeWidth="1.2" />
-          <circle cx="16" cy="26.2" r="1.2" fill={metal.ink} opacity="0.5" />
-          <circle cx="9" cy="26.2" r="1" fill={metal.ink} opacity="0.35" />
-          <circle cx="23" cy="26.2" r="1" fill={metal.ink} opacity="0.35" />
+          <circle cx="16" cy="26.2" r="1.4" fill={ACCENT.jewelA} />
+          <circle cx="9" cy="26.2" r="1.1" fill={ACCENT.jewelB} />
+          <circle cx="23" cy="26.2" r="1.1" fill={ACCENT.jewelB} />
         </>
       );
 
@@ -209,7 +234,8 @@ function Shape({
             strokeWidth="1.2"
             strokeLinejoin="round"
           />
-          <path d="M6 10.5 H21" stroke={metal.light} strokeWidth="1.1" opacity="0.55" />
+          <path d="M6 10.5 H21" stroke={ACCENT.ember} strokeWidth="1.3" opacity="0.85" />
+          <circle cx="24" cy="7" r="1.3" fill={ACCENT.ember} />
         </>
       );
 
@@ -222,8 +248,8 @@ function Shape({
             <path
               key={deg}
               d="M16 4.5 V8.5"
-              stroke={fill}
-              strokeWidth="2.2"
+              stroke={ACCENT.ember}
+              strokeWidth="2.4"
               strokeLinecap="round"
               transform={`rotate(${deg} 16 18)`}
             />
@@ -243,7 +269,8 @@ function Shape({
             strokeWidth="1.2"
             strokeLinejoin="round"
           />
-          <circle cx="9" cy="12" r="1.5" fill={metal.light} opacity="0.7" />
+          <circle cx="8.5" cy="11" r="1.4" fill={ACCENT.sky} />
+          <circle cx="12" cy="24" r="1" fill={ACCENT.sky} opacity="0.8" />
         </>
       );
 
@@ -252,8 +279,8 @@ function Shape({
       return (
         <>
           <path d="M16 3 L29 9.5 L16 16 L3 9.5 Z" fill={fill} stroke={metal.dark} strokeWidth="1.1" strokeLinejoin="round" />
-          <path d="M3 15.5 L16 22 L29 15.5" fill="none" stroke={fill} strokeWidth="2.6" strokeLinejoin="round" />
-          <path d="M3 21.5 L16 28 L29 21.5" fill="none" stroke={fill} strokeWidth="2.6" strokeLinejoin="round" opacity="0.75" />
+          <path d="M3 15.5 L16 22 L29 15.5" fill="none" stroke={ACCENT.sky} strokeWidth="2.6" strokeLinejoin="round" />
+          <path d="M3 21.5 L16 28 L29 21.5" fill="none" stroke={ACCENT.leaf} strokeWidth="2.6" strokeLinejoin="round" />
         </>
       );
   }
