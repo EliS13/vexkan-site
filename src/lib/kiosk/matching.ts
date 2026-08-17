@@ -27,16 +27,19 @@
 export const VERIFY_DISTANCE = 0.6;
 
 /**
- * Tighter, because identification searches the whole roster. Every extra member
- * is another chance for a stranger to land inside the threshold.
+ * Tighter than the 0.6 one-to-one convention, because identification searches
+ * the whole roster and every extra member is another chance for a stranger to
+ * land inside it. Loosened from 0.5 after real use: it was refusing the person
+ * standing directly in front of the camera. The margin below is what still
+ * catches lookalikes, and it does that better than a hard cutoff does.
  */
-export const IDENTIFY_DISTANCE = 0.5;
+export const IDENTIFY_DISTANCE = 0.56;
 
 /**
  * How much closer the winner must be than the runner-up. Below this the two
  * candidates are not distinguishable and the answer is "ask a human".
  */
-export const MIN_MARGIN = 0.08;
+export const MIN_MARGIN = 0.06;
 
 /** Detector confidence below this is not worth matching. */
 export const MIN_DETECTION_SCORE = 0.7;

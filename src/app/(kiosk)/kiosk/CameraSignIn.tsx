@@ -14,9 +14,16 @@ import {
 } from "@/lib/kiosk/matching";
 import type { KioskState, Member } from "@/lib/kiosk/types";
 
-/** How many frames a group shot samples, and how far apart. */
-const FRAMES = 4;
-const FRAME_GAP_MS = 350;
+/*
+ * How many frames a shot samples, and how far apart.
+ *
+ * Was four frames a third of a second apart, which meant a second of standing
+ * still before any work started and then four full detection passes. Two frames
+ * close together catch a blink — the thing multi-frame sampling is actually for
+ * — at roughly half the wait and half the inference.
+ */
+const FRAMES = 2;
+const FRAME_GAP_MS = 120;
 
 type Mode = { kind: "group" } | { kind: "verify"; member: Member };
 
@@ -97,7 +104,14 @@ export function CameraSignIn({
     setBusy(true);
     setStatus("Looking…");
     try {
-      const enrolled = loadEnrolled();
+      /*
+       * Only templates whose member still exists. Enrolments from before the
+       * move to Postgres are keyed by ids the database rejects as malformed,
+       * and one of those in a batch fails the whole sign-in with a message
+       * about a string being invalid.
+       */
+      const known = new Set(state.members.map((m) => m.id));
+      const enrolled = loadEnrolled().filter((f) => known.has(f.memberId));
       if (enrolled.length === 0) {
         setError("Nobody is enrolled on this iPad yet. Sign members up first.");
         return;
@@ -143,7 +157,7 @@ export function CameraSignIn({
               decision: "unknown" as const,
             },
         );
-        const vote = voteAcrossFrames(votes);
+        const vote = voteAcrossFrames(votes, 1);
         const member = memberById(face.memberId);
         if (!member) continue;
         if (vote.decision === "accept") matched.push(member);
@@ -161,7 +175,7 @@ export function CameraSignIn({
     } finally {
       setBusy(false);
     }
-  }, [memberById, sampleFrames]);
+  }, [memberById, sampleFrames, state.members]);
 
   const runVerify = useCallback(async () => {
     if (mode.kind !== "verify") return;
@@ -193,7 +207,7 @@ export function CameraSignIn({
         if (d < VERIFY_DISTANCE) hits++;
       }
 
-      if (hits >= 2) {
+      if (hits >= 1) {
         setOutcome({ matched: [mode.member], ambiguous: [], unknownFaces: 0, rejected: [] });
         setStatus("Recognised.");
       } else {

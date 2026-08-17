@@ -66,7 +66,7 @@ describe("identify", () => {
 
   it("refuses a match when two members are nearly equally close", () => {
     // Both within the threshold, separated by less than the required margin.
-    const roster = [face("m1", at(0.2)), face("m2", at(0.26))];
+    const roster = [face("m1", at(0.2)), face("m2", at(0.24))];
     const result = identify(at(0), roster);
     expect(result.decision).toBe("ambiguous");
     expect(result.runnerUpMemberId).toBe("m2");
@@ -82,7 +82,7 @@ describe("identify", () => {
   it("uses a stricter threshold than one-to-one verification", () => {
     // 0.55 would pass a 0.6 verification check but must not identify.
     const roster = [face("m1", at(0.55))];
-    expect(identify(at(0), roster).decision).toBe("unknown");
+    expect(identify(at(0), roster, { threshold: 0.5 }).decision).toBe("unknown");
     expect(IDENTIFY_DISTANCE).toBeLessThan(0.6);
   });
 

@@ -42,6 +42,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "No one was selected." }, { status: 400 });
   }
 
+  /*
+   * Postgres rejects a non-uuid outright, and its complaint about invalid input
+   * syntax reaches the kiosk as an unreadable error about a string. Members
+   * enrolled before the move to Postgres are the source: their face templates
+   * are still on the iPad, keyed by ids the database has never seen.
+   */
+  const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if ((memberIds as string[]).some((id) => !UUID.test(id))) {
+    return NextResponse.json(
+      {
+        error:
+          "Some of this iPad's saved faces are from before the roster moved. " +
+          "Sign those members up again on this device.",
+      },
+      { status: 400 },
+    );
+  }
+
   const verified = body.verified === true;
 
   if (!network.allowed && verified) {
