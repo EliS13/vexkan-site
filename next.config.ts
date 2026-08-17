@@ -63,6 +63,21 @@ const nextConfig: NextConfig = {
           has: onSubdomain,
           destination: "/kiosk/:path*",
         },
+        /*
+         * The manifest has a dot in its name, so the static-file exclusion above
+         * skips it. It is a real route rather than a file in public/, so it
+         * needs mapping explicitly on both hosts.
+         */
+        {
+          source: "/manifest.webmanifest",
+          has: onSubdomain,
+          destination: "/kiosk/manifest.webmanifest",
+        },
+        {
+          source: "/manifest.webmanifest",
+          has: onLocalhost,
+          destination: "/kiosk/manifest.webmanifest",
+        },
         { source: "/", has: onLocalhost, destination: "/kiosk" },
         { source: `/:page(${KIOSK_PAGES})`, has: onLocalhost, destination: "/kiosk/:page" },
         { source: "/api/:path*", has: onLocalhost, destination: "/kiosk/api/:path*" },

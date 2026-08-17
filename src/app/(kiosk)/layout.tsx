@@ -5,6 +5,7 @@ export const metadata: Metadata = {
   /* Homescreen launch on iPad and iPhone: no Safari chrome, dark status bar. */
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VexKan" },
   formatDetection: { telephone: false },
+  manifest: "/manifest.webmanifest",
   /* A kiosk is not a document. Nothing here should be indexed or shared. */
   robots: { index: false, follow: false },
 };

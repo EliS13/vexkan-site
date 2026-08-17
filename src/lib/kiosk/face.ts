@@ -168,6 +168,9 @@ export function cropFace(
  * person, measured at 0.77 against an unmirrored original.
  */
 export function grabFrame(video: HTMLVideoElement): HTMLCanvasElement {
+  if (!video.videoWidth || !video.videoHeight) {
+    throw new Error("The camera has not produced a picture yet. Wait a moment and try again.");
+  }
   const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;

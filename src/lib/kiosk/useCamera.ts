@@ -98,6 +98,14 @@ export function useCamera(): CameraState {
         video.current.setAttribute("playsinline", "true");
         video.current.muted = true;
         await video.current.play();
+        /*
+         * play() resolves before the first frame has decoded, so videoWidth can
+         * still be 0. Capturing then yields a 0x0 canvas, the detector finds
+         * nothing, and the user is told "no face in frame" while looking
+         * straight at it. Waiting for real dimensions is the difference between
+         * the capture button working and silently doing nothing.
+         */
+        await waitForFrames(video.current);
       }
       setStatus("live");
     } catch (err) {
@@ -121,6 +129,19 @@ export function useCamera(): CameraState {
   const getVideo = useCallback(() => video.current, []);
 
   return { attach, getVideo, status, message, start, stop };
+}
+
+/** Resolves once the element reports real dimensions, or gives up after 5s. */
+function waitForFrames(el: HTMLVideoElement): Promise<void> {
+  if (el.videoWidth > 0) return Promise.resolve();
+  return new Promise((resolve) => {
+    const deadline = Date.now() + 5000;
+    const tick = () => {
+      if (el.videoWidth > 0 || Date.now() > deadline) resolve();
+      else requestAnimationFrame(tick);
+    };
+    tick();
+  });
 }
 
 /** Each of these has a different fix, so they get different words. */
