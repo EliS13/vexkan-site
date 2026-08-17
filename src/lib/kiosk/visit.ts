@@ -27,13 +27,13 @@ export const VISIT_COOKIE = "kiosk_visit";
 /**
  * How long a visitor stays remembered.
  *
- * Long enough that looking on a Tuesday and again on a Thursday is not two
- * codes typed, short enough that a phone lent to somebody, or left in a
- * classroom, stops opening the roster inside the month. Nothing renews it: a
- * page cannot set a cookie in this framework, so the clock starts at the code
- * and does not slide.
+ * A day, at Eli's call. Long enough that looking twice in an evening is one
+ * code typed rather than two, short enough that a phone left in a classroom or
+ * lent to somebody stops opening the roster by the next meeting. Nothing
+ * renews it: a page cannot set a cookie in this framework, so the clock starts
+ * at the code and does not slide.
  */
-const VISIT_DAYS = 30;
+const VISIT_DAYS = 1;
 export const VISIT_MAX_AGE_S = VISIT_DAYS * 24 * 60 * 60;
 
 /**
