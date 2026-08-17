@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import type { Group, KioskState, Member, ToggleResult } from "./types";
 import { seedState } from "./seed";
 import { openSessionFor } from "./hours";
+import * as db from "./supabaseStore";
 
 /**
  * Development storage: one JSON file on disk.
@@ -24,6 +25,14 @@ import { openSessionFor } from "./hours";
  * made on a deployed kiosk will disappear. That is fine for showing people the
  * thing and unacceptable for recording real hours, which is what the Postgres
  * swap is for.
+ */
+/*
+ * The file store is for local development only now.
+ *
+ * On Vercel /tmp is per-instance and cleared on cold starts, so a member signed
+ * up on one request was invisible to the next and the roster read "0 of 0"
+ * minutes after someone was added. Deployed, this module delegates to Postgres
+ * and the path below is never used.
  */
 const DATA_DIR = process.env.VERCEL ? "/tmp/kiosk" : path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "kiosk.json");
@@ -75,7 +84,27 @@ async function writeState(state: KioskState): Promise<void> {
  * about the time. When this moves to Postgres, `now` becomes the database's
  * clock, which is the only one all the iPads can agree on.
  */
+/**
+ * Refuses to fall back to the file store on Vercel.
+ *
+ * Silently writing to /tmp there is how the roster came to read "0 of 0" after
+ * a successful sign-up: every write appeared to work and every read landed on a
+ * different instance. A loud error naming the missing variable is far better
+ * than a kiosk that quietly forgets people.
+ */
+function writesToDatabase(): boolean {
+  if (db.isSupabaseConfigured()) return true;
+  if (process.env.VERCEL) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is not set, so there is nowhere durable to save. " +
+        "Set it and SUPABASE_URL in the project's environment variables.",
+    );
+  }
+  return false;
+}
+
 export function getState(): Promise<KioskState & { now: number }> {
+  if (writesToDatabase()) return db.getState();
   return serialise(async () => ({ ...(await readState()), now: Date.now() }));
 }
 
@@ -90,6 +119,7 @@ export function getState(): Promise<KioskState & { now: number }> {
  * nobody signs out at all.
  */
 export function signOutMember(memberId: string, now: Date = new Date()): Promise<ToggleResult> {
+  if (writesToDatabase()) return db.signOutMember(memberId, now);
   return serialise(async () => {
     const state = await readState();
     const member = state.members.find((m) => m.id === memberId);
@@ -130,6 +160,7 @@ export function addMember(input: {
   photoUrl: string;
   groupIds?: string[];
 }): Promise<Member> {
+  if (writesToDatabase()) return db.addMember(input);
   return serialise(async () => {
     const firstName = input.firstName.trim();
     const lastName = input.lastName.trim();
@@ -169,6 +200,7 @@ export function signInMembers(
   options: { verified: boolean; note?: string | null },
   now: Date = new Date(),
 ): Promise<{ signedIn: Member[]; alreadyIn: Member[] }> {
+  if (writesToDatabase()) return db.signInMembers(memberIds, options, now);
   return serialise(async () => {
     const state = await readState();
     const stamp = now.toISOString();
@@ -208,6 +240,7 @@ export function createGroup(input: {
   startsAt: string;
   endsAt: string;
 }): Promise<Group> {
+  if (writesToDatabase()) return db.createGroup(input);
   return serialise(async () => {
     const name = input.name.trim();
     if (!name) throw new Error("A group needs a name.");
@@ -234,6 +267,7 @@ export function createGroup(input: {
  * keep their other groups and simply stop being listed under this one.
  */
 export function deleteGroup(groupId: string): Promise<void> {
+  if (writesToDatabase()) return db.deleteGroup(groupId);
   return serialise(async () => {
     const state = await readState();
     const group = state.groups.find((g) => g.id === groupId);
@@ -249,6 +283,7 @@ export function deleteGroup(groupId: string): Promise<void> {
 
 /** Replaces a member's group membership outright. */
 export function setMemberGroups(memberId: string, groupIds: string[]): Promise<Member> {
+  if (writesToDatabase()) return db.setMemberGroups(memberId, groupIds);
   return serialise(async () => {
     const state = await readState();
     const member = state.members.find((m) => m.id === memberId);
@@ -274,6 +309,7 @@ export function setMemberActive(
   active: boolean,
   now: Date = new Date(),
 ): Promise<Member> {
+  if (writesToDatabase()) return db.setMemberActive(memberId, active, now);
   return serialise(async () => {
     const state = await readState();
     const member = state.members.find((m) => m.id === memberId);
@@ -296,6 +332,7 @@ export function setMemberActive(
 
 /** Closes every open session. Stands in for the nightly cron until it is built. */
 export function closeAllOpen(now: Date = new Date()): Promise<number> {
+  if (writesToDatabase()) return db.closeAllOpen(now);
   return serialise(async () => {
     const state = await readState();
     const open = state.sessions.filter((s) => s.signedOutAt === null);
