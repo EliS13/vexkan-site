@@ -112,15 +112,6 @@ export default async function AwardsPage() {
         </ul>
       </section>
 
-      {vex.ok && (
-        <p className="mb-7 rounded-xl border-2 border-[#2e343b] bg-[#1d2126] px-4 py-3 font-mono text-[11px] leading-relaxed text-[#8b949e]">
-          <span className="text-[#ffb100]">{vex.awards.length} awards</span> won at competition
-          across {new Set(vex.awards.map((a) => a.teamNumber)).size} teams, live from the VEX
-          Events API. Each one is listed on the profiles of the members who were on the team that
-          season.
-        </p>
-      )}
-
       <div className="flex flex-col gap-7">
         {BADGE_GUIDE.map((section) => (
           <section key={section.heading}>

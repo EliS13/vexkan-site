@@ -12,6 +12,7 @@
  * not which club member was standing behind it.
  */
 
+import { awards as CLUB_AWARDS } from "@/content/club/events";
 import { TEAMS } from "./teams";
 
 const API = `${process.env.VEX_API_BASE ?? "https://events.vex.com/api/v2"}`;
@@ -115,6 +116,51 @@ function isWorlds(eventName: string): boolean {
   return /world championship/i.test(eventName);
 }
 
+/*
+ * Awards the club holds that VEX's records do not.
+ *
+ * Two certificates never made it into VEX's award data, and the U.S. Open
+ * invitation is something the club states about itself rather than a judged
+ * award. All three are already kept in src/content/club/events.ts for the club
+ * site, so they are read from there rather than typed out a second time — one
+ * list to correct when one of them turns out to be wrong.
+ *
+ * The season comes from another award at the same event where VEX has one,
+ * which is how the two January Showdown certificates get dated without anybody
+ * remembering the year.
+ */
+function withClubRecords(fromApi: TeamAward[]): TeamAward[] {
+  const seen = new Set(fromApi.map((a) => `${a.teamNumber}|${a.title}|${a.event}`));
+  const seasonByEvent = new Map(fromApi.map((a) => [a.event, a.season]));
+
+  const extra: TeamAward[] = [];
+  for (const record of CLUB_AWARDS) {
+    /* The API titles carry a programme suffix the club list does not. */
+    const already = fromApi.some(
+      (a) =>
+        a.teamNumber === record.team &&
+        a.title.replace(/\s*\((IQ|V5|WC)\)$/, "").trim() === record.award &&
+        a.event.startsWith(record.event),
+    );
+    if (already || seen.has(`${record.team}|${record.award}|${record.event}`)) continue;
+
+    /* Same event, different team: reuse the season VEX gave that event. */
+    const match = [...seasonByEvent.entries()].find(([name]) => name.startsWith(record.event));
+    const season = match?.[1] ?? "unknown";
+    const { members, inferred } = rosterFor(record.team, season);
+    extra.push({
+      title: record.award,
+      event: record.event,
+      worlds: isWorlds(record.event),
+      teamNumber: record.team,
+      season,
+      members,
+      inferred: inferred || season === "unknown",
+    });
+  }
+  return [...fromApi, ...extra];
+}
+
 /** Every award a member has a share in, because they were on the team that season. */
 export function awardsForMember(awards: TeamAward[], fullName: string): TeamAward[] {
   return awards.filter((a) => a.members.includes(fullName));
@@ -138,7 +184,9 @@ export async function awardsForTeams(numbers: string[]): Promise<AwardsResult> {
       const season = seasonFromCode(a.event?.code ?? "");
       const { members, inferred } = rosterFor(number, season);
       awards.push({
-        title: a.title ?? "Award",
+        /* VEX pads some titles: "Inspire Award (WC) " arrives with a trailing
+           space, which silently defeated matching against the club's list. */
+        title: (a.title ?? "Award").trim(),
         event,
         worlds: isWorlds(event),
         teamNumber: number,
@@ -151,5 +199,5 @@ export async function awardsForTeams(numbers: string[]): Promise<AwardsResult> {
 
   // A total failure and a genuinely award-less club look identical otherwise.
   if (awards.length === 0) return { ok: false, reason: "unavailable" };
-  return { ok: true, awards };
+  return { ok: true, awards: withClubRecords(awards) };
 }
