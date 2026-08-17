@@ -50,7 +50,16 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/:path((?!_next|__nextjs).*)",
+          /*
+           * The lookahead has to exclude static files as well as Next's own
+           * asset paths. Without the dot clause this rule rewrote everything in
+           * public/ too: /logo-vexkan.png became /kiosk/logo-vexkan.png and
+           * 404'd, and so did all twelve megabytes of face model weights, which
+           * silently disabled face recognition on the subdomain while it worked
+           * on the apex. No kiosk page path contains a dot, so treating "has a
+           * dot" as "is a file" is safe here.
+           */
+          source: "/:path((?!_next|__nextjs|.*\\.).*)",
           has: onSubdomain,
           destination: "/kiosk/:path*",
         },
