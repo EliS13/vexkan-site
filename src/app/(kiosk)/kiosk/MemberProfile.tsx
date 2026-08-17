@@ -4,7 +4,7 @@ import { awardKind } from "@/lib/kiosk/badges";
 import { ALONGSIDE, formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
 import type { Member, Session } from "@/lib/kiosk/types";
-import { teamsFor, worldsFor } from "@/lib/kiosk/teams";
+import { teamsFor } from "@/lib/kiosk/teams";
 import { Avatar } from "./Avatar";
 import { BadgeIcon } from "./BadgeIcon";
 
@@ -50,7 +50,6 @@ export function MemberProfile({
 }) {
   const fullName = `${member.firstName} ${member.lastName}`;
   const teams = teamsFor(fullName);
-  const worlds = worldsFor(fullName);
 
   return (
     <div className="flex flex-col gap-4">
@@ -175,23 +174,20 @@ export function MemberProfile({
             {teams.map((team) => (
               <li
                 key={`${team.number}-${team.season}`}
-                className={`rounded-lg border-2 px-2.5 py-1.5 font-mono text-[11px] ${
-                  worlds.includes(team.season)
-                    ? "border-[#c8971a] bg-[#ffcc48]/10 text-[#ffcc48]"
-                    : "border-[#2e343b] bg-[#14171a] text-[#c2c8cf]"
-                }`}
-                title={worlds.includes(team.season) ? "Went to Worlds this season" : undefined}
+                className="rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-2.5 py-1.5 font-mono text-[11px] text-[#c2c8cf]"
               >
                 {team.number}
                 <span className="ml-1.5 text-[#8b949e]">{team.season}</span>
               </li>
             ))}
           </ul>
-          {worlds.length > 0 && (
-            <p className="mt-1.5 font-mono text-[10px] text-[#ffcc48]">
-              Gold marks a season that ended at the VEX World Championship.
-            </p>
-          )}
+          {/*
+            * No Worlds marking here on purpose. Qualification was by person
+            * rather than by team — the 2024-25 squad was drawn from several
+            * teams — so colouring a team because its season ended at Worlds
+            * credited teams that never went. The Worlds badge above says who
+            * actually competed.
+            */}
         </section>
       )}
 

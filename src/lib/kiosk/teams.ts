@@ -47,7 +47,13 @@ export const TEAMS: Team[] = [
   },
 ];
 
-/** Trips to the VEX World Championship, by season. */
+/*
+ * Trips to the VEX World Championship, by season and by person.
+ *
+ * Qualification was individual, not by team: the 2024-25 squad came from
+ * several different teams, so a season's Worlds list cannot be read back onto
+ * the teams that ran that season. 36467E ran in 2024-25 and did not go.
+ */
 export const WORLDS: { season: string; program: "IQ" | "V5RC"; members: string[] }[] = [
   {
     season: "2024-25",
