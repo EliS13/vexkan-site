@@ -38,15 +38,12 @@ export function Kiosk({
   initialNow,
   initialRosterVersion,
   canSign,
-  needsCode,
 }: {
   initial: KioskState;
   initialNow: number;
   initialRosterVersion: string;
   /** False when this device is not on the club's network. Read-only then. */
   canSign: boolean;
-  /** True when a club code is configured, so signing in asks for it. */
-  needsCode: boolean;
 }) {
   const [state, setState] = useState(initial);
   const [confirmation, setConfirmation] = useState<Confirmation>(null);
@@ -221,45 +218,9 @@ export function Kiosk({
    * to anyone. Confirming one claimed identity is also the accurate half of
    * face matching, so this path is more reliable than the group shot.
    */
-  const signInWithCode = useCallback(
-    async (member: Member, credentials: { code: string; typedName: string }) => {
-      setPending(member.id);
-      setError(null);
-      try {
-        const body = await postJson<SignOutReply>("/api/signin", {
-          memberIds: [member.id],
-          verified: false,
-          ...credentials,
-        });
-        anchor.current = { serverNow: body.now, at: Date.now() };
-        setNow(body.now);
-        setState((current) => ({ ...current, sessions: body.sessions }));
-        showConfirmation(member, "in");
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "That did not save. Try again.");
-      } finally {
-        setPending(null);
-      }
-    },
-    [showConfirmation],
-  );
-
-  const tap = useCallback(async (
-    member: Member,
-    signedIn: boolean,
-    /* Set when the profile collected a club code and a typed name. */
-    credentials?: { code: string; typedName: string },
-  ) => {
+  const tap = useCallback(async (member: Member, signedIn: boolean) => {
     if (pending) return;
     if (!signedIn) {
-      /*
-       * With a club code configured the name and code are the check, so the
-       * camera is not also asked for — two proofs for one sign-in is a queue.
-       */
-      if (credentials) {
-        void signInWithCode(member, credentials);
-        return;
-      }
       setCamera({ kind: "verify", member });
       return;
     }
@@ -300,7 +261,7 @@ export function Kiosk({
     } finally {
       setPending(null);
     }
-  }, [pending, showConfirmation, state, now, signInWithCode]);
+  }, [pending, showConfirmation, state, now]);
 
   const startHold = useCallback(
     (member: Member, signedIn: boolean) => {
@@ -537,14 +498,13 @@ export function Kiosk({
           now={now}
           alongside={alongsideMs(profileFor, state.members, state.sessions, now)}
           maySign={maySign}
-          needsCode={needsCode}
           busy={pending === profileFor.id}
           onClose={() => setProfileFor(null)}
-          onAction={(extra) => {
+          onAction={() => {
             const member = profileFor;
             const signedIn = isSignedIn(state.sessions, member.id);
             setProfileFor(null);
-            void tap(member, signedIn, extra);
+            void tap(member, signedIn);
           }}
         />
       )}
@@ -770,63 +730,6 @@ function SignedOutBoard({
 }
 
 /**
- * The code administration gave out, and your own name.
- *
- * Two weak checks that together mean something a tap does not: the code says
- * you were told it, the name says you are the one claiming the hours. Neither
- * is security — everyone in the club knows the code — but a stranger with the
- * kiosk open cannot sign anybody in, and nobody signs in a friend by accident.
- */
-function SignInForm({
-  member,
-  busy,
-  onSubmit,
-}: {
-  member: Member;
-  busy: boolean;
-  onSubmit: (extra: { code: string; typedName: string }) => void;
-}) {
-  const [code, setCode] = useState("");
-  const [typedName, setTypedName] = useState("");
-  const ready = code.trim().length > 0 && typedName.trim().length > 0;
-
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        if (ready && !busy) onSubmit({ code: code.trim(), typedName: typedName.trim() });
-      }}
-      className="flex flex-col gap-2"
-    >
-      <input
-        value={typedName}
-        onChange={(e) => setTypedName(e.target.value)}
-        placeholder={`Type your first name — ${member.firstName}`}
-        aria-label="Your first name"
-        autoComplete="off"
-        className="min-h-[56px] rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-lg"
-      />
-      <input
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        placeholder="Club code"
-        aria-label="Club code"
-        inputMode="numeric"
-        autoComplete="off"
-        className="min-h-[56px] rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-4 font-mono text-lg tracking-widest"
-      />
-      <button
-        type="submit"
-        disabled={!ready || busy}
-        className="min-h-[64px] w-full rounded-2xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
-      >
-        {busy ? "One moment…" : "Sign in"}
-      </button>
-    </form>
-  );
-}
-
-/**
  * A member's profile, over the roster.
  *
  * The tile used to sign you straight in or out. It now opens this, and the
@@ -842,7 +745,6 @@ function Profile({
   now,
   alongside,
   maySign,
-  needsCode,
   busy,
   onClose,
   onAction,
@@ -855,11 +757,9 @@ function Profile({
   now: number;
   alongside: number;
   maySign: boolean;
-  /** True when KIOSK_MEMBER_CODE is set, so signing in asks for it. */
-  needsCode: boolean;
   busy: boolean;
   onClose: () => void;
-  onAction: (extra?: { code: string; typedName: string }) => void;
+  onAction: () => void;
 }) {
   return (
     <div
@@ -886,8 +786,6 @@ function Profile({
                 Signing in and out only works on the club&rsquo;s wifi. Everything else here —
                 hours, badges, awards — reads the same from anywhere.
               </p>
-            ) : needsCode && !signedIn ? (
-              <SignInForm member={member} busy={busy} onSubmit={onAction} />
             ) : (
             <button
               onClick={() => onAction()}

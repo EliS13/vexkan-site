@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getState, signInMembers } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
-import { checkMemberCode, checkPasscode, isMemberCodeRequired, nameMatches } from "@/lib/kiosk/admin";
+import { checkMemberCode } from "@/lib/kiosk/admin";
 import { checkNetwork } from "@/lib/kiosk/network";
 
 export const dynamic = "force-dynamic";
@@ -50,33 +50,6 @@ export async function POST(request: Request) {
   }
 
   /*
-   * The members' code, which administration gives out, plus the member typing
-   * their own name. A tap says a tile was pressed; the name says who pressed
-   * it. Both are skipped when an organizer supplies the admin passcode, and
-   * the whole check is off until KIOSK_MEMBER_CODE is set.
-   */
-  const asOrganizer = checkPasscode(body.passcode);
-  if (isMemberCodeRequired() && !asOrganizer) {
-    if (!checkMemberCode(body.code)) {
-      return NextResponse.json(
-        { error: "That club code is not right. Ask an organizer for today's code." },
-        { status: 403 },
-      );
-    }
-    /* Typed names are only asked for when one person is signing themselves in. */
-    if (memberIds.length === 1) {
-      const { members } = await getState();
-      const member = members.find((m) => m.id === memberIds[0]);
-      if (!member || !nameMatches(body.typedName, member.firstName)) {
-        return NextResponse.json(
-          { error: "Type your first name exactly as it appears on your tile." },
-          { status: 403 },
-        );
-      }
-    }
-  }
-
-  /*
    * Postgres rejects a non-uuid outright, and its complaint about invalid input
    * syntax reaches the kiosk as an unreadable error about a string. Members
    * enrolled before the move to Postgres are the source: their face templates
@@ -101,16 +74,21 @@ export async function POST(request: Request) {
       {
         error:
           network.reason === "no-ip"
-            ? "Could not tell which network this is. An organizer can sign people in with the passcode."
+            ? "Could not tell which network this is. The club code still signs people in."
             : "Sign-in only works on the club's wifi. Join it and try again.",
       },
       { status: 403 },
     );
   }
-  if (!verified && !checkPasscode(body.passcode)) {
-    // An unverified sign-in is an organizer override, and needs the passcode.
+  if (!verified && !checkMemberCode(body.passcode)) {
+    /*
+     * A sign-in the camera could not confirm falls back to the members' code
+     * rather than the organizer passcode. Bad light and a broken lens are
+     * ordinary evenings, and making every one of them wait for a coach put the
+     * club's own attendance behind a person rather than behind a check.
+     */
     return NextResponse.json(
-      { error: "A organizer passcode is needed to sign someone in without a face match." },
+      { error: "The club code is needed to sign someone in without a face match." },
       { status: 401 },
     );
   }

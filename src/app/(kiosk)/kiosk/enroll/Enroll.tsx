@@ -123,8 +123,14 @@ export function Enroll({ initial }: { initial: KioskState }) {
       const body = await postJson<EnrollReply>("/api/enroll", {
           firstName,
           lastName,
-          // The first capture is the straight-on one, so it makes the tile.
-          photoUrl: shots[0].photo,
+          /*
+           * The last capture, not the first. The prompts run "look straight",
+           * three head turns, then "Smile" — so the fifth shot is the only one
+           * taken of somebody smiling, and the first is the stiffest picture of
+           * the five. The tile is the thing a member sees of themselves every
+           * meeting; it may as well be the good one.
+           */
+          photoUrl: shots[shots.length - 1].photo,
           passcode,
         });
 

@@ -2,8 +2,7 @@ import { headers } from "next/headers";
 import { getState } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
 import { checkNetwork } from "@/lib/kiosk/network";
-import { isMemberCodeRequired } from "@/lib/kiosk/admin";
-import { Kiosk } from "./Kiosk";
+import { KioskShell } from "./KioskShell";
 
 /** Presence is live by definition, so nothing on this route is prerendered. */
 export const dynamic = "force-dynamic";
@@ -17,12 +16,11 @@ export default async function KioskPage() {
    */
   const canSign = checkNetwork(await headers()).allowed;
   return (
-    <Kiosk
+    <KioskShell
       initial={state}
       initialNow={now}
       initialRosterVersion={rosterVersion(state.members)}
       canSign={canSign}
-      needsCode={isMemberCodeRequired()}
     />
   );
 }

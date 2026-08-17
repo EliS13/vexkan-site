@@ -80,7 +80,8 @@ export function AddPhoto({
 
   const save = useCallback(async () => {
     try {
-      await onSave(shots[0].photo);
+      // The last capture is the one taken on "Smile", same as sign-up.
+      await onSave(shots[shots.length - 1].photo);
       /*
        * Templates land on this iPad only once the save succeeded, so a failed
        * write never leaves a face matching a member whose photo was not stored.
