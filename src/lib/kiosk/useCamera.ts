@@ -18,6 +18,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 export type CameraStatus = "idle" | "starting" | "live" | "denied" | "unavailable" | "insecure";
 
+/*
+ * Set once the camera has actually opened on this device.
+ *
+ * The Permissions API would be the obvious way to ask "am I allowed already",
+ * but Safari does not answer for the camera, and Safari is the whole target
+ * here. So: remember that it worked, then optimistically try again next time
+ * and fall back to asking if that fails. Trying and recovering is reliable
+ * where querying is not.
+ */
+const GRANTED_KEY = "vexkan.kiosk.camera.granted";
+
 export type CameraState = {
   /**
    * Callback ref for the <video> element. A callback rather than a RefObject on
@@ -32,6 +43,12 @@ export type CameraState = {
   /** Ready to explain to a twelve year old, not a stack trace. */
   message: string | null;
   start: () => Promise<void>;
+  /**
+   * Opens the camera without a tap, for a device that has allowed it before.
+   * Silent: a refusal leaves the gate showing its normal invitation rather than
+   * an error, because needing a gesture is not the same as being blocked.
+   */
+  resume: () => Promise<void>;
   stop: () => void;
 };
 
@@ -65,8 +82,9 @@ export function useCamera(): CameraState {
     stream.current = null;
   }, []);
 
-  const start = useCallback(async () => {
+  const open = useCallback(async (silent: boolean) => {
     if (!secureEnough()) {
+      if (silent) return;
       setStatus("insecure");
       setMessage(
         "The camera only works over https. Open this page at its real address rather than by IP.",
@@ -74,6 +92,7 @@ export function useCamera(): CameraState {
       return;
     }
     if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      if (silent) return;
       setStatus("unavailable");
       setMessage("This browser cannot use the camera. Safari or Chrome will.");
       return;
@@ -108,12 +127,38 @@ export function useCamera(): CameraState {
         await waitForFrames(video.current);
       }
       setStatus("live");
+      try {
+        window.localStorage.setItem(GRANTED_KEY, "1");
+      } catch {
+        // Private browsing. The gate simply keeps asking, which still works.
+      }
     } catch (err) {
       const name = err instanceof Error ? err.name : "";
+      if (silent) {
+        /*
+         * A silent attempt that fails proves nothing: the browser may only want
+         * a gesture. Fall back to the invitation rather than telling someone
+         * their camera is blocked when it is not.
+         */
+        setStatus("idle");
+        return;
+      }
       setStatus(name === "NotAllowedError" ? "denied" : "unavailable");
       setMessage(explain(name));
     }
   }, []);
+
+  const start = useCallback(() => open(false), [open]);
+
+  const resume = useCallback(async () => {
+    let remembered = false;
+    try {
+      remembered = window.localStorage.getItem(GRANTED_KEY) === "1";
+    } catch {
+      remembered = false;
+    }
+    if (remembered) await open(true);
+  }, [open]);
 
   const attach = useCallback((el: HTMLVideoElement | null) => {
     video.current = el;
@@ -128,7 +173,7 @@ export function useCamera(): CameraState {
 
   const getVideo = useCallback(() => video.current, []);
 
-  return { attach, getVideo, status, message, start, stop };
+  return { attach, getVideo, status, message, start, resume, stop };
 }
 
 /** Resolves once the element reports real dimensions, or gives up after 5s. */

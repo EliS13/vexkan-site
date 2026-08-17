@@ -70,7 +70,7 @@ export function CameraSignIn({
    * the whole thing is ref-bearing (getVideo closes over a ref) and rejects
    * every read of it during render.
    */
-  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart } =
+  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart, resume: camResume } =
     useCamera();
 
   /*
@@ -85,6 +85,8 @@ export function CameraSignIn({
         setStatus("Loading the face models…");
         await loadFaceEngine();
         if (cancelled) return;
+        // Already allowed on this device: skip the gate entirely.
+        void camResume();
         setStatus(
           mode.kind === "group"
             ? "Get everyone in frame, then take the photo."
@@ -95,7 +97,7 @@ export function CameraSignIn({
       }
     })();
     return () => { cancelled = true; };
-  }, [mode]);
+  }, [mode, camResume]);
 
   /** Samples several frames so a blink or a turned head cannot decide anything. */
   const sampleFrames = useCallback(async (): Promise<HTMLCanvasElement[]> => {

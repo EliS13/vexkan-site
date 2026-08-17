@@ -50,7 +50,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
    * the whole thing is ref-bearing (getVideo closes over a ref) and rejects
    * every read of it during render.
    */
-  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart } =
+  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart, resume: camResume } =
     useCamera();
 
   /*
@@ -63,13 +63,16 @@ export function Enroll({ initial }: { initial: KioskState }) {
     (async () => {
       try {
         await loadFaceEngine();
-        if (!cancelled) setStatus(PROMPTS[0]);
+        if (cancelled) return;
+        // Already allowed on this device: skip the gate entirely.
+        void camResume();
+        setStatus(PROMPTS[0]);
       } catch {
         setError("The face models could not load. Check the connection and try again.");
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [camResume]);
 
   /**
    * One capture. Refuses when a second face is in shot: enrolling from a frame
