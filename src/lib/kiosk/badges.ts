@@ -1095,7 +1095,13 @@ function nextRung(value: number, rungs: number[]): number {
   return rungs.find((r) => value < r) ?? rungs[rungs.length - 1];
 }
 
-export function clubAwards(members: Member[], sessions: Session[], now: number): ClubAward[] {
+export function clubAwards(
+  members: Member[],
+  sessions: Session[],
+  now: number,
+  /** Competition awards from the VEX API, when it answered. */
+  vexAwards?: number,
+): ClubAward[] {
   const totalHours = sessions.reduce((sum, s) => sum + sessionMs(s, now), 0) / 3_600_000;
 
   const byDay = new Map<string, Set<string>>();
@@ -1118,6 +1124,23 @@ export function clubAwards(members: Member[], sessions: Session[], now: number):
     ["club-long-night", "Longest night", "moon", Math.round(longestNight), [20, 40, 60, 100], "hours in a day"],
     ["club-seasons", "Seasons run", "laurel", seasons, [2, 3, 5, 10], "seasons"],
   ];
+
+  /*
+   * Trophies climb in threes rather than on a fixed ladder. The club is at
+   * twenty-nine and there is no sensible final rung — the goal should always
+   * be the next one, however many are already on the shelf.
+   */
+  if (typeof vexAwards === "number") {
+    const target = (Math.floor(vexAwards / 3) + 1) * 3;
+    rows.push([
+      "club-trophies",
+      "Awards won",
+      "crown",
+      vexAwards,
+      [target],
+      "competition awards",
+    ]);
+  }
 
   return rows.map(([id, label, shape, current, rungs, unit]) => {
     const target = nextRung(current, rungs);

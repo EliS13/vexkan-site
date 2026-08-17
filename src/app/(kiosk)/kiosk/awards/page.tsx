@@ -34,9 +34,14 @@ export default async function AwardsPage() {
     }
   }
 
-  const club = clubAwards(state.members, state.sessions, now);
   /* Real results, from VEX rather than from anybody's memory. */
   const vex = await awardsForTeams([...new Set(TEAMS.map((t) => t.number))]);
+  const club = clubAwards(
+    state.members,
+    state.sessions,
+    now,
+    vex.ok ? vex.awards.length : undefined,
+  );
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-5">
