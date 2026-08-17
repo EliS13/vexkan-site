@@ -13,7 +13,7 @@ import { describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
 import { alphabetical, clubTotals, formatDuration, formatHours, isSignedIn } from "@/lib/kiosk/hours";
 import { postJson, type AdminReply } from "@/lib/kiosk/postJson";
 import { AddPhoto } from "./AddPhoto";
-import type { KioskState, Member } from "@/lib/kiosk/types";
+import type { Group, KioskState, Member } from "@/lib/kiosk/types";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -31,6 +31,12 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
   /** Which row's menu is open. One at a time, so the list stays readable. */
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const [renaming, setRenaming] = useState<Member | null>(null);
+  const [groupMenuFor, setGroupMenuFor] = useState<string | null>(null);
+  const [editingGroup, setEditingGroup] = useState<Group | null>(null);
+  const [gName, setGName] = useState("");
+  const [gDays, setGDays] = useState<number[]>([]);
+  const [gFrom, setGFrom] = useState("16:30");
+  const [gTo, setGTo] = useState("18:00");
   const [draftFirst, setDraftFirst] = useState("");
   const [draftLast, setDraftLast] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -209,13 +215,46 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                 {state.members.filter((m) => m.active && m.groupIds.includes(group.id)).length}{" "}
                 members
               </span>
-              <button
-                onClick={() => send({ action: "deleteGroup", groupId: group.id })}
-                disabled={busy}
-                className="min-h-[44px] rounded-lg border-2 border-[#e04f4f]/50 px-3 font-mono text-[11px] tracking-widest text-[#e04f4f] uppercase disabled:opacity-40"
-              >
-                Retire
-              </button>
+              {/* Imported groups arrived with no schedule at all, so editing
+                  one is not an edge case — it is the first thing to do. */}
+              <div className="relative shrink-0">
+                <button
+                  onClick={() => setGroupMenuFor(groupMenuFor === group.id ? null : group.id)}
+                  aria-label={`Options for ${group.name}`}
+                  aria-expanded={groupMenuFor === group.id}
+                  className="min-h-[44px] w-11 rounded-lg border-2 border-[#2e343b] text-lg leading-none text-[#8b949e]"
+                >
+                  ⋯
+                </button>
+
+                {groupMenuFor === group.id && (
+                  <div className="absolute right-0 z-20 mt-1 w-56 overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#1d2126] shadow-xl">
+                    <button
+                      onClick={() => {
+                        setEditingGroup(group);
+                        setGName(group.name);
+                        setGDays(group.meetsOn);
+                        setGFrom(group.startsAt);
+                        setGTo(group.endsAt);
+                        setGroupMenuFor(null);
+                      }}
+                      className="block w-full px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b]"
+                    >
+                      Rename and set the time
+                    </button>
+                    <button
+                      onClick={() => {
+                        send({ action: "deleteGroup", groupId: group.id });
+                        setGroupMenuFor(null);
+                      }}
+                      disabled={busy}
+                      className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm text-[#e04f4f] hover:bg-[#2e343b] disabled:opacity-40"
+                    >
+                      Retire this group
+                    </button>
+                  </div>
+                )}
+              </div>
             </li>
           ))}
           {standings.length === 0 && (
@@ -411,6 +450,106 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             })}
         </ul>
       </section>
+
+      {editingGroup && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              send({
+                action: "updateGroup",
+                groupId: editingGroup.id,
+                name: gName,
+                meetsOn: gDays,
+                startsAt: gFrom,
+                endsAt: gTo,
+              });
+              setEditingGroup(null);
+            }}
+            className="flex w-full max-w-md flex-col gap-3 rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] p-5"
+          >
+            <p className="font-mono text-[11px] tracking-widest text-[#ffb100] uppercase">
+              Edit group
+            </p>
+            <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              Name
+              <input
+                autoFocus
+                value={gName}
+                onChange={(e) => setGName(e.target.value)}
+                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-xl text-[#e8eaed]"
+              />
+            </label>
+
+            <div className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              Meets
+              <div className="mt-1 flex gap-1">
+                {DAYS.map((day, i) => (
+                  <button
+                    key={day}
+                    type="button"
+                    onClick={() =>
+                      setGDays((prev) =>
+                        prev.includes(i) ? prev.filter((d) => d !== i) : [...prev, i],
+                      )
+                    }
+                    className={`min-h-[48px] flex-1 rounded-lg border-2 text-[11px] ${
+                      gDays.includes(i)
+                        ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
+                        : "border-[#2e343b] text-[#8b949e]"
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <label className="flex-1 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+                From
+                <input
+                  type="time"
+                  value={gFrom}
+                  onChange={(e) => setGFrom(e.target.value)}
+                  className="mt-1 block min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+                />
+              </label>
+              <label className="flex-1 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+                To
+                <input
+                  type="time"
+                  value={gTo}
+                  onChange={(e) => setGTo(e.target.value)}
+                  className="mt-1 block min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+                />
+              </label>
+            </div>
+
+            <p className="font-mono text-[10px] leading-relaxed text-[#8b949e]">
+              The kiosk opens on whichever group is meeting or about to. A group
+              with no days set never rises to the top.
+            </p>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setEditingGroup(null)}
+                className="min-h-[56px] flex-1 rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={busy || !gName.trim()}
+                className="min-h-[56px] flex-1 rounded-xl bg-[#ffb100] font-serif font-bold text-[#14171a] disabled:opacity-40"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {renaming && (
         <div className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-6">
