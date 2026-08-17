@@ -19,7 +19,7 @@ export type BadgeTier =
 /** Which drawing to use. The renderer owns the artwork; this owns the meaning. */
 export type BadgeShape =
   | "medal" | "star" | "gem" | "flame" | "laurel" | "clock" | "layers"
-  | "shield" | "crown" | "anvil" | "sun" | "moon" | "replay";
+  | "shield" | "crown" | "anvil" | "sun" | "moon" | "replay" | "whistle";
 
 export type Badge = {
   /** Stable across renders, so React keys and tests can rely on it. */
@@ -165,6 +165,15 @@ function runLength(orderedDays: string[], attended: Set<string>): number {
  * attendance would hand the badge to whoever signed the first sheet.
  */
 const FOUNDERS = ["Eli Seeliger"];
+
+/*
+ * The people who run the sessions rather than attend them.
+ *
+ * Named here for the same reason founders are: nothing in the session rows
+ * distinguishes a coach from a member who turns up a lot, and inferring it
+ * from hours would hand the badge to whoever attended most.
+ */
+const COACHES = ["Eli Seeliger", "Dylan Liu", "Cecilia Seeliger", "Eric Huang"];
 
 /* No 10-hour mark: that is three evenings, and everyone clears it. */
 const HOUR_MILESTONES = [500, 250, 100, 50, 25];
@@ -669,6 +678,17 @@ function assemble(member: Member, ctx: Context): Badge[] {
     });
   }
 
+  if (COACHES.includes(fullName)) {
+    badges.push({
+      id: "coach",
+      label: "Coach",
+      detail: "Runs the club's sessions",
+      shape: "whistle",
+      tier: "special",
+      weight: 280,
+    });
+  }
+
   if (FOUNDERS.includes(fullName)) {
     badges.push({
       id: "founder",
@@ -962,6 +982,10 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
       {
         badge: { id: "founder", label: "Founder", detail: "Started the club", shape: "crown", tier: "gold", weight: 0 },
         how: "Founded VexKan. Not something attendance can earn.",
+      },
+      {
+        badge: { id: "coach", label: "Coach", detail: "Runs the sessions", shape: "whistle", tier: "special", weight: 0 },
+        how: "Runs the club's sessions. Named rather than earned, like Founder.",
       },
       {
         badge: { id: "marathon", label: "Marathon", detail: "One long visit", shape: "clock", tier: "special", weight: 0 },

@@ -297,6 +297,23 @@ function Shape({
         </>
       );
 
+    /* Coach: a whistle. */
+    case "whistle":
+      return (
+        <>
+          <path
+            d="M4 12 H18 A7.5 7.5 0 1 1 18 27 H11 A7 7 0 0 1 4 20 Z"
+            fill={fill}
+            stroke={metal.dark}
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <circle cx="18.5" cy="19.5" r="3.4" fill={metal.ink} opacity="0.55" />
+          <path d="M4 12 V8 A2 2 0 0 1 6 6 H12" fill="none" stroke={ACCENT.ribbon} strokeWidth="2.6" strokeLinecap="round" />
+          <path d="M6.5 15 H12" stroke={metal.light} strokeWidth="1.4" opacity="0.7" strokeLinecap="round" />
+        </>
+      );
+
     /* Visits: stacked plates, one per return. */
     case "layers":
       return (
