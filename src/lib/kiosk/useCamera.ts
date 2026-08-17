@@ -53,8 +53,8 @@ export type CameraState = {
   resume: () => Promise<void>;
   /** Front or rear. The rear camera is how an organizer photographs a group. */
   facing: Facing;
-  /** Swaps cameras, keeping the stream open. Null while only one exists. */
-  flip: (() => Promise<void>) | null;
+  /** Swaps cameras. Reports a refusal rather than failing silently. */
+  flip: () => Promise<void>;
   stop: () => void;
 };
 
@@ -93,7 +93,11 @@ export function useCamera(): CameraState {
     stream.current = null;
   }, []);
 
-  const open = useCallback(async (silent: boolean, want: Facing = "user", deviceId?: string) => {
+  const open = useCallback(async (
+    silent: boolean,
+    want: Facing = "user",
+    constraint?: MediaTrackConstraints,
+  ) => {
     if (!secureEnough()) {
       if (silent) return;
       setStatus("insecure");
@@ -133,14 +137,11 @@ export function useCamera(): CameraState {
          * anyway, so a larger stream only costs the iPad decode work and
          * memory on every frame it draws.
          */
-        /*
-         * A device id when we have one, because facingMode is only a hint:
-         * Safari may quietly return the front camera for "environment", so the
-         * mirror flips while the picture does not. An id is unambiguous.
-         */
-        video: deviceId
-          ? { deviceId: { exact: deviceId }, width: { ideal: 960 }, height: { ideal: 540 } }
-          : { facingMode: want, width: { ideal: 960 }, height: { ideal: 540 } },
+        video: {
+          ...(constraint ?? { facingMode: want }),
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+        },
         audio: false,
       });
       stream.current = media;
@@ -151,7 +152,7 @@ export function useCamera(): CameraState {
        */
       const track = media.getVideoTracks()[0];
       const settings = track?.getSettings?.() ?? {};
-      currentDeviceId.current = settings.deviceId ?? deviceId ?? null;
+      currentDeviceId.current = settings.deviceId ?? null;
       const reported = settings.facingMode as Facing | undefined;
       const byLabel = /back|rear|environment/i.test(track?.label ?? "")
         ? "environment"
@@ -211,24 +212,42 @@ export function useCamera(): CameraState {
 
   const start = useCallback(() => open(false), [open]);
 
+  /**
+   * Switches cameras, trying each mechanism browsers actually honour.
+   *
+   * There is no single reliable one. `facingMode: "environment"` is advisory —
+   * Safari may return the front camera anyway, so the mirror flips while the
+   * picture does not. `{ exact: "environment" }` is binding but throws where
+   * unsupported. A device id is unambiguous but iOS does not always enumerate
+   * both cameras, and its ids are not stable between sessions. So: try the
+   * binding form, then the id, then the hint, and stop at whichever produces a
+   * camera that is genuinely different from the one already open.
+   */
   const flip = useCallback(async () => {
-    const list = cameras.current;
     const other: Facing = facing === "user" ? "environment" : "user";
+    const wasDevice = currentDeviceId.current;
+    const wasFacing = facing;
 
-    // Next camera in the list, wrapping. On a two-camera iPad that is simply
-    // the other one, and it is named rather than described.
-    let target: string | undefined;
-    if (list.length > 1) {
-      const at = list.findIndex((d) => d.deviceId === currentDeviceId.current);
-      target = list[(at + 1) % list.length]?.deviceId || undefined;
+    const list = cameras.current;
+    const at = list.findIndex((d) => d.deviceId === wasDevice);
+    const nextId = list.length > 1 ? list[(at + 1) % list.length]?.deviceId : undefined;
+
+    const attempts: MediaTrackConstraints[] = [
+      { facingMode: { exact: other } },
+      ...(nextId ? [{ deviceId: { exact: nextId } } as MediaTrackConstraints] : []),
+      { facingMode: other },
+    ];
+
+    for (const attempt of attempts) {
+      await open(true, other, attempt);
+      // Changed camera only if the device actually differs. A hint that was
+      // ignored reopens the same one, which is a failure wearing a success.
+      if (stream.current && currentDeviceId.current !== wasDevice) return;
     }
 
-    await open(false, other, target);
-
-    // Refused, or there was no id to use: try describing it instead, then give
-    // the working camera back rather than leaving a dead panel.
-    if (!stream.current) await open(true, other);
-    if (!stream.current) await open(true, facing, currentDeviceId.current ?? undefined);
+    // Nothing worked. Put the original back rather than leave a dead panel.
+    await open(true, wasFacing, wasDevice ? { deviceId: { exact: wasDevice } } : undefined);
+    setMessage("This device would not switch cameras.");
   }, [open, facing]);
 
   const resume = useCallback(async () => {
@@ -254,7 +273,13 @@ export function useCamera(): CameraState {
 
   const getVideo = useCallback(() => video.current, []);
 
-  return { attach, getVideo, status, message, start, resume, facing, flip: hasSeveral ? flip : null, stop };
+  /*
+   * Offered whenever the camera is open, not only when two were enumerated.
+   * iOS does not always list both, so gating on the count hid the control on
+   * exactly the devices that needed it. A refusal is reported instead.
+   */
+  void hasSeveral;
+  return { attach, getVideo, status, message, start, resume, facing, flip, stop };
 }
 
 /** Resolves once the element reports real dimensions, or gives up after 5s. */
