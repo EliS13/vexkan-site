@@ -15,6 +15,9 @@ import { BadgeIcon } from "./BadgeIcon";
  * leaderboard links to, which is read-only. Two copies of this would drift the
  * first time a badge was added.
  */
+/* Five fit without the visits below being pushed off a phone screen. */
+const SHOWN_AT_FIRST = 5;
+
 export function MemberProfile({
   member,
   signedIn,
@@ -86,7 +89,7 @@ export function MemberProfile({
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
-            {badges.map((badge) => (
+            {badges.slice(0, SHOWN_AT_FIRST).map((badge) => (
               <li key={badge.id}>
                 <a
                   href={`/awards#${awardKind(badge)}`}
@@ -101,6 +104,39 @@ export function MemberProfile({
               </li>
             ))}
           </ul>
+        )}
+
+        {/*
+          * Past five, the rest fold away. A member with a dozen badges should
+          * not push their recent visits off the screen — and <details> needs no
+          * JavaScript, so this behaves the same in the kiosk overlay and on the
+          * server-rendered page.
+          */}
+        {badges.length > SHOWN_AT_FIRST && (
+          <details className="mt-2 group">
+            <summary className="cursor-pointer list-none rounded-lg border-2 border-[#2e343b] px-3 py-2 text-center font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              <span className="group-open:hidden">
+                View {badges.length - SHOWN_AT_FIRST} more
+              </span>
+              <span className="hidden group-open:inline">Show fewer</span>
+            </summary>
+            <ul className="mt-2 flex flex-col gap-2">
+              {badges.slice(SHOWN_AT_FIRST).map((badge) => (
+                <li key={badge.id}>
+                  <a
+                    href={`/awards#${awardKind(badge)}`}
+                    className="flex items-center gap-3 rounded-xl border-2 border-[#2e343b] bg-[#14171a] p-2 transition-colors hover:border-[#ffb100]"
+                  >
+                    <BadgeIcon badge={badge} className="size-9 shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-serif text-base font-semibold">{badge.label}</p>
+                      <p className="truncate font-mono text-[10px] text-[#8b949e]">{badge.detail}</p>
+                    </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </details>
         )}
       </section>
 

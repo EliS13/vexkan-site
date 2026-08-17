@@ -158,6 +158,13 @@ function runLength(orderedDays: string[], attended: Set<string>): number {
 
 /* --------------------------------------------------------------- the set */
 
+/*
+ * The people who started the club. Named rather than derived: nothing in the
+ * session rows says who founded anything, and inferring it from the earliest
+ * attendance would hand the badge to whoever signed the first sheet.
+ */
+const FOUNDERS = ["Eli Seeliger"];
+
 /* No 10-hour mark: that is three evenings, and everyone clears it. */
 const HOUR_MILESTONES = [500, 250, 100, 50, 25];
 const VISIT_MILESTONES = [100, 50, 25];
@@ -290,6 +297,153 @@ const SECRETS: Secret[] = [
         gap = Math.max(gap, (Date.parse(days[i]) - Date.parse(days[i - 1])) / 86_400_000);
       }
       return gap >= 90 ? `Came back after ${Math.round(gap)} days away` : null;
+    },
+  },
+  {
+    id: "dawn-patrol",
+    label: "Dawn Patrol",
+    shape: "sun",
+    weight: 37,
+    test: (_m, ctx) =>
+      ctx.mine.some((s) => clubParts(s.signedInAt).minutes < 8 * 60)
+        ? "Signed in before 8am"
+        : null,
+  },
+  {
+    id: "midnight-oil",
+    label: "Midnight Oil",
+    shape: "moon",
+    weight: 38,
+    test: (_m, ctx) =>
+      ctx.mine.some((s) => s.signedOutAt && clubParts(s.signedOutAt).minutes >= 23 * 60)
+        ? "Still here after 11pm"
+        : null,
+  },
+  {
+    id: "seven-days",
+    label: "Seven Days",
+    shape: "crown",
+    weight: 39,
+    test: (_m, ctx) => {
+      const days = new Set(ctx.mine.map((s) => clubParts(s.signedInAt).weekday));
+      return days.size === 7 ? "Came on every day of the week" : null;
+    },
+  },
+  {
+    id: "solo-session",
+    label: "Solo Session",
+    shape: "moon",
+    weight: 30,
+    test: (_m, ctx) => {
+      const alone = [...new Set(ctx.mine.map((s) => clubDay(s.signedInAt)))].filter(
+        (d) => ctx.headcountByDay.get(d) === 1,
+      );
+      return alone.length ? `The only one here, ${alone.length} time${alone.length === 1 ? "" : "s"}` : null;
+    },
+  },
+  {
+    id: "anniversary",
+    label: "Anniversary",
+    shape: "laurel",
+    weight: 33,
+    test: (_m, ctx) => {
+      const byDate = new Map<string, Set<string>>();
+      for (const s of ctx.mine) {
+        const [year, month, day] = clubDay(s.signedInAt).split("-");
+        const key = `${month}-${day}`;
+        (byDate.get(key) ?? byDate.set(key, new Set()).get(key)!).add(year);
+      }
+      const hit = [...byDate.entries()].find(([, years]) => years.size >= 2);
+      return hit ? `Here on the same date in ${hit[1].size} different years` : null;
+    },
+  },
+  {
+    id: "lunch-club",
+    label: "Lunch Club",
+    shape: "sun",
+    weight: 27,
+    test: (_m, ctx) =>
+      ctx.mine.some(
+        (s) =>
+          s.signedOutAt &&
+          clubParts(s.signedInAt).minutes >= 11 * 60 &&
+          clubParts(s.signedOutAt).minutes <= 14 * 60,
+      )
+        ? "A whole visit inside the lunch hour"
+        : null,
+  },
+  {
+    id: "marathon-day",
+    label: "Marathon Day",
+    shape: "flame",
+    weight: 40,
+    test: (_m, ctx) => {
+      const byDay = new Map<string, number>();
+      for (const s of ctx.mine) {
+        const d = clubDay(s.signedInAt);
+        byDay.set(d, (byDay.get(d) ?? 0) + sessionMs(s, ctx.now));
+      }
+      const best = Math.max(0, ...byDay.values());
+      return best >= 8 * 3_600_000 ? `${hours(best)} in a single day` : null;
+    },
+  },
+  {
+    id: "summer-school",
+    label: "Summer School",
+    shape: "sun",
+    weight: 26,
+    test: (_m, ctx) =>
+      ctx.mine.some((s) => ["07", "08"].includes(clubDay(s.signedInAt).slice(5, 7)))
+        ? "Came in the summer holidays"
+        : null,
+  },
+  {
+    id: "new-year",
+    label: "New Year",
+    shape: "star",
+    weight: 26,
+    test: (_m, ctx) => {
+      const years = new Set(
+        ctx.mine
+          .filter((s) => clubDay(s.signedInAt).slice(5, 7) === "01")
+          .map((s) => clubDay(s.signedInAt).slice(0, 4)),
+      );
+      return years.size >= 2 ? `Back in January of ${years.size} different years` : null;
+    },
+  },
+  {
+    id: "four-seasons",
+    label: "Rain or Shine",
+    shape: "sun",
+    weight: 34,
+    test: (_m, ctx) => {
+      /* Winter, spring, summer, autumn — by the months the club runs in. */
+      const quarters = new Set(
+        ctx.mine.map((s) => Math.floor((Number(clubDay(s.signedInAt).slice(5, 7)) - 1) / 3)),
+      );
+      return quarters.size === 4 ? "Came in all four seasons of the year" : null;
+    },
+  },
+  {
+    id: "bookends",
+    label: "Bookends",
+    shape: "shield",
+    weight: 41,
+    test: (m, ctx) => {
+      const days = [...ctx.firstInByDay.entries()]
+        .filter(([day, id]) => id === m.id && ctx.lastOutByDay.get(day) === m.id)
+        .length;
+      return days >= 3 ? `Opened and closed the club on ${days} days` : null;
+    },
+  },
+  {
+    id: "ten-months",
+    label: "Eight Months",
+    shape: "layers",
+    weight: 32,
+    test: (_m, ctx) => {
+      const months = new Set(ctx.mine.map((s) => clubDay(s.signedInAt).slice(0, 7)));
+      return months.size >= 8 ? `Turned up in ${months.size} different months` : null;
     },
   },
   {
@@ -426,11 +580,22 @@ function assemble(member: Member, ctx: Context): Badge[] {
   if (mySeasons.size >= 2) {
     badges.push({
       id: `veteran-${mySeasons.size}`,
-      label: mySeasons.size >= 3 ? "Founder" : "Returned",
+      label: mySeasons.size >= 3 ? "Running it back" : "Returned",
       detail: `Came back across ${mySeasons.size} seasons`,
       shape: "laurel",
       tier: "special",
       weight: 75 + mySeasons.size,
+    });
+  }
+
+  if (FOUNDERS.includes(`${member.firstName} ${member.lastName}`)) {
+    badges.push({
+      id: "founder",
+      label: "Founder",
+      detail: "Started the club",
+      shape: "crown",
+      tier: "gold",
+      weight: 300,
     });
   }
 
@@ -441,7 +606,6 @@ function assemble(member: Member, ctx: Context): Badge[] {
    */
   const streakAll = runLength(ctx.orderedDays, ctx.myDays);
   const totalHours = totalMs / 3_600_000;
-  const podiums = badges.filter((b) => b.id.startsWith("season-")).length;
   const averageMs = mine.length > 0 ? totalMs / mine.length : 0;
 
   if (totalHours >= 100 && streakAll >= 10) {
@@ -455,16 +619,6 @@ function assemble(member: Member, ctx: Context): Badge[] {
     });
   }
 
-  if (podiums >= 2) {
-    badges.push({
-      id: "dynasty",
-      label: "Dynasty",
-      detail: `On the podium in ${podiums} different seasons`,
-      shape: "crown",
-      tier: "gold",
-      weight: 95,
-    });
-  }
 
   if (mine.length >= 25 && averageMs >= 3 * 3_600_000) {
     badges.push({
@@ -558,6 +712,18 @@ const SECRET_HINTS: Record<string, string> = {
   "big-week": "Twenty hours inside a single week.",
   comeback: "Return after ninety days away.",
   clockwork: "Arrive in the same five-minute window fifteen times.",
+  "dawn-patrol": "Sign in before 8am.",
+  "midnight-oil": "Still signed in after 11pm.",
+  "seven-days": "Come on all seven days of the week, across your time here.",
+  "solo-session": "Be the only member in the room on a club day.",
+  anniversary: "Be here on the same calendar date in two different years.",
+  "lunch-club": "A whole visit inside the lunch hour.",
+  "marathon-day": "Eight hours in one day, across as many visits as it takes.",
+  "summer-school": "Come during the summer holidays.",
+  "new-year": "Come in January, in two different years.",
+  "four-seasons": "Come in all four seasons of the calendar year.",
+  bookends: "First in and last out on the same day, three times.",
+  "ten-months": "Turn up in eight different calendar months.",
 };
 
 export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
@@ -614,10 +780,6 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
     heading: "Combinations",
     entries: [
       {
-        badge: { id: "dynasty", label: "Dynasty", detail: "Podium twice", shape: "crown", tier: "gold", weight: 0 },
-        how: "On the podium in two or more different seasons.",
-      },
-      {
         badge: { id: "ironclad", label: "Ironclad", detail: "Hours and consistency", shape: "shield", tier: "gold", weight: 0 },
         how: "100 hours or more, and a streak of at least 10 club days. Volume alone will not do it.",
       },
@@ -636,7 +798,11 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
       },
       {
         badge: { id: "returned", label: "Returned", detail: "Two seasons", shape: "laurel", tier: "special", weight: 0 },
-        how: "Came back for a second season. Becomes Founder at three.",
+        how: "Came back for a second season. Becomes Running it back at three.",
+      },
+      {
+        badge: { id: "founder", label: "Founder", detail: "Started the club", shape: "crown", tier: "gold", weight: 0 },
+        how: "Founded VexKan. Not something attendance can earn.",
       },
       {
         badge: { id: "marathon", label: "Marathon", detail: "One long visit", shape: "clock", tier: "special", weight: 0 },

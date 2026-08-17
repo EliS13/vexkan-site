@@ -130,13 +130,15 @@ describe("badgesFor", () => {
     expect(veteran?.label).toBe("Returned");
   });
 
-  it("calls three seasons a founder", () => {
+  it("calls three seasons Running it back", () => {
     const s = [
       visit("a", "m1", "2024-12-30"),
       visit("b", "m1", "2025-09-21"),
       visit("c", "m1", "2026-06-01"),
     ];
-    expect(badgesFor(m1, s, NOW).find((b) => b.id.startsWith("veteran-"))?.label).toBe("Founder");
+    expect(badgesFor(m1, s, NOW).find((b) => b.id.startsWith("veteran-"))?.label).toBe(
+      "Running it back",
+    );
   });
 
   it("reports only the highest hour milestone reached", () => {
@@ -232,5 +234,24 @@ describe("secret achievements", () => {
     const badges = badgesFor(m1, s, NOW);
     // The season medal still leads; a secret never outranks a placing.
     expect(badges[0].shape).not.toBe("sun");
+  });
+});
+
+describe("Founder", () => {
+  it("goes to the club's founder and nobody else", () => {
+    const s = [
+      {
+        id: "s1",
+        memberId: "m9",
+        signedInAt: "2026-06-01T18:00:00.000-06:00",
+        signedOutAt: "2026-06-01T20:00:00.000-06:00",
+        autoClosed: false,
+        verified: false,
+        note: null,
+      },
+    ];
+    const eli = { ...member("m9"), firstName: "Eli", lastName: "Seeliger" };
+    expect(badgesFor(eli, s, NOW).some((b) => b.id === "founder")).toBe(true);
+    expect(badgesFor(member("m9"), s, NOW).some((b) => b.id === "founder")).toBe(false);
   });
 });
