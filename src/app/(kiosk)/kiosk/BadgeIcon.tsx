@@ -20,6 +20,8 @@ const METAL: Record<BadgeTier, { light: string; mid: string; dark: string; ink: 
   milestone: { light: "#9df0c4", mid: "#3fbb82", dark: "#1d6b48", ink: "#0c2e1f" },
   streak: { light: "#f5b98a", mid: "#e8743c", dark: "#a13d13", ink: "#3d1808" },
   special: { light: "#cbb6f5", mid: "#9b7ae0", dark: "#5b3fa0", ink: "#241640" },
+  /* Secrets read as ink and neon rather than metal — they are not ranked. */
+  secret: { light: "#8ee9ff", mid: "#33b6d8", dark: "#155e75", ink: "#04222b" },
 };
 
 export function BadgeIcon({ badge, className = "" }: { badge: Badge; className?: string }) {
@@ -159,6 +161,89 @@ function Shape({
           <circle cx="16" cy="16" r="13" fill={fill} stroke={metal.dark} strokeWidth="1.3" />
           <circle cx="16" cy="16" r="9.6" fill="none" stroke={metal.light} strokeWidth="0.9" opacity="0.5" />
           <path d="M16 8.5 V16 L21.5 19.5" fill="none" stroke={metal.ink} strokeWidth="2.2" strokeLinecap="round" />
+        </>
+      );
+
+    /* Ironclad: a shield — volume plus consistency, the hardest to fake. */
+    case "shield":
+      return (
+        <>
+          <path
+            d="M16 2 L28 6.5 V15 C28 22.5 22.8 27.6 16 30 C9.2 27.6 4 22.5 4 15 V6.5 Z"
+            fill={fill}
+            stroke={metal.dark}
+            strokeWidth="1.3"
+            strokeLinejoin="round"
+          />
+          <path d="M16 2 V30" stroke={metal.dark} strokeWidth="0.9" opacity="0.45" />
+          <path d="M7 8 L16 5 V13 L7 15.5 Z" fill={metal.light} opacity="0.45" />
+        </>
+      );
+
+    /* Dynasty: a crown, for a podium in more than one season. */
+    case "crown":
+      return (
+        <>
+          <path
+            d="M3 24 L5.5 9 L12 16 L16 6 L20 16 L26.5 9 L29 24 Z"
+            fill={fill}
+            stroke={metal.dark}
+            strokeWidth="1.3"
+            strokeLinejoin="round"
+          />
+          <rect x="3" y="24" width="26" height="4.5" rx="1.4" fill={fill} stroke={metal.dark} strokeWidth="1.2" />
+          <circle cx="16" cy="26.2" r="1.2" fill={metal.ink} opacity="0.5" />
+          <circle cx="9" cy="26.2" r="1" fill={metal.ink} opacity="0.35" />
+          <circle cx="23" cy="26.2" r="1" fill={metal.ink} opacity="0.35" />
+        </>
+      );
+
+    /* Workhorse: an anvil, for long visits over and over. */
+    case "anvil":
+      return (
+        <>
+          <path
+            d="M4 9 H24 C24 13 21 15.5 18 16.5 V19 H23 L26 28 H8 L11 19 H14 V16.5 C10 15.6 7.5 13.6 4 13 Z"
+            fill={fill}
+            stroke={metal.dark}
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <path d="M6 10.5 H21" stroke={metal.light} strokeWidth="1.1" opacity="0.55" />
+        </>
+      );
+
+    /* Early Bird and Weekender: a rising sun. */
+    case "sun":
+      return (
+        <>
+          <circle cx="16" cy="18" r="7" fill={fill} stroke={metal.dark} strokeWidth="1.2" />
+          {[0, 45, 90, 135].map((deg) => (
+            <path
+              key={deg}
+              d="M16 4.5 V8.5"
+              stroke={fill}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              transform={`rotate(${deg} 16 18)`}
+            />
+          ))}
+          <path d="M2.5 28 H29.5" stroke={metal.dark} strokeWidth="1.8" strokeLinecap="round" />
+        </>
+      );
+
+    /* Night Owl and Last One Out: a crescent moon. */
+    case "moon":
+      return (
+        <>
+          <path
+            d="M22 4 A13 13 0 1 0 28 18.5 A10.5 10.5 0 1 1 22 4 Z"
+            fill={fill}
+            stroke={metal.dark}
+            strokeWidth="1.2"
+            strokeLinejoin="round"
+          />
+          <circle cx="9" cy="12" r="1.5" fill={metal.light} opacity="0.7" />
         </>
       );
 

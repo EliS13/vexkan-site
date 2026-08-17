@@ -174,3 +174,63 @@ describe("badgesFor", () => {
     expect(topBadges(all)).toHaveLength(3);
   });
 });
+
+describe("secret achievements", () => {
+  const m1 = member("m1");
+
+  /** A visit on `day`, starting at `startHour` club time, lasting `hours`. */
+  function at(id: string, memberId: string, day: string, startHour: number, hours = 2): Session {
+    const start = `${day}T${String(startHour).padStart(2, "0")}:00:00.000-06:00`;
+    return {
+      id,
+      memberId,
+      signedInAt: new Date(start).toISOString(),
+      signedOutAt: new Date(Date.parse(start) + hours * 3_600_000).toISOString(),
+      autoClosed: false,
+      verified: false,
+      note: null,
+    };
+  }
+  const has = (s: Session[], id: string) => badgesFor(m1, s, NOW).some((b) => b.id === id);
+
+  it("gives Early Bird for signing in before 9am", () => {
+    expect(has([at("a", "m1", "2026-06-01", 8)], "early-bird")).toBe(true);
+    expect(has([at("a", "m1", "2026-06-01", 10)], "early-bird")).toBe(false);
+  });
+
+  it("gives Night Owl only after five late nights", () => {
+    const four = [1, 2, 3, 4].map((d, i) => at(`a${i}`, "m1", `2026-06-0${d}`, 20, 2));
+    expect(has(four, "night-owl")).toBe(false);
+    expect(has([...four, at("a5", "m1", "2026-06-05", 20, 2)], "night-owl")).toBe(true);
+  });
+
+  it("gives Double Dip for three visits in one day, not two", () => {
+    const day = "2026-06-01";
+    const two = [at("a", "m1", day, 9, 1), at("b", "m1", day, 13, 1)];
+    expect(has(two, "double-dip")).toBe(false);
+    expect(has([...two, at("c", "m1", day, 18, 1)], "double-dip")).toBe(true);
+  });
+
+  it("gives Comeback after ninety days away", () => {
+    const s = [at("a", "m1", "2026-01-05", 17), at("b", "m1", "2026-06-01", 17)];
+    expect(has(s, "comeback")).toBe(true);
+  });
+
+  it("does not give Comeback for a normal gap", () => {
+    const s = [at("a", "m1", "2026-05-01", 17), at("b", "m1", "2026-06-01", 17)];
+    expect(has(s, "comeback")).toBe(false);
+  });
+
+  it("gives Ironclad only for hours and a streak together", () => {
+    // 120 hours, but every visit on the same day: no streak.
+    const heavy = Array.from({ length: 30 }, (_, i) => at(`h${i}`, "m1", "2026-06-01", 8, 4));
+    expect(has(heavy, "ironclad")).toBe(false);
+  });
+
+  it("keeps secrets out of the podium weighting", () => {
+    const s = [at("a", "m1", "2026-06-01", 8, 4), at("b", "m2", "2026-06-01", 8, 1)];
+    const badges = badgesFor(m1, s, NOW);
+    // The season medal still leads; a secret never outranks a placing.
+    expect(badges[0].shape).not.toBe("sun");
+  });
+});

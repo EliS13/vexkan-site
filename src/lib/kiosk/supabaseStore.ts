@@ -103,11 +103,36 @@ const toSession = (r: SessionRow): Session => ({
 
 /* ----------------------------------------------------------------- reads */
 
+/*
+ * Every row, not the first thousand.
+ *
+ * PostgREST answers a plain select with at most 1000 rows and says so only in
+ * the Content-Range header — no error, no truncation notice. The club crossed
+ * that line when three years of paper sheets were imported, and from then on
+ * the kiosk quietly dropped its 96 oldest sessions: hours were short, the
+ * leaderboard was wrong, and nothing anywhere said so.
+ *
+ * Paging in blocks of 1000 until a short page arrives. Sessions are the only
+ * table near the limit today; members and groups go through the same path so
+ * they cannot develop the same silent fault at 1000 members.
+ */
+async function restAll<T>(path: string, page = 1000): Promise<T[]> {
+  const joiner = path.includes("?") ? "&" : "?";
+  const rows: T[] = [];
+  for (let offset = 0; ; offset += page) {
+    const batch = (await rest(`${path}${joiner}limit=${page}&offset=${offset}`)) as T[] | null;
+    if (!batch || batch.length === 0) break;
+    rows.push(...batch);
+    if (batch.length < page) break;
+  }
+  return rows;
+}
+
 export async function getState(): Promise<KioskState & { now: number }> {
   const [members, sessions, groups] = await Promise.all([
-    rest("kiosk_members?select=*") as Promise<MemberRow[]>,
-    rest("kiosk_sessions?select=*") as Promise<SessionRow[]>,
-    rest("kiosk_groups?select=*") as Promise<GroupRow[]>,
+    restAll<MemberRow>("kiosk_members?select=*"),
+    restAll<SessionRow>("kiosk_sessions?select=*&order=signed_in_at"),
+    restAll<GroupRow>("kiosk_groups?select=*"),
   ]);
   return {
     members: members.map(toMember),

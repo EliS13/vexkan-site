@@ -14,6 +14,9 @@ import { Avatar } from "../Avatar";
 
 export const dynamic = "force-dynamic";
 
+/* A row is one line tall. Past four chips it wraps and the board loses its shape. */
+const BADGES_ON_A_ROW = 4;
+
 
 /**
  * Ranked by total hours in the room. Quieter and denser than the kiosk: this is
@@ -79,8 +82,8 @@ export default async function BoardPage() {
                   * sign-in buttons and cannot spend a tap on detail.
                   */}
                 {(book.get(member.id) ?? []).length > 0 && (
-                  <ul className="mb-1 flex flex-wrap gap-1">
-                    {(book.get(member.id) ?? []).map((badge) => (
+                  <ul className="mb-1 flex flex-wrap items-center gap-1">
+                    {(book.get(member.id) ?? []).slice(0, BADGES_ON_A_ROW).map((badge) => (
                       <li
                         key={badge.id}
                         title={badge.detail}
@@ -90,6 +93,14 @@ export default async function BoardPage() {
                         {badge.label}
                       </li>
                     ))}
+                    {(book.get(member.id) ?? []).length > BADGES_ON_A_ROW && (
+                      <li className="font-mono text-[10px] text-[#8b949e]">
+                        +{(book.get(member.id) ?? []).length - BADGES_ON_A_ROW}
+                      </li>
+                    )}
+                    <li className="ml-1 font-mono text-[10px] text-[#4a525b]">
+                      {(book.get(member.id) ?? []).length} badges
+                    </li>
                   </ul>
                 )}
                 <p className="truncate font-serif text-lg font-semibold">

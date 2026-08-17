@@ -50,6 +50,18 @@ export function Kiosk({
    * buys somewhere for a member to see what they have earned.
    */
   const [profileFor, setProfileFor] = useState<Member | null>(null);
+  /*
+   * Hold a tile to sign in or out; tap it to open the profile.
+   *
+   * The profile made the common action two taps. A press-and-hold puts the
+   * one-tap path back for anyone who knows it, without taking the tile's new
+   * job away — and the button inside the profile keeps the action reachable
+   * for anyone who does not, including by keyboard, where a hold has no
+   * meaning.
+   */
+  const [holding, setHolding] = useState<string | null>(null);
+  const holdTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const acted = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [camera, setCamera] = useState<CameraMode>(null);
@@ -244,6 +256,27 @@ export function Kiosk({
     }
   }, [pending, showConfirmation, state, now]);
 
+  const startHold = useCallback(
+    (member: Member, signedIn: boolean) => {
+      acted.current = false;
+      setHolding(member.id);
+      if (holdTimer.current) clearTimeout(holdTimer.current);
+      holdTimer.current = setTimeout(() => {
+        acted.current = true;
+        setHolding(null);
+        void tap(member, signedIn);
+      }, 550);
+    },
+    [tap],
+  );
+
+  const endHold = useCallback(() => {
+    if (holdTimer.current) clearTimeout(holdTimer.current);
+    setHolding(null);
+  }, []);
+
+  useEffect(() => () => { if (holdTimer.current) clearTimeout(holdTimer.current); }, []);
+
   const cameraDone = useCallback(
     (next: { sessions: KioskState["sessions"]; now: number }, signedIn: Member[]) => {
       anchor.current = { serverNow: next.now, at: Date.now() };
@@ -341,13 +374,25 @@ export function Kiosk({
         {roster.map(({ member, signedIn, currentMs, totalMs }) => (
           <button
             key={member.id}
-            onClick={() => setProfileFor(member)}
+            onClick={() => {
+              // The hold already did something; do not also open the profile.
+              if (acted.current) { acted.current = false; return; }
+              setProfileFor(member);
+            }}
+            onPointerDown={() => startHold(member, signedIn)}
+            onPointerUp={endHold}
+            onPointerLeave={endHold}
+            onPointerCancel={endHold}
+            // Long-press on iOS otherwise raises the selection callout.
+            onContextMenu={(e) => e.preventDefault()}
             disabled={pending === member.id}
             aria-pressed={signedIn}
             aria-label={`${member.firstName} ${member.lastName}, ${
-              signedIn ? "signed in. Open profile." : "signed out. Open profile."
-            }`}
-            className={`group relative flex min-h-[88px] flex-col gap-2 rounded-2xl p-3 text-left transition-[transform,background-color] duration-100 active:scale-[0.97] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100 ${
+              signedIn ? "signed in" : "signed out"
+            }. Open profile, or hold to sign ${signedIn ? "out" : "in"}.`}
+            className={`group relative flex min-h-[88px] flex-col gap-2 rounded-2xl p-3 text-left select-none transition-[transform,background-color] duration-100 active:scale-[0.97] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100 ${
+              holding === member.id ? "ring-4 ring-[#ffb100]" : ""
+            } ${
               signedIn
                 ? "border-4 border-[#ffb100] bg-[#ffb100] text-[#14171a]"
                 : "border-2 border-[#2e343b] bg-[#1d2126] text-[#e8eaed]"

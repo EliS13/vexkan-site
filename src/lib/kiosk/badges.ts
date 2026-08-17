@@ -12,10 +12,13 @@ import type { Member, Session } from "./types";
  * season ends, drifts the first time a session is edited.
  */
 
-export type BadgeTier = "gold" | "silver" | "bronze" | "milestone" | "streak" | "special";
+export type BadgeTier =
+  | "gold" | "silver" | "bronze" | "milestone" | "streak" | "special" | "secret";
 
 /** Which drawing to use. The renderer owns the artwork; this owns the meaning. */
-export type BadgeShape = "medal" | "star" | "gem" | "flame" | "laurel" | "clock" | "layers";
+export type BadgeShape =
+  | "medal" | "star" | "gem" | "flame" | "laurel" | "clock" | "layers"
+  | "shield" | "crown" | "anvil" | "sun" | "moon";
 
 export type Badge = {
   /** Stable across renders, so React keys and tests can rely on it. */
@@ -56,6 +59,31 @@ export function clubDay(iso: string): string {
   const day = DAY_FORMAT.format(new Date(iso));
   dayCache.set(iso, day);
   return day;
+}
+
+const PART_FORMAT = new Intl.DateTimeFormat("en-CA", {
+  timeZone: CLUB_TIMEZONE,
+  weekday: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false,
+});
+const partCache = new Map<string, { weekday: number; minutes: number }>();
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+/** Club-local weekday (0 = Sunday) and minutes past midnight. */
+export function clubParts(iso: string): { weekday: number; minutes: number } {
+  const hit = partCache.get(iso);
+  if (hit) return hit;
+  const parts = Object.fromEntries(
+    PART_FORMAT.formatToParts(new Date(iso)).map((p) => [p.type, p.value]),
+  );
+  const value = {
+    weekday: WEEKDAYS.indexOf(String(parts.weekday)),
+    minutes: (Number(parts.hour) % 24) * 60 + Number(parts.minute),
+  };
+  partCache.set(iso, value);
+  return value;
 }
 
 /**
@@ -139,6 +167,148 @@ const VISIT_MILESTONES = [100, 50, 25];
  */
 const STREAK_MILESTONES = [30, 25, 20, 15, 10, 5];
 
+/*
+ * Secret achievements.
+ *
+ * Each returns the detail line when earned and null when not, so the test and
+ * the wording it produces live together — a rule that changes cannot leave a
+ * description behind describing the old one.
+ */
+type Secret = {
+  id: string;
+  label: string;
+  shape: BadgeShape;
+  weight: number;
+  test: (member: Member, ctx: Context) => string | null;
+};
+
+const SECRETS: Secret[] = [
+  {
+    id: "early-bird",
+    label: "Early Bird",
+    shape: "sun",
+    weight: 30,
+    test: (_m, ctx) => {
+      const early = ctx.mine.filter((s) => clubParts(s.signedInAt).minutes < 9 * 60);
+      return early.length ? `Signed in before 9am, ${early.length} time${early.length === 1 ? "" : "s"}` : null;
+    },
+  },
+  {
+    id: "night-owl",
+    label: "Night Owl",
+    shape: "moon",
+    weight: 31,
+    test: (_m, ctx) => {
+      const late = ctx.mine.filter(
+        (s) => s.signedOutAt && clubParts(s.signedOutAt).minutes >= 21 * 60,
+      );
+      return late.length >= 5 ? `Still here after 9pm on ${late.length} nights` : null;
+    },
+  },
+  {
+    id: "weekender",
+    label: "Weekender",
+    shape: "sun",
+    weight: 29,
+    test: (_m, ctx) => {
+      const weekend = new Set(
+        ctx.mine
+          .filter((s) => [0, 6].includes(clubParts(s.signedInAt).weekday))
+          .map((s) => clubDay(s.signedInAt)),
+      );
+      return weekend.size >= 20 ? `${weekend.size} weekend days at the club` : null;
+    },
+  },
+  {
+    id: "double-dip",
+    label: "Double Dip",
+    shape: "layers",
+    weight: 28,
+    test: (_m, ctx) => {
+      const perDay = new Map<string, number>();
+      for (const s of ctx.mine) {
+        const d = clubDay(s.signedInAt);
+        perDay.set(d, (perDay.get(d) ?? 0) + 1);
+      }
+      const most = Math.max(0, ...perDay.values());
+      return most >= 3 ? `${most} separate visits in a single day` : null;
+    },
+  },
+  {
+    id: "opening-act",
+    label: "Opening Act",
+    shape: "sun",
+    weight: 34,
+    test: (m, ctx) => {
+      const n = [...ctx.firstInByDay.values()].filter((id) => id === m.id).length;
+      return n >= 15 ? `First through the door on ${n} club days` : null;
+    },
+  },
+  {
+    id: "last-one-out",
+    label: "Last One Out",
+    shape: "moon",
+    weight: 34,
+    test: (m, ctx) => {
+      const n = [...ctx.lastOutByDay.values()].filter((id) => id === m.id).length;
+      return n >= 15 ? `Last to leave on ${n} club days` : null;
+    },
+  },
+  {
+    id: "big-week",
+    label: "Big Week",
+    shape: "flame",
+    weight: 36,
+    test: (_m, ctx) => {
+      const byDay = new Map<string, number>();
+      for (const s of ctx.mine) {
+        const d = clubDay(s.signedInAt);
+        byDay.set(d, (byDay.get(d) ?? 0) + sessionMs(s, ctx.now));
+      }
+      const days = [...byDay.keys()].sort();
+      let best = 0;
+      for (let i = 0; i < days.length; i++) {
+        let sum = 0;
+        const start = Date.parse(days[i]);
+        for (let j = i; j < days.length && Date.parse(days[j]) - start < 7 * 86_400_000; j++) {
+          sum += byDay.get(days[j]) ?? 0;
+        }
+        best = Math.max(best, sum);
+      }
+      return best >= 20 * 3_600_000 ? `${hours(best)} inside a single week` : null;
+    },
+  },
+  {
+    id: "comeback",
+    label: "Comeback",
+    shape: "laurel",
+    weight: 33,
+    test: (_m, ctx) => {
+      const days = [...new Set(ctx.mine.map((s) => clubDay(s.signedInAt)))].sort();
+      let gap = 0;
+      for (let i = 1; i < days.length; i++) {
+        gap = Math.max(gap, (Date.parse(days[i]) - Date.parse(days[i - 1])) / 86_400_000);
+      }
+      return gap >= 90 ? `Came back after ${Math.round(gap)} days away` : null;
+    },
+  },
+  {
+    id: "clockwork",
+    label: "Clockwork",
+    shape: "clock",
+    weight: 35,
+    test: (_m, ctx) => {
+      const counts = new Map<number, number>();
+      for (const s of ctx.mine) {
+        const slot = Math.floor(clubParts(s.signedInAt).minutes / 5);
+        counts.set(slot, (counts.get(slot) ?? 0) + 1);
+      }
+      const most = Math.max(0, ...counts.values());
+      return most >= 15 ? `Arrived in the same five minutes ${most} times` : null;
+    },
+  },
+];
+
 /* Longest first, so only the higher of the two is worn. */
 const LONG_SITTINGS = [
   { hours: 8, id: "ultramarathon", label: "Ultramarathon", weight: 48 },
@@ -157,6 +327,10 @@ export function badgesFor(member: Member, sessions: Session[], now: number): Bad
 
 type Context = {
   mine: Session[];
+  /** Who was first in and last out on each club day, for the secret awards. */
+  firstInByDay: Map<string, string>;
+  lastOutByDay: Map<string, string>;
+  headcountByDay: Map<string, number>;
   myDays: Set<string>;
   orderedDays: string[];
   seasons: string[];
@@ -242,12 +416,13 @@ function assemble(member: Member, ctx: Context): Badge[] {
     });
   }
 
+
   /*
    * Seasons attended. The club turned over almost completely between 2024-25
-   * and 2025-26, so staying across a boundary is genuinely uncommon and worth
-   * marking on its own.
+   * and 2025-26, so staying across a boundary is genuinely uncommon.
    */
   const mySeasons = new Set(mine.map((s) => seasonOf(s.signedInAt)));
+
   if (mySeasons.size >= 2) {
     badges.push({
       id: `veteran-${mySeasons.size}`,
@@ -257,6 +432,69 @@ function assemble(member: Member, ctx: Context): Badge[] {
       tier: "special",
       weight: 75 + mySeasons.size,
     });
+  }
+
+  /*
+   * Combinations. These are the interesting ones: no single number gets you
+   * here, so they say something a milestone cannot. Volume without turning up
+   * regularly earns nothing; so does turning up without ever staying.
+   */
+  const streakAll = runLength(ctx.orderedDays, ctx.myDays);
+  const totalHours = totalMs / 3_600_000;
+  const podiums = badges.filter((b) => b.id.startsWith("season-")).length;
+  const averageMs = mine.length > 0 ? totalMs / mine.length : 0;
+
+  if (totalHours >= 100 && streakAll >= 10) {
+    badges.push({
+      id: "ironclad",
+      label: "Ironclad",
+      detail: `${Math.round(totalHours)} hours and a ${streakAll}-day run`,
+      shape: "shield",
+      tier: "gold",
+      weight: 86,
+    });
+  }
+
+  if (podiums >= 2) {
+    badges.push({
+      id: "dynasty",
+      label: "Dynasty",
+      detail: `On the podium in ${podiums} different seasons`,
+      shape: "crown",
+      tier: "gold",
+      weight: 95,
+    });
+  }
+
+  if (mine.length >= 25 && averageMs >= 3 * 3_600_000) {
+    badges.push({
+      id: "workhorse",
+      label: "Workhorse",
+      detail: `${mine.length} visits averaging ${hours(averageMs)}`,
+      shape: "anvil",
+      tier: "special",
+      weight: 66,
+    });
+  }
+
+
+  /*
+   * The secret ones. Nothing here is announced in advance — they are found by
+   * doing something, which is the point of them. Each is a fact about the
+   * sessions, so nobody has to remember to award one.
+   */
+  for (const secret of SECRETS) {
+    const earned = secret.test(member, ctx);
+    if (earned) {
+      badges.push({
+        id: secret.id,
+        label: secret.label,
+        detail: earned,
+        shape: secret.shape,
+        tier: "secret",
+        weight: secret.weight,
+      });
+    }
   }
 
   /* One long sitting. Build nights and competition prep look like this. */
@@ -305,6 +543,21 @@ export function awardKind(badge: Pick<Badge, "id" | "place">): string {
 export type BadgeGuideEntry = {
   badge: Badge;
   how: string;
+  /** Hidden on the awards page until somebody in the club has earned it. */
+  secret?: boolean;
+};
+
+/* Written out rather than derived: the test says when, this says what. */
+const SECRET_HINTS: Record<string, string> = {
+  "early-bird": "Sign in before 9am.",
+  "night-owl": "Still signed in after 9pm, five nights.",
+  weekender: "Twenty weekend days at the club.",
+  "double-dip": "Three separate visits in a single day.",
+  "opening-act": "First through the door on fifteen club days.",
+  "last-one-out": "Last to leave on fifteen club days.",
+  "big-week": "Twenty hours inside a single week.",
+  comeback: "Return after ninety days away.",
+  clockwork: "Arrive in the same five-minute window fifteen times.",
 };
 
 export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
@@ -339,6 +592,38 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
       {
         badge: { id: "visits", label: "Visits", detail: "Times you came", shape: "layers", tier: "milestone", weight: 0 },
         how: `Number of visits recorded: ${[...VISIT_MILESTONES].reverse().join(", ")}.`,
+      },
+    ],
+  },
+  {
+    heading: "Secret",
+    entries: SECRETS.map((s) => ({
+      badge: {
+        id: s.id,
+        label: s.label,
+        detail: "Secret",
+        shape: s.shape,
+        tier: "secret" as const,
+        weight: 0,
+      },
+      how: SECRET_HINTS[s.id] ?? "Found by doing something.",
+      secret: true,
+    })),
+  },
+  {
+    heading: "Combinations",
+    entries: [
+      {
+        badge: { id: "dynasty", label: "Dynasty", detail: "Podium twice", shape: "crown", tier: "gold", weight: 0 },
+        how: "On the podium in two or more different seasons.",
+      },
+      {
+        badge: { id: "ironclad", label: "Ironclad", detail: "Hours and consistency", shape: "shield", tier: "gold", weight: 0 },
+        how: "100 hours or more, and a streak of at least 10 club days. Volume alone will not do it.",
+      },
+      {
+        badge: { id: "workhorse", label: "Workhorse", detail: "Long visits, often", shape: "anvil", tier: "special", weight: 0 },
+        how: "At least 25 visits averaging over three hours each.",
       },
     ],
   },
@@ -405,6 +690,30 @@ export function badgeBook(
   }
 
   const orderedDays = [...clubDays].sort();
+
+  /* Who opened and closed each club day, and how many came. */
+  const firstInByDay = new Map<string, string>();
+  const lastOutByDay = new Map<string, string>();
+  const seenByDay = new Map<string, Set<string>>();
+  const earliest = new Map<string, number>();
+  const latest = new Map<string, number>();
+  for (const s of sessions) {
+    const day = clubDay(s.signedInAt);
+    const inAt = Date.parse(s.signedInAt);
+    if (!earliest.has(day) || inAt < earliest.get(day)!) {
+      earliest.set(day, inAt);
+      firstInByDay.set(day, s.memberId);
+    }
+    if (s.signedOutAt) {
+      const outAt = Date.parse(s.signedOutAt);
+      if (!latest.has(day) || outAt > latest.get(day)!) {
+        latest.set(day, outAt);
+        lastOutByDay.set(day, s.memberId);
+      }
+    }
+    (seenByDay.get(day) ?? seenByDay.set(day, new Set()).get(day)!).add(s.memberId);
+  }
+  const headcountByDay = new Map([...seenByDay].map(([day, who]) => [day, who.size]));
   const seasonRanks = new Map<string, ReturnType<typeof rank>>();
   for (const [season, rows] of bySeason) seasonRanks.set(season, rank(rows, now));
   const allTime = rank(sessions, now);
@@ -415,6 +724,9 @@ export function badgeBook(
       member.id,
       assemble(member, {
         mine: byMember.get(member.id) ?? [],
+        firstInByDay,
+        lastOutByDay,
+        headcountByDay,
         myDays: daysByMember.get(member.id) ?? new Set(),
         orderedDays,
         seasons,
@@ -425,4 +737,71 @@ export function badgeBook(
     );
   }
   return book;
+}
+
+
+/* ---------------------------------------------------------- club awards */
+
+/**
+ * Goals the club chases together.
+ *
+ * These belong to nobody, so they never appear on a tile or a profile — only
+ * on the awards page, with how far along the club is. A member cannot earn
+ * "two thousand hours logged"; the club can, and seeing it two hundred short
+ * is the part that makes it a goal rather than a statistic.
+ */
+export type ClubAward = {
+  id: string;
+  label: string;
+  detail: string;
+  shape: BadgeShape;
+  /** Where the club is now, and what it is reaching for. */
+  current: number;
+  target: number;
+  unit: string;
+  done: boolean;
+};
+
+/** The next unmet rung, or the last one when they are all met. */
+function nextRung(value: number, rungs: number[]): number {
+  return rungs.find((r) => value < r) ?? rungs[rungs.length - 1];
+}
+
+export function clubAwards(members: Member[], sessions: Session[], now: number): ClubAward[] {
+  const totalHours = sessions.reduce((sum, s) => sum + sessionMs(s, now), 0) / 3_600_000;
+
+  const byDay = new Map<string, Set<string>>();
+  const hoursByDay = new Map<string, number>();
+  for (const s of sessions) {
+    const day = clubDay(s.signedInAt);
+    (byDay.get(day) ?? byDay.set(day, new Set()).get(day)!).add(s.memberId);
+    hoursByDay.set(day, (hoursByDay.get(day) ?? 0) + sessionMs(s, now) / 3_600_000);
+  }
+  const fullest = Math.max(0, ...[...byDay.values()].map((who) => who.size));
+  const longestNight = Math.max(0, ...hoursByDay.values());
+  const seasons = new Set(sessions.map((s) => seasonOf(s.signedInAt))).size;
+  const active = members.filter((m) => m.active).length;
+
+  const rows: [string, string, BadgeShape, number, number[], string][] = [
+    ["club-hours", "Hours logged", "gem", Math.round(totalHours), [500, 1000, 2500, 5000, 10000], "hours"],
+    ["club-sessions", "Visits recorded", "layers", sessions.length, [250, 500, 1000, 2500, 5000], "visits"],
+    ["club-members", "Members on the roster", "crown", active, [10, 25, 50, 100], "members"],
+    ["club-full-house", "Full House", "sun", fullest, [10, 15, 20, 30], "in one night"],
+    ["club-long-night", "Longest night", "moon", Math.round(longestNight), [20, 40, 60, 100], "hours in a day"],
+    ["club-seasons", "Seasons run", "laurel", seasons, [2, 3, 5, 10], "seasons"],
+  ];
+
+  return rows.map(([id, label, shape, current, rungs, unit]) => {
+    const target = nextRung(current, rungs);
+    return {
+      id,
+      label,
+      detail: `${current.toLocaleString()} of ${target.toLocaleString()} ${unit}`,
+      shape,
+      current,
+      target,
+      unit,
+      done: current >= rungs[rungs.length - 1],
+    };
+  });
 }

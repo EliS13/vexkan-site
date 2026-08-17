@@ -50,7 +50,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           href="/"
           className="flex-1 rounded-lg border-2 border-[#2e343b] px-4 py-4 text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase"
         >
-          Sign in screen
+          {standing.signedIn ? "Log out" : "Sign in"}
         </a>
       </div>
     </div>

@@ -4,7 +4,7 @@
  * the href against the app's own route tree without applying it.
  */
 import { getState } from "@/lib/kiosk/store";
-import { BADGE_GUIDE, awardKind, badgeBook } from "@/lib/kiosk/badges";
+import { BADGE_GUIDE, awardKind, badgeBook, clubAwards } from "@/lib/kiosk/badges";
 import { BadgeIcon } from "../BadgeIcon";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +28,8 @@ export default async function AwardsPage() {
     }
   }
 
+  const club = clubAwards(state.members, state.sessions, now);
+
   return (
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-5">
       <header className="mb-6 flex items-end justify-between gap-4">
@@ -45,6 +47,50 @@ export default async function AwardsPage() {
         </a>
       </header>
 
+      <section className="mb-7">
+        <h2 className="mb-1 font-mono text-[11px] tracking-[0.18em] text-[#8b949e] uppercase">
+          The club
+        </h2>
+        <p className="mb-3 font-mono text-[11px] text-[#4a525b]">
+          Goals nobody earns alone. These belong to the club, not to a member.
+        </p>
+        <ul className="grid gap-2 sm:grid-cols-2">
+          {club.map((award) => {
+            const share = Math.min(100, (award.current / award.target) * 100);
+            return (
+              <li
+                key={award.id}
+                className="relative flex items-center gap-3 overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3"
+              >
+                <div
+                  aria-hidden
+                  className="absolute inset-y-0 left-0 bg-[#ffb100]/10"
+                  style={{ width: `${share}%` }}
+                />
+                <BadgeIcon
+                  badge={{
+                    id: award.id,
+                    label: award.label,
+                    detail: award.detail,
+                    shape: award.shape,
+                    tier: award.done ? "gold" : "milestone",
+                    weight: 0,
+                  }}
+                  className="relative size-9 shrink-0"
+                />
+                <div className="relative min-w-0 flex-1">
+                  <p className="truncate font-serif text-base font-semibold">{award.label}</p>
+                  <p className="font-mono text-[11px] text-[#8b949e]">{award.detail}</p>
+                </div>
+                <span className="relative shrink-0 font-mono text-[11px] tabular-nums text-[#ffb100]">
+                  {Math.round(share)}%
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+
       <div className="flex flex-col gap-7">
         {BADGE_GUIDE.map((section) => (
           <section key={section.heading}>
@@ -52,18 +98,30 @@ export default async function AwardsPage() {
               {section.heading}
             </h2>
             <ul className="flex flex-col gap-2">
-              {section.entries.map(({ badge, how }) => {
+              {section.entries.map(({ badge, how, secret }) => {
                 const count = held.get(badge.id) ?? 0;
+                /* A secret stays secret until somebody in the club finds it. */
+                const locked = secret === true && count === 0;
                 return (
                   <li
                     key={badge.id}
                     id={badge.id}
                     className="flex scroll-mt-4 items-center gap-4 rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3 target:border-[#ffb100]"
                   >
-                    <BadgeIcon badge={badge} className="size-11 shrink-0 sm:size-12" />
+                    {locked ? (
+                      <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-dashed border-[#4a525b] font-serif text-xl text-[#4a525b] sm:size-12">
+                        ?
+                      </span>
+                    ) : (
+                      <BadgeIcon badge={badge} className="size-11 shrink-0 sm:size-12" />
+                    )}
                     <div className="min-w-0 flex-1">
-                      <p className="font-serif text-lg font-semibold">{badge.label}</p>
-                      <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">{how}</p>
+                      <p className={`font-serif text-lg font-semibold ${locked ? "text-[#4a525b]" : ""}`}>
+                        {locked ? "Secret award" : badge.label}
+                      </p>
+                      <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
+                        {locked ? "Nobody has found this one yet." : how}
+                      </p>
                     </div>
                     <span className="shrink-0 text-right font-mono text-[11px] text-[#8b949e]">
                       {count === 0 ? "unclaimed" : `${count} hold${count === 1 ? "s" : ""} it`}

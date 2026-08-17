@@ -77,7 +77,7 @@ export function MemberProfile({
 
       <section>
         <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
-          {badges.length === 0 ? "No badges yet" : "Badges"}
+          {badges.length === 0 ? "No badges yet" : `Badges · ${badges.length}`}
         </h3>
         {badges.length === 0 ? (
           <p className="font-mono text-[11px] text-[#8b949e]">
