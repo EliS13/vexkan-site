@@ -262,7 +262,7 @@ export function CameraSignIn({
       )}
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="relative grid max-h-[38svh] min-h-[30svh] place-items-center overflow-hidden rounded-2xl bg-black lg:max-h-none lg:min-h-[40vh]">
+        <div className="relative grid min-h-[40vh] place-items-center overflow-hidden rounded-2xl bg-black">
           {/* Mirrored for the person standing there; the captured pixels are not. */}
           <video
             ref={attach}

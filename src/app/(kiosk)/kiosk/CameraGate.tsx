@@ -26,24 +26,24 @@ export function CameraGate({
   const blocked = status === "denied" || status === "unavailable" || status === "insecure";
 
   return (
-    <div className="mx-auto flex w-full max-w-md flex-col justify-center gap-2 overflow-y-auto p-3 text-center sm:gap-4">
+    <div className="mx-auto flex w-full max-w-md flex-col justify-center gap-4 p-2 text-center">
       <div
         aria-hidden
-        className="mx-auto grid size-12 place-items-center rounded-xl border-2 border-[#ffb100] text-2xl sm:size-20 sm:rounded-2xl sm:text-4xl"
+        className="mx-auto grid size-20 place-items-center rounded-2xl border-2 border-[#ffb100] text-4xl"
       >
         📷
       </div>
 
-      <h2 className="font-serif text-xl font-bold sm:text-2xl">
+      <h2 className="font-serif text-2xl font-bold">
         {blocked ? "The camera is not available" : "Turn on the camera"}
       </h2>
 
-      <p className="text-[13px] leading-snug text-[#9aa4ae] sm:text-[15px] sm:leading-relaxed">
+      <p className="text-[15px] leading-relaxed text-[#9aa4ae]">
         {blocked ? message : purpose}
       </p>
 
       {!blocked && (
-        <p className="hidden font-mono text-[11px] leading-relaxed text-[#8b949e] sm:block">
+        <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
           Your browser will ask permission next. Nothing is recorded and no
           picture leaves this device.
         </p>
@@ -53,7 +53,7 @@ export function CameraGate({
         <button
           onClick={onStart}
           disabled={status === "starting"}
-          className="min-h-[60px] rounded-2xl bg-[#ffb100] font-serif text-lg font-bold text-[#14171a] disabled:opacity-40 sm:min-h-[72px] sm:text-xl"
+          className="min-h-[72px] rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
         >
           {status === "starting" ? "Asking…" : "Allow the camera"}
         </button>
