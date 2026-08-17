@@ -14,7 +14,6 @@
  * re-run after a partial failure fills the gaps rather than doubling everyone's
  * hours.
  */
-import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 
 const [, , file, ...flags] = process.argv;
