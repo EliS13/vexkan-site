@@ -20,6 +20,7 @@ import {
   rosterOrder,
   seasonLeaderboard,
 } from "@/lib/kiosk/hours";
+import { badgeBook, topBadges, type Badge } from "@/lib/kiosk/badges";
 import { CLUB_TIMEZONE, describePhase, orderGroups } from "@/lib/kiosk/schedule";
 import { postJson, type SignOutReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
@@ -135,6 +136,16 @@ export function Kiosk({
   const roster = useMemo(
     () => rosterOrder(visibleMembers, state.sessions, now),
     [visibleMembers, state.sessions, now],
+  );
+  /*
+   * Badges for the whole roster, not the filtered view, so switching groups
+   * does not reshuffle who is on a podium. Deliberately not keyed on `now`:
+   * the clock ticks every ten seconds and nobody crosses a hundred hours
+   * between two of them, so this recomputes only when the sessions do.
+   */
+  const book = useMemo(
+    () => badgeBook(state.members, state.sessions, initialNow),
+    [state.members, state.sessions, initialNow],
   );
   // Counted across the whole club, not the filtered view: the header answers
   // "how many are in the room", which a filter should not change. Memoised
@@ -334,6 +345,7 @@ export function Kiosk({
             {/* Square, so the photo is never stretched to fill a tall row. */}
             <div className="relative aspect-square w-full">
               <Avatar member={member} signedIn={signedIn} />
+              <BadgeRow badges={book.get(member.id) ?? []} />
             </div>
 
             <div className="flex items-baseline justify-between gap-2">
@@ -604,6 +616,46 @@ function SignedOutBoard({
     </div>
   );
 }
+
+/**
+ * The three best badges, sitting on the photograph.
+ *
+ * Display only — the tile itself is the sign-in button, so a badge cannot be
+ * tapped for detail without stealing that tap. The full set, with what each one
+ * was for, is on the leaderboard.
+ */
+function BadgeRow({ badges }: { badges: Badge[] }) {
+  const shown = topBadges(badges);
+  if (shown.length === 0) return null;
+  return (
+    <div className="pointer-events-none absolute top-1 left-1 flex gap-1">
+      {shown.map((badge) => (
+        <span
+          key={badge.id}
+          title={`${badge.label} — ${badge.detail}`}
+          className={`grid size-6 place-items-center rounded-md border text-[13px] leading-none shadow-sm sm:size-7 sm:text-[15px] ${TIER_STYLE[badge.tier]}`}
+        >
+          {badge.icon}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/*
+ * Never colour alone: each tier has its own glyph as well, so gold and bronze
+ * are told apart by shape on a photograph and by anyone who cannot separate the
+ * two by hue.
+ */
+const TIER_STYLE: Record<Badge["tier"], string> = {
+  gold: "border-[#c8971a] bg-[#ffcc48] text-[#3d2c00]",
+  silver: "border-[#8f9296] bg-[#d7dade] text-[#2a2d31]",
+  bronze: "border-[#8a5a2b] bg-[#cd8b4a] text-[#33200a]",
+  runnerUp: "border-[#4a525b] bg-[#20242a] text-[#c2c8cf]",
+  milestone: "border-[#2f6f52] bg-[#173a2b] text-[#7fe0ae]",
+  streak: "border-[#7a4a86] bg-[#3a2140] text-[#dbaeea]",
+  special: "border-[#8a6a1f] bg-[#3a2f12] text-[#f0cf7a]",
+};
 
 /** 1st, 2nd, 3rd, 4th — including the 11th-to-13th exceptions. */
 function ordinal(n: number): string {

@@ -7,7 +7,19 @@
  */
 import { getState } from "@/lib/kiosk/store";
 import { formatDuration, formatHours, leaderboard } from "@/lib/kiosk/hours";
+import { badgeBook, type Badge } from "@/lib/kiosk/badges";
 import { Avatar } from "../Avatar";
+
+/* Shape as well as colour, so the tiers survive a photograph and colour blindness. */
+const TIER_STYLE: Record<Badge["tier"], string> = {
+  gold: "border-[#c8971a] bg-[#ffcc48]/15 text-[#ffcc48]",
+  silver: "border-[#8f9296] bg-[#d7dade]/15 text-[#d7dade]",
+  bronze: "border-[#8a5a2b] bg-[#cd8b4a]/15 text-[#cd8b4a]",
+  runnerUp: "border-[#4a525b] bg-[#20242a] text-[#c2c8cf]",
+  milestone: "border-[#2f6f52] bg-[#173a2b] text-[#7fe0ae]",
+  streak: "border-[#7a4a86] bg-[#3a2140] text-[#dbaeea]",
+  special: "border-[#8a6a1f] bg-[#3a2f12] text-[#f0cf7a]",
+};
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +31,7 @@ export default async function BoardPage() {
   const { now, ...state } = await getState();
   const standings = leaderboard(state.members, state.sessions, now);
   const most = standings[0]?.totalMs ?? 0;
+  const book = badgeBook(state.members, state.sessions, now);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-4xl flex-col p-5">
@@ -66,6 +79,26 @@ export default async function BoardPage() {
               </div>
 
               <div className="relative min-w-0 flex-1">
+                {/*
+                  * Every badge, not the tile's best three. This page is read
+                  * standing still, and it is the only place the kiosk can
+                  * explain what each one was for — the tiles themselves are
+                  * sign-in buttons and cannot spend a tap on detail.
+                  */}
+                {(book.get(member.id) ?? []).length > 0 && (
+                  <ul className="mb-1 flex flex-wrap gap-1">
+                    {(book.get(member.id) ?? []).map((badge) => (
+                      <li
+                        key={badge.id}
+                        title={badge.detail}
+                        className={`flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] ${TIER_STYLE[badge.tier]}`}
+                      >
+                        <span aria-hidden>{badge.icon}</span>
+                        {badge.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <p className="truncate font-serif text-lg font-semibold">
                   {member.firstName} {member.lastName}
                 </p>
