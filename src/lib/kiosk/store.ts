@@ -15,7 +15,17 @@ import { openSessionFor } from "./hours";
  * one room and is not fine for anything else.
  */
 
-const DATA_DIR = path.join(process.cwd(), ".data");
+/*
+ * Locally this sits in the repo so the data survives restarts and can be
+ * inspected. On Vercel the filesystem is read-only apart from /tmp, so writing
+ * anywhere else throws and every route 500s.
+ *
+ * /tmp works, but it is per-instance and cleared between cold starts: sign-ins
+ * made on a deployed kiosk will disappear. That is fine for showing people the
+ * thing and unacceptable for recording real hours, which is what the Postgres
+ * swap is for.
+ */
+const DATA_DIR = process.env.VERCEL ? "/tmp/kiosk" : path.join(process.cwd(), ".data");
 const DATA_FILE = path.join(DATA_DIR, "kiosk.json");
 
 /**
