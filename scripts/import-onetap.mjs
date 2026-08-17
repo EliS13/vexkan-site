@@ -121,7 +121,10 @@ async function rest(path, init = {}) {
     },
   });
   if (!res.ok) throw new Error(`${res.status} ${(await res.text()).slice(0, 200)}`);
-  return res.status === 204 ? null : res.json();
+  // A write without Prefer: return=representation answers with an empty body,
+  // and parsing nothing throws "Unexpected end of JSON input".
+  const text = await res.text();
+  return text.length === 0 ? null : JSON.parse(text);
 }
 
 const rows = readRows(sheetXml(file));

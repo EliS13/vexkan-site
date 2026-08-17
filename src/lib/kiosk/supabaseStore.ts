@@ -59,7 +59,16 @@ async function rest(path: string, init: RequestInit = {}): Promise<unknown> {
     const detail = await res.text();
     throw new Error(`Supabase ${res.status}: ${detail.slice(0, 200)}`);
   }
-  return res.status === 204 ? null : res.json();
+
+  /*
+   * A write without Prefer: return=representation answers 201 with an empty
+   * body, and res.json() on nothing throws "Unexpected end of JSON input" —
+   * which surfaced as an intermittent 500 on sign-in. Intermittent because
+   * inserting a session crashed while finding somebody already signed in, which
+   * inserts nothing, did not.
+   */
+  const text = await res.text();
+  return text.length === 0 ? null : JSON.parse(text);
 }
 
 /* ------------------------------------------------------------ row mapping */
