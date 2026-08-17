@@ -1,7 +1,14 @@
 "use client";
 
+/*
+ * Plain anchors, not next/link, for every link that crosses the subdomain
+ * rewrite. Client-side navigation resolves the literal href against the app's
+ * own route tree without applying rewrites, so on signin.vexkan.ca a <Link
+ * href="/"> walked into the club site's routes instead of the kiosk and the
+ * button appeared to do nothing. A full navigation lets the server rewrite it.
+ */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Link from "next/link";
 import { Avatar } from "./Avatar";
 import { CameraSignIn } from "./CameraSignIn";
 import { countSignedIn, formatDuration, rosterOrder } from "@/lib/kiosk/hours";
@@ -266,12 +273,12 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
         >
           Camera sign in
         </button>
-        <Link
+        <a
           href="/enroll"
           className="grid min-h-[64px] place-items-center rounded-2xl border-2 border-[#2e343b] px-6 font-mono text-xs tracking-widest text-[#8b949e] uppercase sm:min-h-[88px]"
         >
           Sign up
-        </Link>
+        </a>
       </div>
 
       {camera && (
@@ -313,18 +320,18 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
         </p>
       </div>
       <div className="flex items-center gap-3">
-        <Link
+        <a
           href="/admin"
           className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
         >
           Admin
-        </Link>
-        <Link
+        </a>
+        <a
           href="/board"
           className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
         >
           Leaderboard
-        </Link>
+        </a>
         <p className="font-mono text-lg tabular-nums text-[#e8eaed] sm:text-3xl">{time}</p>
       </div>
     </header>

@@ -1,4 +1,10 @@
-import Link from "next/link";
+/*
+ * Plain anchors, not next/link, for every link that crosses the subdomain
+ * rewrite. Client-side navigation resolves the literal href against the app's
+ * own route tree without applying rewrites, so on signin.vexkan.ca a <Link
+ * href="/"> walked into the club site's routes instead of the kiosk and the
+ * button appeared to do nothing. A full navigation lets the server rewrite it.
+ */
 import { getState } from "@/lib/kiosk/store";
 import { formatDuration, formatHours, leaderboard } from "@/lib/kiosk/hours";
 import { Avatar } from "../Avatar";
@@ -23,12 +29,12 @@ export default async function BoardPage() {
           </p>
           <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Leaderboard</h1>
         </div>
-        <Link
+        <a
           href="/"
           className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
         >
           Back to sign in
-        </Link>
+        </a>
       </header>
 
       <ol className="flex flex-col gap-2">

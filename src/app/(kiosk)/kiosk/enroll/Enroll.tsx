@@ -1,7 +1,14 @@
 "use client";
 
+/*
+ * Plain anchors, not next/link, for every link that crosses the subdomain
+ * rewrite. Client-side navigation resolves the literal href against the app's
+ * own route tree without applying rewrites, so on signin.vexkan.ca a <Link
+ * href="/"> walked into the club site's routes instead of the kiosk and the
+ * button appeared to do nothing. A full navigation lets the server rewrite it.
+ */
+
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
 import { cropFace, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
 import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
@@ -155,12 +162,12 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </p>
           <h1 className="font-serif text-3xl font-bold">Sign up a member</h1>
         </div>
-        <Link
+        <a
           href="/"
           className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
         >
           Back
-        </Link>
+        </a>
       </header>
 
       {saved && (
