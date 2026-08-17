@@ -14,6 +14,7 @@ import { CameraSignIn } from "./CameraSignIn";
 import {
   countSignedIn,
   formatDuration,
+  formatElapsed,
   formatHours,
   placeOf,
   rosterOrder,
@@ -356,7 +357,7 @@ export function Kiosk({
                 signedIn ? "text-[#14171a]/75" : "text-[#8b949e]"
               }`}
             >
-              <span>{signedIn ? `here ${formatDuration(currentMs ?? 0)}` : "—"}</span>
+              <span>{signedIn ? `here ${formatElapsed(currentMs ?? 0)}` : "—"}</span>
               {/* Two durations side by side read as one number without this. */}
               <span aria-hidden className={signedIn ? "text-[#14171a]/35" : "text-[#4a525b]"}>
                 |

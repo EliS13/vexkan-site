@@ -233,12 +233,25 @@ export function countSignedIn(members: Member[], sessions: Session[]): number {
  */
 export function formatDuration(ms: number): string {
   const totalMinutes = Math.floor(ms / 60000);
-  if (totalMinutes < 1) return "just now";
+  // A quantity, not a time. This reads a season total, an average visit and a
+  // visit that happened in November — "just now" was true of none of them.
+  if (totalMinutes < 1) return "under a minute";
   const hours = Math.floor(totalMinutes / 60);
   const minutes = totalMinutes % 60;
   if (hours === 0) return `${minutes}m`;
   if (minutes === 0) return `${hours}h`;
   return `${hours}h ${minutes}m`;
+}
+
+/**
+ * How long someone has been in the room, for the tile they just tapped.
+ *
+ * The one place "just now" is honest: it describes a sign-in that happened
+ * seconds ago, on a tile that says "here" in front of it. Everywhere else the
+ * number is a quantity and belongs to formatDuration.
+ */
+export function formatElapsed(ms: number): string {
+  return ms < 60_000 ? "just now" : formatDuration(ms);
 }
 
 /** Decimal hours, the unit a coach reports. */

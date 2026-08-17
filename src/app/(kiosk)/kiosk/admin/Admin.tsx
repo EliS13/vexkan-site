@@ -101,8 +101,6 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
     }
   }, [passcode]);
 
-  const activeGroups = state.groups.filter((g) => g.active);
-
   /*
    * The roster, filtered and in the order it has always been: everyone active
    * first, then by first name. Matching on the full name rather than the first
@@ -842,7 +840,19 @@ function GroupMembers({
  */
 function Analytics({ state, now }: { state: KioskState; now: number }) {
   const totals = clubTotals(state.members, state.sessions, now);
-  const rows = alphabetical(state.members, state.sessions, now);
+  const [search, setSearch] = useState("");
+
+  /*
+   * The totals above stay whole-club whatever is typed here. Filtering them
+   * too would put a number labelled "Total hours" next to a search box and
+   * leave it ambiguous which of the two it counted.
+   */
+  const needle = search.trim().toLowerCase();
+  const rows = alphabetical(state.members, state.sessions, now).filter(
+    (r) =>
+      needle === "" ||
+      `${r.member.firstName} ${r.member.lastName}`.toLowerCase().includes(needle),
+  );
 
   const stats: [string, string, string?][] = [
     ["Total hours", formatHours(totals.totalMs) + "h", formatDuration(totals.totalMs)],
@@ -863,17 +873,22 @@ function Analytics({ state, now }: { state: KioskState; now: number }) {
         ))}
       </section>
 
-      {totals.autoClosed > 0 && (
-        <p className="rounded-lg border-2 border-[#ffb100]/40 bg-[#ffb100]/10 px-4 py-3 font-mono text-[11px] text-[#ffb100]">
-          {totals.autoClosed} {totals.autoClosed === 1 ? "session was" : "sessions were"} closed
-          automatically rather than by a real sign-out, so those hours are estimates.
-        </p>
-      )}
-
       <section>
         <h2 className="mb-2 font-serif text-xl font-semibold">Hours per member</h2>
+        {state.members.length > 0 && (
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            type="search"
+            placeholder="Search members"
+            aria-label="Search hours per member"
+            className="mb-2 min-h-[48px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-base"
+          />
+        )}
         {rows.length === 0 ? (
-          <p className="font-mono text-sm text-[#8b949e]">Nobody is signed up yet.</p>
+          <p className="font-mono text-sm text-[#8b949e]">
+            {search ? "Nobody matches that." : "Nobody is signed up yet."}
+          </p>
         ) : (
           <table className="w-full border-collapse text-left">
             <thead>
