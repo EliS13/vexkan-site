@@ -359,13 +359,6 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                     <p className="min-w-0 flex-1 truncate font-serif text-lg font-semibold">
                       {member.firstName} {member.lastName}
                       {here && <span className="ml-2 font-mono text-[11px] text-[#35c17a]">in the room</span>}
-                      {/* Sign-up always takes a photo, so a member without one
-                          can only have arrived in the import. */}
-                      {!member.photoUrl && (
-                        <span className="ml-2 font-mono text-[10px] tracking-widest text-[#ffb100] uppercase">
-                          from the old system
-                        </span>
-                      )}
                     </p>
 
                     {/*
