@@ -5,6 +5,7 @@ import {
   getState,
   setMemberActive,
   setMemberGroups,
+  setMemberPhoto,
 } from "@/lib/kiosk/store";
 import { checkPasscode, isAdminGateConfigured } from "@/lib/kiosk/admin";
 
@@ -63,6 +64,14 @@ export async function POST(request: Request) {
         if (typeof body.memberId !== "string") throw new Error("Which member?");
         const ids = Array.isArray(body.groupIds) ? (body.groupIds as string[]) : [];
         await setMemberGroups(body.memberId, ids);
+        break;
+      }
+      case "setMemberPhoto": {
+        if (typeof body.memberId !== "string") throw new Error("Which member?");
+        if (typeof body.photoUrl !== "string" || !body.photoUrl.startsWith("data:image/")) {
+          throw new Error("That photo did not arrive.");
+        }
+        await setMemberPhoto(body.memberId, body.photoUrl);
         break;
       }
       case "setMemberActive": {

@@ -12,7 +12,8 @@ import { useCallback, useMemo, useState } from "react";
 import { describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
 import { alphabetical, clubTotals, formatDuration, formatHours, isSignedIn } from "@/lib/kiosk/hours";
 import { postJson, type AdminReply } from "@/lib/kiosk/postJson";
-import type { KioskState } from "@/lib/kiosk/types";
+import { AddPhoto } from "./AddPhoto";
+import type { KioskState, Member } from "@/lib/kiosk/types";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -26,6 +27,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
    */
   const [unlocked, setUnlocked] = useState(false);
   const [tab, setTab] = useState<"roster" | "analytics">("roster");
+  const [photoFor, setPhotoFor] = useState<Member | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -300,10 +302,35 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                   }`}
                 >
                   <div className="mb-2 flex items-center gap-3">
+                    <div className="size-10 shrink-0 overflow-hidden rounded-lg">
+                      {member.photoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element -- stored crop
+                        <img src={member.photoUrl} alt="" className="size-full object-cover" />
+                      ) : (
+                        <div className="grid size-full place-items-center rounded-lg border-2 border-dashed border-[#4a525b] font-mono text-[10px] text-[#8b949e]">
+                          ?
+                        </div>
+                      )}
+                    </div>
                     <p className="min-w-0 flex-1 truncate font-serif text-lg font-semibold">
                       {member.firstName} {member.lastName}
                       {here && <span className="ml-2 font-mono text-[11px] text-[#35c17a]">in the room</span>}
+                      {/* Sign-up always takes a photo, so a member without one
+                          can only have arrived in the import. */}
+                      {!member.photoUrl && (
+                        <span className="ml-2 font-mono text-[10px] tracking-widest text-[#ffb100] uppercase">
+                          from the old system
+                        </span>
+                      )}
                     </p>
+                    {!member.photoUrl && member.active && (
+                      <button
+                        onClick={() => setPhotoFor(member)}
+                        className="min-h-[44px] shrink-0 rounded-lg border-2 border-[#ffb100] px-3 font-mono text-[11px] tracking-widest text-[#ffb100] uppercase"
+                      >
+                        Add photo
+                      </button>
+                    )}
                     <button
                       onClick={() =>
                         send({
@@ -350,6 +377,17 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             })}
         </ul>
       </section>
+
+      {photoFor && (
+        <AddPhoto
+          member={photoFor}
+          busy={busy}
+          onClose={() => setPhotoFor(null)}
+          onSave={(photoUrl) =>
+            send({ action: "setMemberPhoto", memberId: photoFor.id, photoUrl })
+          }
+        />
+      )}
 
       <p className="border-t border-[#2e343b] pt-4 font-mono text-[11px] text-[#8b949e]">
         Retiring a group and deactivating a member both keep every recorded hour.

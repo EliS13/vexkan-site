@@ -209,6 +209,16 @@ export async function deleteGroup(groupId: string): Promise<void> {
   }
 }
 
+/** Gives an imported member the photograph they were brought in without. */
+export async function setMemberPhoto(memberId: string, photoUrl: string): Promise<Member> {
+  const rows = (await rest(`kiosk_members?id=eq.${q(memberId)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ photo_url: photoUrl }),
+  })) as MemberRow[];
+  return toMember(rows[0]);
+}
+
 export async function setMemberGroups(memberId: string, groupIds: string[]): Promise<Member> {
   const rows = (await rest(`kiosk_members?id=eq.${q(memberId)}`, {
     method: "PATCH",

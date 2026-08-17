@@ -34,13 +34,26 @@ export function Avatar({ member, signedIn }: { member: Member; signedIn: boolean
 
   const hue = hueFor(`${member.firstName}${member.lastName}`);
   return (
+    /*
+     * Initials, dashed. Sign-up always takes a photograph, so a member without
+     * one came in from the old system, and the dashed edge marks that at a
+     * glance — a tile still waiting for a face rather than one that lost it.
+     */
     <div
       aria-hidden
-      className="grid size-full place-items-center rounded-xl font-serif text-[clamp(1.5rem,4vw,2.5rem)] font-bold"
+      className="grid size-full place-items-center rounded-xl border-2 border-dashed font-serif text-[clamp(1.5rem,4vw,2.5rem)] font-bold"
       style={
         signedIn
-          ? { background: `hsl(${hue} 55% 22%)`, color: `hsl(${hue} 70% 82%)` }
-          : { background: `hsl(${hue} 12% 20%)`, color: `hsl(${hue} 10% 55%)` }
+          ? {
+              background: `hsl(${hue} 55% 22%)`,
+              color: `hsl(${hue} 70% 82%)`,
+              borderColor: `hsl(${hue} 45% 40%)`,
+            }
+          : {
+              background: `hsl(${hue} 12% 20%)`,
+              color: `hsl(${hue} 10% 55%)`,
+              borderColor: "#3a424b",
+            }
       }
     >
       {initials}

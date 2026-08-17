@@ -280,6 +280,25 @@ export function deleteGroup(groupId: string): Promise<void> {
   });
 }
 
+/**
+ * Gives an existing member a photograph.
+ *
+ * Members imported from the old system arrive with names and history but no
+ * picture, and a tile with no face cannot be found across a room. This is the
+ * path that fixes that, without going through sign-up and creating a duplicate.
+ */
+export function setMemberPhoto(memberId: string, photoUrl: string): Promise<Member> {
+  if (writesToDatabase()) return db.setMemberPhoto(memberId, photoUrl);
+  return serialise(async () => {
+    const state = await readState();
+    const member = state.members.find((m) => m.id === memberId);
+    if (!member) throw new Error("No such member.");
+    member.photoUrl = photoUrl;
+    await writeState(state);
+    return member;
+  });
+}
+
 /** Replaces a member's group membership outright. */
 export function setMemberGroups(memberId: string, groupIds: string[]): Promise<Member> {
   if (writesToDatabase()) return db.setMemberGroups(memberId, groupIds);
