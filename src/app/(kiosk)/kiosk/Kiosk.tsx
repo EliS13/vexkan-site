@@ -305,14 +305,26 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
     <header className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:mb-4 sm:items-end">
       <div className="flex items-center gap-4">
         {/*
-         * The club's own logo. It already reads "VexKan Robotics Club", so the
-         * kiosk does not repeat that in text beside it.
+         * The club's own logo, in whichever form fits.
+         *
+         * The wordmark is 4:1, so held upright it eats the width the room count
+         * and the clock need and the header wraps onto three lines. The square V
+         * says the same thing in a quarter of the space. Orientation rather than
+         * a width breakpoint: an iPad in portrait is still 820px across, wide
+         * enough that `sm:` would keep the wordmark exactly where it does not
+         * fit. Neither is repeated in text — both already read as the club.
          */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size local asset */}
+        <img
+          src="/icon-192.png"
+          alt="VexKan Robotics Club"
+          className="size-10 shrink-0 rounded-xl landscape:hidden"
+        />
         {/* eslint-disable-next-line @next/next/no-img-element -- fixed-size local asset */}
         <img
           src="/logo-vexkan.png"
           alt="VexKan Robotics Club"
-          className="h-8 w-auto shrink-0 sm:h-14"
+          className="hidden h-8 w-auto shrink-0 landscape:block sm:landscape:h-14"
         />
         <p className="font-serif text-2xl leading-tight font-bold sm:text-4xl">
           <span className="tabular-nums">{inRoom}</span>
