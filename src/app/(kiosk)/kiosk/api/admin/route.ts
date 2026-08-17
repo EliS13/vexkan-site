@@ -6,6 +6,8 @@ import {
   setMemberActive,
   setMemberGroups,
   setMemberPhoto,
+  renameMember,
+  updateGroup,
 } from "@/lib/kiosk/store";
 import { checkPasscode, isAdminGateConfigured } from "@/lib/kiosk/admin";
 
@@ -55,6 +57,18 @@ export async function POST(request: Request) {
         });
         break;
       }
+      case "updateGroup": {
+        const { groupId, name, meetsOn, startsAt, endsAt } = body;
+        if (typeof groupId !== "string") throw new Error("Which group?");
+        if (typeof name !== "string") throw new Error("A group needs a name.");
+        await updateGroup(groupId, {
+          name,
+          meetsOn: Array.isArray(meetsOn) ? (meetsOn as number[]) : [],
+          startsAt: typeof startsAt === "string" ? startsAt : "16:30",
+          endsAt: typeof endsAt === "string" ? endsAt : "18:00",
+        });
+        break;
+      }
       case "deleteGroup": {
         if (typeof body.groupId !== "string") throw new Error("Which group?");
         await deleteGroup(body.groupId);
@@ -64,6 +78,14 @@ export async function POST(request: Request) {
         if (typeof body.memberId !== "string") throw new Error("Which member?");
         const ids = Array.isArray(body.groupIds) ? (body.groupIds as string[]) : [];
         await setMemberGroups(body.memberId, ids);
+        break;
+      }
+      case "renameMember": {
+        if (typeof body.memberId !== "string") throw new Error("Which member?");
+        if (typeof body.firstName !== "string" || typeof body.lastName !== "string") {
+          throw new Error("A first and last name are both required.");
+        }
+        await renameMember(body.memberId, body.firstName, body.lastName);
         break;
       }
       case "setMemberPhoto": {

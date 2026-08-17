@@ -201,14 +201,23 @@ for (const [name, theirGroups] of members) {
 }
 
 /*
- * One open session per member is enforced by a unique index, and this export
- * contains several never-checked-out rows for the same person. All but the most
- * recent are closed at their own start, flagged auto_closed, so the import does
- * not collide with itself and nobody gains phantom hours.
+ * Nothing imports as still open.
+ *
+ * Keeping each member's most recent never-checked-out row open seemed kind —
+ * they might still be in the room — but these rows are months old, and an open
+ * session counts to the present. A June check-in accumulated thousands of
+ * hours, and signing it out froze that as a real visit. Every row without a
+ * check-out is closed at its own start instead: it contributes nothing and is
+ * flagged auto_closed, which the analytics tab reports as an estimate.
+ *
+ * A session opened today is the one exception, since that person plausibly is
+ * still here.
  */
+const TODAY = new Date().toISOString().slice(0, 10);
 const lastOpenByMember = new Map();
 for (const s of sessions) {
   if (s.signedOutAt) continue;
+  if (s.signedInAt.slice(0, 10) !== TODAY) continue;
   const prev = lastOpenByMember.get(s.name);
   if (!prev || s.signedInAt > prev.signedInAt) lastOpenByMember.set(s.name, s);
 }
@@ -232,7 +241,7 @@ for (const s of sessions) {
       signed_out_at: s.signedOutAt ?? (stillOpen ? null : s.signedInAt),
       auto_closed: !s.signedOutAt && !stillOpen,
       verified: false,
-      note: !s.signedOutAt && !stillOpen ? "Imported with no check-out recorded." : null,
+      note: !s.signedOutAt && !stillOpen ? "Imported with no check-out recorded; length unknown." : null,
     }),
   });
   written++;

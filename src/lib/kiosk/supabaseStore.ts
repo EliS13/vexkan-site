@@ -203,6 +203,24 @@ export async function createGroup(input: {
   return toGroup(rows[0]);
 }
 
+/** Renames a group or moves its meeting time. Members and hours are untouched. */
+export async function updateGroup(
+  groupId: string,
+  input: { name: string; meetsOn: number[]; startsAt: string; endsAt: string },
+): Promise<Group> {
+  const rows = (await rest(`kiosk_groups?id=eq.${q(groupId)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({
+      name: input.name.trim(),
+      meets_on: [...new Set(input.meetsOn)].filter((d) => d >= 0 && d <= 6).sort(),
+      starts_at: input.startsAt,
+      ends_at: input.endsAt,
+    }),
+  })) as GroupRow[];
+  return toGroup(rows[0]);
+}
+
 /** Retired, not deleted: sessions and members reference it. */
 export async function deleteGroup(groupId: string): Promise<void> {
   await rest(`kiosk_groups?id=eq.${q(groupId)}`, {
@@ -216,6 +234,26 @@ export async function deleteGroup(groupId: string): Promise<void> {
       body: JSON.stringify({ group_ids: (m.group_ids ?? []).filter((g) => g !== groupId) }),
     });
   }
+}
+
+/**
+ * Corrects a name.
+ *
+ * The import filled a surname with an em dash wherever the old system held only
+ * one name, because tiles read "Ben C." and need both halves. Those need
+ * fixing by hand, and so do the ordinary misspellings any roster collects.
+ */
+export async function renameMember(
+  memberId: string,
+  firstName: string,
+  lastName: string,
+): Promise<Member> {
+  const rows = (await rest(`kiosk_members?id=eq.${q(memberId)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ first_name: firstName.trim(), last_name: lastName.trim() }),
+  })) as MemberRow[];
+  return toMember(rows[0]);
 }
 
 /** Gives an imported member the photograph they were brought in without. */

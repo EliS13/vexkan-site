@@ -261,6 +261,32 @@ export function createGroup(input: {
 }
 
 /**
+ * Renames a group or changes when it meets.
+ *
+ * The import derived group names from list names like "Vex IQ Competition
+ * (August 16th)" and gave them no schedule at all, so every imported group
+ * needs both. Membership and recorded hours are untouched.
+ */
+export function updateGroup(
+  groupId: string,
+  input: { name: string; meetsOn: number[]; startsAt: string; endsAt: string },
+): Promise<Group> {
+  if (!input.name.trim()) throw new Error("A group needs a name.");
+  if (writesToDatabase()) return db.updateGroup(groupId, input);
+  return serialise(async () => {
+    const state = await readState();
+    const group = state.groups.find((g) => g.id === groupId);
+    if (!group) throw new Error("No such group.");
+    group.name = input.name.trim();
+    group.meetsOn = [...new Set(input.meetsOn)].filter((d) => d >= 0 && d <= 6).sort();
+    group.startsAt = input.startsAt;
+    group.endsAt = input.endsAt;
+    await writeState(state);
+    return group;
+  });
+}
+
+/**
  * Retires a group. Deactivated rather than spliced out, because sessions and
  * members reference it and a hard delete would orphan that history. Members
  * keep their other groups and simply stop being listed under this one.
@@ -277,6 +303,27 @@ export function deleteGroup(groupId: string): Promise<void> {
       member.groupIds = member.groupIds.filter((id) => id !== groupId);
     }
     await writeState(state);
+  });
+}
+
+/** Corrects a name, including the em-dash surnames the import had to invent. */
+export function renameMember(
+  memberId: string,
+  firstName: string,
+  lastName: string,
+): Promise<Member> {
+  const first = firstName.trim();
+  const last = lastName.trim();
+  if (!first || !last) throw new Error("A first and last name are both required.");
+  if (writesToDatabase()) return db.renameMember(memberId, first, last);
+  return serialise(async () => {
+    const state = await readState();
+    const member = state.members.find((m) => m.id === memberId);
+    if (!member) throw new Error("No such member.");
+    member.firstName = first;
+    member.lastName = last;
+    await writeState(state);
+    return member;
   });
 }
 

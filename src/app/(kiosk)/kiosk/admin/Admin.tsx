@@ -28,6 +28,11 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
   const [unlocked, setUnlocked] = useState(false);
   const [tab, setTab] = useState<"roster" | "analytics">("roster");
   const [photoFor, setPhotoFor] = useState<Member | null>(null);
+  /** Which row's menu is open. One at a time, so the list stays readable. */
+  const [menuFor, setMenuFor] = useState<string | null>(null);
+  const [renaming, setRenaming] = useState<Member | null>(null);
+  const [draftFirst, setDraftFirst] = useState("");
+  const [draftLast, setDraftLast] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -323,27 +328,56 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                         </span>
                       )}
                     </p>
-                    {!member.photoUrl && member.active && (
+
+                    {/*
+                      * One menu rather than a row of buttons. Every member needs
+                      * renaming, a photo and deactivating available, and three
+                      * controls per row across a roster of twenty-eight is a wall
+                      * of buttons nobody reads.
+                      */}
+                    <div className="relative shrink-0">
                       <button
-                        onClick={() => setPhotoFor(member)}
-                        className="min-h-[44px] shrink-0 rounded-lg border-2 border-[#ffb100] px-3 font-mono text-[11px] tracking-widest text-[#ffb100] uppercase"
+                        onClick={() => setMenuFor(menuFor === member.id ? null : member.id)}
+                        aria-label={`Options for ${member.firstName} ${member.lastName}`}
+                        aria-expanded={menuFor === member.id}
+                        className="min-h-[44px] w-11 rounded-lg border-2 border-[#2e343b] text-lg leading-none text-[#8b949e]"
                       >
-                        Add photo
+                        ⋯
                       </button>
-                    )}
-                    <button
-                      onClick={() =>
-                        send({
-                          action: "setMemberActive",
-                          memberId: member.id,
-                          active: !member.active,
-                        })
-                      }
-                      disabled={busy}
-                      className="min-h-[44px] rounded-lg border-2 border-[#2e343b] px-3 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase disabled:opacity-40"
-                    >
-                      {member.active ? "Deactivate" : "Restore"}
-                    </button>
+
+                      {menuFor === member.id && (
+                        <div className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#1d2126] shadow-xl">
+                          <button
+                            onClick={() => { setPhotoFor(member); setMenuFor(null); }}
+                            disabled={!member.active}
+                            className="block w-full px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b] disabled:opacity-40"
+                          >
+                            {member.photoUrl ? "Replace photo" : "Add photo"}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setRenaming(member);
+                              setDraftFirst(member.firstName);
+                              setDraftLast(member.lastName === "—" ? "" : member.lastName);
+                              setMenuFor(null);
+                            }}
+                            className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b]"
+                          >
+                            Rename
+                          </button>
+                          <button
+                            onClick={() => {
+                              send({ action: "setMemberActive", memberId: member.id, active: !member.active });
+                              setMenuFor(null);
+                            }}
+                            disabled={busy}
+                            className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm text-[#e04f4f] hover:bg-[#2e343b] disabled:opacity-40"
+                          >
+                            {member.active ? "Deactivate" : "Restore"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {activeGroups.map((group) => {
@@ -377,6 +411,59 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             })}
         </ul>
       </section>
+
+      {renaming && (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-6">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              send({
+                action: "renameMember",
+                memberId: renaming.id,
+                firstName: draftFirst,
+                lastName: draftLast,
+              });
+              setRenaming(null);
+            }}
+            className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] p-5"
+          >
+            <p className="font-mono text-[11px] tracking-widest text-[#ffb100] uppercase">Rename</p>
+            <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              First name
+              <input
+                autoFocus
+                value={draftFirst}
+                onChange={(e) => setDraftFirst(e.target.value)}
+                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-xl text-[#e8eaed]"
+              />
+            </label>
+            <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              Last name
+              <input
+                value={draftLast}
+                onChange={(e) => setDraftLast(e.target.value)}
+                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-xl text-[#e8eaed]"
+              />
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setRenaming(null)}
+                className="min-h-[56px] flex-1 rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={busy || !draftFirst.trim() || !draftLast.trim()}
+                className="min-h-[56px] flex-1 rounded-xl bg-[#ffb100] font-serif font-bold text-[#14171a] disabled:opacity-40"
+              >
+                Save
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
 
       {photoFor && (
         <AddPhoto
