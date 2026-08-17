@@ -176,7 +176,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
         <div className="flex min-h-0 flex-col gap-3">
-          <div className="relative grid min-h-[40vh] flex-1 place-items-center overflow-hidden rounded-2xl bg-black">
+          <div className="relative grid max-h-[38svh] min-h-[30svh] place-items-center overflow-hidden rounded-2xl bg-black lg:max-h-none lg:min-h-[40vh] lg:flex-1">
             <video
             ref={attach}
               muted
