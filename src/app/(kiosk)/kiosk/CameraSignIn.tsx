@@ -74,6 +74,8 @@ export function CameraSignIn({
   const [passcode, setPasscode] = useState("");
   /** The frozen photo being analysed, so the tap visibly did something. */
   const [shot, setShot] = useState<string | null>(null);
+  /** Whether the code entry is showing instead of waiting on a face. */
+  const [usingCode, setUsingCode] = useState(false);
 
   const memberById = useCallback(
     (id: string) => state.members.find((m) => m.id === id) ?? null,
@@ -349,7 +351,7 @@ export function CameraSignIn({
         </div>
 
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto">
-          {!outcome && camStatus === "live" && (
+          {!outcome && camStatus === "live" && !usingCode && (
             <button
               onClick={mode.kind === "group" ? runGroup : runVerify}
               disabled={camStatus !== "live" || busy}
@@ -357,6 +359,70 @@ export function CameraSignIn({
             >
               {busy ? "Working…" : mode.kind === "group" ? "Take the photo" : "Check my face"}
             </button>
+          )}
+
+          {/*
+           * The code, offered up front rather than only after a face check has
+           * failed. Someone not yet enrolled, or standing in bad light, should
+           * not have to be refused first to find the way in — and a member
+           * waiting on a camera that will not recognise them is the moment the
+           * queue at the door stops moving.
+           */}
+          {!outcome && !usingCode && (
+            <button
+              onClick={() => setUsingCode(true)}
+              className="min-h-[64px] rounded-2xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            >
+              Use a code instead
+            </button>
+          )}
+
+          {!outcome && usingCode && (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const who = mode.kind === "verify" ? [mode.member] : [];
+                if (who.length > 0) void commit(who, false);
+              }}
+              className="flex flex-col gap-3 rounded-2xl border-2 border-[#2e343b] p-4"
+            >
+              <p className="font-serif text-lg font-semibold">
+                {mode.kind === "verify"
+                  ? `Sign ${mode.member.firstName} in with the organizer code`
+                  : "Pick people from the grid, then use the camera"}
+              </p>
+              {mode.kind === "verify" && (
+                <>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    autoFocus
+                    value={passcode}
+                    onChange={(e) => setPasscode(e.target.value)}
+                    aria-label="Organizer code"
+                    className="min-h-[64px] rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-4 text-center font-mono text-2xl tracking-[0.3em] text-[#e8eaed]"
+                  />
+                  <button
+                    type="submit"
+                    disabled={busy || passcode.length === 0}
+                    className="min-h-[72px] rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
+                  >
+                    {busy ? "Signing in…" : "Sign in"}
+                  </button>
+                  {/* Recorded unverified, so a coach can tell these apart later. */}
+                  <p className="font-mono text-[10px] leading-relaxed text-[#8b949e]">
+                    Recorded without a face match, and marked as such.
+                  </p>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={() => { setUsingCode(false); setPasscode(""); }}
+                className="min-h-[56px] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              >
+                Back to the camera
+              </button>
+            </form>
           )}
 
           {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setShot(null); setStatus("Ready."); }} />}
