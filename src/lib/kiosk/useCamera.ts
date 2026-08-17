@@ -29,6 +29,8 @@ export type CameraStatus = "idle" | "starting" | "live" | "denied" | "unavailabl
  */
 const GRANTED_KEY = "vexkan.kiosk.camera.granted";
 
+export type Facing = "user" | "environment";
+
 export type CameraState = {
   /**
    * Callback ref for the <video> element. A callback rather than a RefObject on
@@ -49,6 +51,10 @@ export type CameraState = {
    * an error, because needing a gesture is not the same as being blocked.
    */
   resume: () => Promise<void>;
+  /** Front or rear. The rear camera is how an organizer photographs a group. */
+  facing: Facing;
+  /** Swaps cameras, keeping the stream open. Null while only one exists. */
+  flip: (() => Promise<void>) | null;
   stop: () => void;
 };
 
@@ -67,6 +73,8 @@ export function useCamera(): CameraState {
   const stream = useRef<MediaStream | null>(null);
   const [status, setStatus] = useState<CameraStatus>("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const [facing, setFacing] = useState<Facing>("user");
+  const [hasSeveral, setHasSeveral] = useState(false);
 
   const stop = useCallback(() => {
     stream.current?.getTracks().forEach((t) => t.stop());
@@ -82,7 +90,7 @@ export function useCamera(): CameraState {
     stream.current = null;
   }, []);
 
-  const open = useCallback(async (silent: boolean) => {
+  const open = useCallback(async (silent: boolean, want: Facing = "user") => {
     if (!secureEnough()) {
       if (silent) return;
       setStatus("insecure");
@@ -112,10 +120,14 @@ export function useCamera(): CameraState {
          * anyway, so a larger stream only costs the iPad decode work and
          * memory on every frame it draws.
          */
-        video: { facingMode: "user", width: { ideal: 960 }, height: { ideal: 540 } },
+        video: { facingMode: want, width: { ideal: 960 }, height: { ideal: 540 } },
         audio: false,
       });
+      // Replace rather than add: two live streams would keep the old camera's
+      // indicator light on and hold the device open.
+      stream.current?.getTracks().forEach((t) => t.stop());
       stream.current = media;
+      setFacing(want);
       if (video.current) {
         video.current.srcObject = media;
         // iOS needs both of these set before play() or it opens fullscreen.
@@ -132,6 +144,18 @@ export function useCamera(): CameraState {
         await waitForFrames(video.current);
       }
       setStatus("live");
+      /*
+       * Only ask what cameras exist once permission is granted. Before that,
+       * browsers report unlabelled placeholder devices — or nothing — so a
+       * flip button would appear on a phone with one camera and not on an
+       * iPad with two.
+       */
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        setHasSeveral(devices.filter((d) => d.kind === "videoinput").length > 1);
+      } catch {
+        setHasSeveral(false);
+      }
       try {
         window.localStorage.setItem(GRANTED_KEY, "1");
       } catch {
@@ -154,6 +178,11 @@ export function useCamera(): CameraState {
   }, []);
 
   const start = useCallback(() => open(false), [open]);
+
+  const flip = useCallback(
+    () => open(false, facing === "user" ? "environment" : "user"),
+    [open, facing],
+  );
 
   const resume = useCallback(async () => {
     let remembered = false;
@@ -178,7 +207,7 @@ export function useCamera(): CameraState {
 
   const getVideo = useCallback(() => video.current, []);
 
-  return { attach, getVideo, status, message, start, resume, stop };
+  return { attach, getVideo, status, message, start, resume, facing, flip: hasSeveral ? flip : null, stop };
 }
 
 /** Resolves once the element reports real dimensions, or gives up after 5s. */

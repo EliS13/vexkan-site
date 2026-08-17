@@ -50,7 +50,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
    * the whole thing is ref-bearing (getVideo closes over a ref) and rejects
    * every read of it during render.
    */
-  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart, resume: camResume } =
+  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart, resume: camResume, facing, flip } =
     useCamera();
 
   /*
@@ -176,12 +176,24 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </p>
           <h1 className="font-serif text-3xl font-bold">Sign up a member</h1>
         </div>
-        <a
-          href="/"
-          className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
-        >
-          Back
-        </a>
+        <div className="flex gap-2">
+          {/* An organizer holding the iPad photographs someone facing them, so
+              the rear camera is the useful one here as well. */}
+          {flip && camStatus === "live" && (
+            <button
+              onClick={() => void flip()}
+              className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            >
+              {facing === "user" ? "Back camera" : "Front camera"}
+            </button>
+          )}
+          <a
+            href="/"
+            className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          >
+            Back
+          </a>
+        </div>
       </header>
 
       {saved && (
@@ -202,7 +214,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
             ref={attach}
               muted
               playsInline
-              className={`absolute inset-0 size-full -scale-x-100 object-cover ${
+              className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""} ${
                 camStatus === "live" ? "" : "hidden"
               }`}
             />

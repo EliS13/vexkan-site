@@ -84,7 +84,7 @@ export function CameraSignIn({
    * the whole thing is ref-bearing (getVideo closes over a ref) and rejects
    * every read of it during render.
    */
-  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart, resume: camResume } =
+  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart, resume: camResume, facing, flip } =
     useCamera();
 
   /*
@@ -287,12 +287,22 @@ export function CameraSignIn({
           </p>
           <p className="font-serif text-2xl font-bold">{status}</p>
         </div>
-        <button
-          onClick={onClose}
-          className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-5 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
-        >
-          Close
-        </button>
+        <div className="flex gap-2">
+          {flip && camStatus === "live" && (
+            <button
+              onClick={() => { setShot(null); void flip(); }}
+              className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-5 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            >
+              {facing === "user" ? "Use back camera" : "Use front camera"}
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-5 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          >
+            Close
+          </button>
+        </div>
       </header>
 
       {error && (
@@ -314,13 +324,17 @@ export function CameraSignIn({
             ref={attach}
             muted
             playsInline
-            className={`absolute inset-0 size-full -scale-x-100 object-cover ${
+            className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""} ${
               camStatus === "live" ? "" : "hidden"
             }`}
           />
           {shot && (
             /* eslint-disable-next-line @next/next/no-img-element -- in-memory frame */
-            <img src={shot} alt="" className="absolute inset-0 size-full -scale-x-100 object-cover" />
+            <img
+              src={shot}
+              alt=""
+              className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""}`}
+            />
           )}
           {camStatus !== "live" && (
             <div className="absolute inset-0 grid place-items-center">
