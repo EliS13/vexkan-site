@@ -6,7 +6,7 @@
  * button appeared to do nothing. A full navigation lets the server rewrite it.
  */
 import { mayView } from "@/lib/kiosk/visit";
-import { VisitorGate } from "../VisitorGate";
+import { redirect } from "next/navigation";
 import { getState } from "@/lib/kiosk/store";
 import { formatDuration, formatHours, leaderboard } from "@/lib/kiosk/hours";
 import { badgeBook } from "@/lib/kiosk/badges";
@@ -25,8 +25,13 @@ const BADGES_ON_A_ROW = 4;
  * read standing still, not tapped in passing.
  */
 export default async function BoardPage() {
-  /* Same gate as the roster: a path is not a way past the code. */
-  if (!(await mayView())) return <VisitorGate />;
+  /*
+   * One gate, on the sign-in screen, rather than the same form on four pages.
+   * Somebody who typed /awards without a cookie lands where the code is asked
+   * and knows where they are, instead of meeting a lock screen wearing the
+   * awards page's URL.
+   */
+  if (!(await mayView())) redirect("/");
 
   const { now, ...state } = await getState();
   const standings = leaderboard(state.members, state.sessions, now);

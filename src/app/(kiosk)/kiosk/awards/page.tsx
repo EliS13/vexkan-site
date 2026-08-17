@@ -4,7 +4,7 @@
  * the href against the app's own route tree without applying it.
  */
 import { mayView } from "@/lib/kiosk/visit";
-import { VisitorGate } from "../VisitorGate";
+import { redirect } from "next/navigation";
 import { getState } from "@/lib/kiosk/store";
 import { BADGE_GUIDE, awardKind, badgeBook, clubAwards } from "@/lib/kiosk/badges";
 import { TEAMS } from "@/lib/kiosk/teams";
@@ -25,8 +25,13 @@ export const dynamic = "force-dynamic";
 const SHOWN_PER_SECTION = 6;
 
 export default async function AwardsPage() {
-  /* Same gate as the roster: a path is not a way past the code. */
-  if (!(await mayView())) return <VisitorGate />;
+  /*
+   * One gate, on the sign-in screen, rather than the same form on four pages.
+   * Somebody who typed /awards without a cookie lands where the code is asked
+   * and knows where they are, instead of meeting a lock screen wearing the
+   * awards page's URL.
+   */
+  if (!(await mayView())) redirect("/");
 
   const { now, ...state } = await getState();
   const book = badgeBook(state.members, state.sessions, now);

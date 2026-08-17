@@ -2,9 +2,8 @@
  * Plain anchors, not next/link — these cross the subdomain rewrite. See the
  * note at the top of Kiosk.tsx.
  */
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { mayView } from "@/lib/kiosk/visit";
-import { VisitorGate } from "../../VisitorGate";
 import { getState } from "@/lib/kiosk/store";
 import { badgeBook } from "@/lib/kiosk/badges";
 import { alongsideMs, recentVisits, standingFor } from "@/lib/kiosk/hours";
@@ -22,8 +21,13 @@ export const dynamic = "force-dynamic";
  * kiosk's own overlay carries the action.
  */
 export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
-  /* Same gate as the roster: a path is not a way past the code. */
-  if (!(await mayView())) return <VisitorGate />;
+  /*
+   * One gate, on the sign-in screen, rather than the same form on four pages.
+   * Somebody who typed /awards without a cookie lands where the code is asked
+   * and knows where they are, instead of meeting a lock screen wearing the
+   * awards page's URL.
+   */
+  if (!(await mayView())) redirect("/");
 
   const { id } = await params;
   const { now, ...state } = await getState();
