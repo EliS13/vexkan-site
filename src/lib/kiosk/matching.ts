@@ -44,8 +44,15 @@ export const MIN_MARGIN = 0.06;
 /** Detector confidence below this is not worth matching. */
 export const MIN_DETECTION_SCORE = 0.7;
 
-/** A face smaller than this carries too little detail for a reliable descriptor. */
-export const MIN_FACE_PX = 80;
+/**
+ * Smallest usable face, in pixels of the frame handed to the detector.
+ *
+ * Frames are downscaled to 640 wide before detection now, so this drops with
+ * them: 40 of 640 is the same share of the picture 80 of 1280 was. Expressed in
+ * pixels rather than a fraction because that is what a detection box reports,
+ * and the two must be in the same units to be compared at all.
+ */
+export const MIN_FACE_PX = 40;
 
 export type EnrolledFace = {
   memberId: string;

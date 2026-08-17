@@ -107,7 +107,12 @@ export function useCamera(): CameraState {
          * camera, or a Mac with only an external webcam, still gets a stream
          * instead of an OverconstrainedError.
          */
-        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+        /*
+         * 960 rather than 1280. Frames are downscaled to 640 for detection
+         * anyway, so a larger stream only costs the iPad decode work and
+         * memory on every frame it draws.
+         */
+        video: { facingMode: "user", width: { ideal: 960 }, height: { ideal: 540 } },
         audio: false,
       });
       stream.current = media;

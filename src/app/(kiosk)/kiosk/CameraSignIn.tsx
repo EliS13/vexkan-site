@@ -34,6 +34,20 @@ const FRAME_GAP_MS = 0;
 
 type Mode = { kind: "group" } | { kind: "verify"; member: Member };
 
+/**
+ * Names the failure and where it came from.
+ *
+ * Safari words every SyntaxError as "the string did not match the expected
+ * pattern" and identifies nothing else, so an unlabelled one is untraceable —
+ * it could be a malformed URL, a bad date, or a rejected input value. Prefixing
+ * with the step that failed turns a report of "the string error" into something
+ * that points at a single function.
+ */
+function describeFailure(err: unknown): string {
+  if (!(err instanceof Error)) return "unknown error";
+  return err.name && err.name !== "Error" ? `${err.name}: ${err.message}` : err.message;
+}
+
 type Outcome = {
   matched: Member[];
   ambiguous: Member[];
@@ -183,7 +197,7 @@ export function CameraSignIn({
           : "Nobody was recognised confidently.",
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The camera check failed.");
+      setError(`Reading the photo failed — ${describeFailure(err)}`);
     } finally {
       setBusy(false);
     }
@@ -231,7 +245,7 @@ export function CameraSignIn({
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "The camera check failed.");
+      setError(`Checking your face failed — ${describeFailure(err)}`);
     } finally {
       setBusy(false);
     }
@@ -256,7 +270,7 @@ export function CameraSignIn({
         if (!res.ok) throw new Error(body.error ?? "That did not save.");
         onDone(body, body.signedIn ?? []);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "That did not save.");
+        setError(`Saving failed — ${describeFailure(err)}`);
       } finally {
         setBusy(false);
       }

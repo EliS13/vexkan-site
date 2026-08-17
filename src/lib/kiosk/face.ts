@@ -169,15 +169,27 @@ export function cropFace(
  * sign-in must agree on that — a mirrored copy of a face scores as a different
  * person, measured at 0.77 against an unmirrored original.
  */
+/**
+ * Widest frame the detector is given.
+ *
+ * Detection cost scales with pixel count, so a 1280-wide frame is four times
+ * the work of a 640-wide one — seconds rather than a moment on an iPad. A face
+ * at kiosk distance is hundreds of pixels across even here, far more detail
+ * than the 150x150 the recognition net actually reads, so the extra resolution
+ * bought nothing but waiting.
+ */
+const DETECT_WIDTH = 640;
+
 export function grabFrame(video: HTMLVideoElement): HTMLCanvasElement {
   if (!video.videoWidth || !video.videoHeight) {
     throw new Error("The camera has not produced a picture yet. Wait a moment and try again.");
   }
+  const scale = Math.min(1, DETECT_WIDTH / video.videoWidth);
   const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  canvas.width = Math.round(video.videoWidth * scale);
+  canvas.height = Math.round(video.videoHeight * scale);
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("no 2d context");
-  ctx.drawImage(video, 0, 0);
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
   return canvas;
 }

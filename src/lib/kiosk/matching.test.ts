@@ -135,7 +135,7 @@ describe("checkQuality", () => {
 
   it("rejects a face too small to describe reliably", () => {
     const verdict = checkQuality(
-      { ...good, box: { x: 10, y: 10, width: 40, height: 40 } },
+      { ...good, box: { x: 10, y: 10, width: 24, height: 24 } },
       frame,
     );
     expect(verdict).toMatchObject({ ok: false, reason: "Too far from the camera" });
@@ -230,7 +230,7 @@ describe("checkQuality edge tolerance", () => {
   });
 
   it("still enforces size and confidence even with edges allowed", () => {
-    const tiny = { score: 0.95, box: { x: 0, y: 0, width: 30, height: 30 } };
+    const tiny = { score: 0.95, box: { x: 0, y: 0, width: 20, height: 20 } };
     expect(checkQuality(tiny, frame, undefined, { allowEdge: true })).toMatchObject({ ok: false });
   });
 });
