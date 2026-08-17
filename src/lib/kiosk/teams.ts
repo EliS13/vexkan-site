@@ -16,7 +16,14 @@ export type Team = {
   season: string;
   /** Full names, matching kiosk_members exactly. */
   members: string[];
-  /** Set when the team competed at the VEX World Championship. */
+  /**
+   * Set when this team competed at the World Championship that season.
+   *
+   * Per team, not per season. Qualification was individual — the 2024-25 squad
+   * came from several teams — so "somebody from this club went to Worlds in
+   * 2024-25" says nothing about whether this particular team was there. Marking
+   * it by season credited 36467E for a trip it never made.
+   */
   worlds?: boolean;
   program?: "IQ" | "V5RC";
 };
@@ -38,8 +45,14 @@ export const TEAMS: Team[] = [
   },
 
   { program: "IQ", number: "595Y", season: "2025-26", members: ["Eli Seeliger", "Ryan Feng"] },
-  { program: "V5RC",
-    number: "16688A", season: "2025-26", members: ["Eli Seeliger", "Michael Lian", "Michael Li"] },
+  {
+    program: "V5RC",
+    number: "16688A",
+    season: "2025-26",
+    members: ["Eli Seeliger", "Michael Lian", "Michael Li"],
+    /* Proven by VEX: 16688A won the Inspire Award at the 2026 Worlds. */
+    worlds: true,
+  },
   { program: "V5RC",
     number: "16688K", season: "2025-26", members: ["Alex Han", "Michael Li"] },
   {
