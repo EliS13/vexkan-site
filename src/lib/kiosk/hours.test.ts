@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   alphabetical,
+  alongsideMs,
   clubTotals,
   countSignedIn,
   formatDuration,
@@ -385,5 +386,48 @@ describe("formatElapsed", () => {
   it("reads as a duration once a minute has passed", () => {
     expect(formatElapsed(60_000)).toBe("1m");
     expect(formatElapsed(HOUR)).toBe("1h");
+  });
+});
+
+describe("alongsideMs", () => {
+  const eli = { ...member("e1", "Eli", "Seeliger") };
+  const li = member("m1", "Michael", "Li");
+  const lian = member("m2", "Michael", "Lian");
+  const roster = [eli, li, lian];
+
+  it("is zero for somebody with no companions listed", () => {
+    const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z")];
+    expect(alongsideMs(li, roster, s, NOW)).toBe(0);
+  });
+
+  it("counts a companion's session the member did not sign in for", () => {
+    const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z")];
+    expect(alongsideMs(eli, roster, s, NOW)).toBe(2 * HOUR);
+  });
+
+  it("counts an overlapping pair once, not twice", () => {
+    const s = [
+      session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z"),
+      session("s2", "m2", "2026-06-01T18:30:00.000Z", "2026-06-01T20:00:00.000Z"),
+    ];
+    expect(alongsideMs(eli, roster, s, NOW)).toBe(2 * HOUR);
+  });
+
+  it("does not count time the member was signed in for themselves", () => {
+    const s = [
+      session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z"),
+      session("s2", "e1", "2026-06-01T18:00:00.000Z", "2026-06-01T19:00:00.000Z"),
+    ];
+    expect(alongsideMs(eli, roster, s, NOW)).toBe(HOUR);
+  });
+
+  it("leaves the member's own total untouched", () => {
+    const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z")];
+    expect(totalMsFor(s, "e1", NOW)).toBe(0);
+  });
+
+  it("leaves the club total untouched", () => {
+    const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z")];
+    expect(clubTotals(roster, s, NOW).totalMs).toBe(2 * HOUR);
   });
 });

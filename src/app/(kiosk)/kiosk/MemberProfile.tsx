@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Badge } from "@/lib/kiosk/badges";
 import { awardKind } from "@/lib/kiosk/badges";
-import { formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
+import { ALONGSIDE, formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
 import type { Member, Session } from "@/lib/kiosk/types";
 import { Avatar } from "./Avatar";
@@ -15,6 +15,9 @@ import { BadgeIcon } from "./BadgeIcon";
  * leaderboard links to, which is read-only. Two copies of this would drift the
  * first time a badge was added.
  */
+/* Who the alongside line is about. One entry today; read from the same map. */
+const ALONGSIDE_LABEL = Object.values(ALONGSIDE)[0]?.join(" and ") ?? "others";
+
 /* Five fit without the visits below being pushed off a phone screen. */
 const SHOWN_AT_FIRST = 5;
 
@@ -27,6 +30,7 @@ export function MemberProfile({
   badges,
   recent,
   now,
+  alongside = 0,
   action,
 }: {
   member: Member;
@@ -38,6 +42,8 @@ export function MemberProfile({
   /** Their last few visits, newest first. */
   recent: Session[];
   now: number;
+  /** Time in the room for somebody else's session. Shown apart from the total. */
+  alongside?: number;
   /** The sign-in button on the kiosk; nothing on the read-only page. */
   action?: ReactNode;
 }) {
@@ -75,6 +81,21 @@ export function MemberProfile({
           </div>
         ))}
       </dl>
+
+      {/*
+        * Kept out of the figure above rather than folded into it. The hours
+        * tile is the sum of this member's own sessions and has to stay
+        * reconcilable against the record; this is time they were in the room
+        * for somebody else's, which is true but is not the same claim.
+        */}
+      {alongside > 0 && (
+        <p className="rounded-xl border-2 border-dashed border-[#2e343b] px-3 py-2 font-mono text-[11px] leading-relaxed text-[#8b949e]">
+          <span className="text-[#ffb100]">+{formatHours(alongside)}h alongside</span> — as team
+          leader, in the room whenever {ALONGSIDE_LABEL} were, without signing in separately. Not
+          counted in the hours above, the leaderboard, or any club total. A floor rather than a
+          total: build time, management and course prep were never signed in at all.
+        </p>
+      )}
 
       {action}
 

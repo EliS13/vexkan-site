@@ -14,6 +14,7 @@ import { CameraSignIn } from "./CameraSignIn";
 import {
   countSignedIn,
   formatDuration,
+  alongsideMs,
   isSignedIn,
   recentVisits,
   formatElapsed,
@@ -467,6 +468,7 @@ export function Kiosk({
           badges={book.get(profileFor.id) ?? []}
           recent={recentVisits(state.sessions, profileFor.id)}
           now={now}
+          alongside={alongsideMs(profileFor, state.members, state.sessions, now)}
           busy={pending === profileFor.id}
           onClose={() => setProfileFor(null)}
           onAction={() => {
@@ -712,6 +714,7 @@ function Profile({
   badges,
   recent,
   now,
+  alongside,
   busy,
   onClose,
   onAction,
@@ -722,6 +725,7 @@ function Profile({
   badges: Badge[];
   recent: KioskState["sessions"];
   now: number;
+  alongside: number;
   busy: boolean;
   onClose: () => void;
   onAction: () => void;
@@ -744,6 +748,7 @@ function Profile({
           badges={badges}
           recent={recent}
           now={now}
+          alongside={alongside}
           action={
             <button
               onClick={onAction}

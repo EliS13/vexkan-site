@@ -5,7 +5,7 @@
 import { notFound } from "next/navigation";
 import { getState } from "@/lib/kiosk/store";
 import { badgeBook } from "@/lib/kiosk/badges";
-import { recentVisits, standingFor } from "@/lib/kiosk/hours";
+import { alongsideMs, recentVisits, standingFor } from "@/lib/kiosk/hours";
 import { MemberProfile } from "../../MemberProfile";
 
 export const dynamic = "force-dynamic";
@@ -37,6 +37,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
         badges={badges}
         recent={recentVisits(state.sessions, member.id)}
         now={now}
+        alongside={alongsideMs(member, state.members, state.sessions, now)}
       />
 
       <div className="mt-6 flex gap-2">

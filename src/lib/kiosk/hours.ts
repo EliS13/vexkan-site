@@ -31,6 +31,86 @@ export function sessionMs(session: Session, now: number): number {
   return Math.max(0, end - start);
 }
 
+/*
+ * People whose attendance means somebody else was in the room too.
+ *
+ * Eli was team leader for Michael Li and Michael Lian, so he was in the room
+ * for all of their sessions whether or not he signed in himself. This is
+ * written down rather than inferred: nothing in the session rows says who was
+ * leading, and the kiosk never asked.
+ *
+ * It understates rather than overstates. Building alone, management and course
+ * prep were never signed in for at all, so this counts only the time another
+ * member's own record can vouch for.
+ *
+ * Deliberately kept out of totalMsFor, the leaderboard, badges and every club
+ * figure. It is reported on a profile as its own line, so the ranked number
+ * stays exactly the sum of that member's own sessions and can still be
+ * reconciled against the record.
+ */
+export const ALONGSIDE: Record<string, string[]> = {
+  "Eli Seeliger": ["Michael Li", "Michael Lian"],
+};
+
+/**
+ * Time a member was in the room for somebody else's session but not their own.
+ *
+ * Overlapping sessions are merged and the member's own time is removed, so an
+ * hour with both Michaels present counts once, and an hour they were signed in
+ * for themselves is not counted twice.
+ */
+export function alongsideMs(
+  member: Member,
+  members: Member[],
+  sessions: Session[],
+  now: number,
+): number {
+  const names = ALONGSIDE[`${member.firstName} ${member.lastName}`];
+  if (!names) return 0;
+
+  const theirIds = new Set(
+    members.filter((m) => names.includes(`${m.firstName} ${m.lastName}`)).map((m) => m.id),
+  );
+  if (theirIds.size === 0) return 0;
+
+  const span = (s: Session): [number, number] => [
+    Date.parse(s.signedInAt),
+    s.signedOutAt === null ? now : Date.parse(s.signedOutAt),
+  ];
+
+  const theirs = sessions
+    .filter((s) => theirIds.has(s.memberId))
+    .map(span)
+    .filter(([a, b]) => b > a)
+    .sort((x, y) => x[0] - y[0]);
+  if (theirs.length === 0) return 0;
+
+  // Merge overlaps so a night with both Michaels counts once.
+  const merged: [number, number][] = [theirs[0]];
+  for (const [start, end] of theirs.slice(1)) {
+    const last = merged[merged.length - 1];
+    if (start <= last[1]) last[1] = Math.max(last[1], end);
+    else merged.push([start, end]);
+  }
+
+  const mine = sessions
+    .filter((s) => s.memberId === member.id)
+    .map(span)
+    .filter(([a, b]) => b > a);
+
+  // Subtract anything already counted as their own attendance.
+  let total = 0;
+  for (const [start, end] of merged) {
+    let uncovered = end - start;
+    for (const [a, b] of mine) {
+      const overlap = Math.min(end, b) - Math.max(start, a);
+      if (overlap > 0) uncovered -= overlap;
+    }
+    total += Math.max(0, uncovered);
+  }
+  return total;
+}
+
 /** Total time in the room across every session, including the open one. */
 export function totalMsFor(sessions: Session[], memberId: string, now: number): number {
   return sessions
