@@ -5,6 +5,8 @@
  */
 import { getState } from "@/lib/kiosk/store";
 import { BADGE_GUIDE, awardKind, badgeBook, clubAwards } from "@/lib/kiosk/badges";
+import { TEAMS } from "@/lib/kiosk/teams";
+import { awardsForTeams } from "@/lib/kiosk/vexAwards";
 import { BadgeIcon } from "../BadgeIcon";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +35,8 @@ export default async function AwardsPage() {
   }
 
   const club = clubAwards(state.members, state.sessions, now);
+  /* Real results, from VEX rather than from anybody's memory. */
+  const vex = await awardsForTeams([...new Set(TEAMS.map((t) => t.number))]);
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-5">
@@ -102,6 +106,49 @@ export default async function AwardsPage() {
           })}
         </ul>
       </section>
+
+      {vex.ok && (
+        <section className="mb-7">
+          <h2 className="mb-1 font-mono text-[11px] tracking-[0.18em] text-[#8b949e] uppercase">
+            Won at competition
+          </h2>
+          <p className="mb-3 font-mono text-[11px] text-[#4a525b]">
+            {vex.awards.length} awards across {new Set(vex.awards.map((a) => a.teamNumber)).size}{" "}
+            teams, live from the VEX Events API. Not badges — these are the real thing.
+          </p>
+          <ul className="flex flex-col gap-1.5">
+            {vex.awards.map((award, i) => (
+              <li
+                key={`${award.teamNumber}-${award.title}-${i}`}
+                className={`flex items-baseline gap-3 rounded-lg border-2 px-3 py-2 ${
+                  award.worlds
+                    ? "border-[#c8971a] bg-[#ffcc48]/10"
+                    : "border-[#2e343b] bg-[#1d2126]"
+                }`}
+              >
+                <span
+                  className={`w-16 shrink-0 font-mono text-[11px] ${
+                    award.worlds ? "text-[#ffcc48]" : "text-[#8b949e]"
+                  }`}
+                >
+                  {award.teamNumber}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="font-serif text-base">{award.title}</span>
+                  <span className="block truncate font-mono text-[10px] text-[#8b949e]">
+                    {award.event}
+                  </span>
+                </span>
+                {award.worlds && (
+                  <span className="shrink-0 font-mono text-[10px] tracking-widest text-[#ffcc48] uppercase">
+                    Worlds
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <div className="flex flex-col gap-7">
         {BADGE_GUIDE.map((section) => (
