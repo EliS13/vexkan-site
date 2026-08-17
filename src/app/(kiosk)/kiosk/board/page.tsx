@@ -5,6 +5,8 @@
  * href="/"> walked into the club site's routes instead of the kiosk and the
  * button appeared to do nothing. A full navigation lets the server rewrite it.
  */
+import { mayView } from "@/lib/kiosk/visit";
+import { VisitorGate } from "../VisitorGate";
 import { getState } from "@/lib/kiosk/store";
 import { formatDuration, formatHours, leaderboard } from "@/lib/kiosk/hours";
 import { badgeBook } from "@/lib/kiosk/badges";
@@ -23,6 +25,9 @@ const BADGES_ON_A_ROW = 4;
  * read standing still, not tapped in passing.
  */
 export default async function BoardPage() {
+  /* Same gate as the roster: a path is not a way past the code. */
+  if (!(await mayView())) return <VisitorGate />;
+
   const { now, ...state } = await getState();
   const standings = leaderboard(state.members, state.sessions, now);
   const most = standings[0]?.totalMs ?? 0;

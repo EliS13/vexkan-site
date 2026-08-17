@@ -3,6 +3,8 @@
  * note at the top of Kiosk.tsx.
  */
 import { notFound } from "next/navigation";
+import { mayView } from "@/lib/kiosk/visit";
+import { VisitorGate } from "../../VisitorGate";
 import { getState } from "@/lib/kiosk/store";
 import { badgeBook } from "@/lib/kiosk/badges";
 import { alongsideMs, recentVisits, standingFor } from "@/lib/kiosk/hours";
@@ -20,6 +22,9 @@ export const dynamic = "force-dynamic";
  * kiosk's own overlay carries the action.
  */
 export default async function MemberPage({ params }: { params: Promise<{ id: string }> }) {
+  /* Same gate as the roster: a path is not a way past the code. */
+  if (!(await mayView())) return <VisitorGate />;
+
   const { id } = await params;
   const { now, ...state } = await getState();
   const member = state.members.find((m) => m.id === id);

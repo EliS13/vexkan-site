@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { checkMemberCode, isMemberCodeRequired } from "@/lib/kiosk/admin";
+import { visitCookie } from "@/lib/kiosk/visit";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export async function POST(request: Request) {
    * With no code configured there is nothing to check, and refusing everyone
    * would hide the kiosk from the club before anybody had been told a code.
    */
-  if (!isMemberCodeRequired()) return NextResponse.json({ ok: true });
+  if (!isMemberCodeRequired()) return unlocked();
 
   if (!checkMemberCode(body.code)) {
     return NextResponse.json(
@@ -41,5 +42,16 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true });
+  return unlocked();
+}
+
+/*
+ * The cookie is the whole grant. It says "this browser answered the code",
+ * lasts until the browser closes, and is checked by every kiosk page — so the
+ * gate cannot be walked around by typing /awards.
+ */
+function unlocked() {
+  const res = NextResponse.json({ ok: true });
+  res.cookies.set(visitCookie);
+  return res;
 }

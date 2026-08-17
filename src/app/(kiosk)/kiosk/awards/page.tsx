@@ -3,6 +3,8 @@
  * these links cross the subdomain rewrite, and client-side navigation resolves
  * the href against the app's own route tree without applying it.
  */
+import { mayView } from "@/lib/kiosk/visit";
+import { VisitorGate } from "../VisitorGate";
 import { getState } from "@/lib/kiosk/store";
 import { BADGE_GUIDE, awardKind, badgeBook, clubAwards } from "@/lib/kiosk/badges";
 import { TEAMS } from "@/lib/kiosk/teams";
@@ -23,6 +25,9 @@ export const dynamic = "force-dynamic";
 const SHOWN_PER_SECTION = 6;
 
 export default async function AwardsPage() {
+  /* Same gate as the roster: a path is not a way past the code. */
+  if (!(await mayView())) return <VisitorGate />;
+
   const { now, ...state } = await getState();
   const book = badgeBook(state.members, state.sessions, now);
 

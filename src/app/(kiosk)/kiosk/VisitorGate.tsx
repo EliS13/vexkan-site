@@ -17,7 +17,7 @@ import { postJson } from "@/lib/kiosk/postJson";
  * there, and treating it as one would put the whole attendance record behind a
  * secret thirty-seven students know.
  */
-export function VisitorGate({ onUnlock }: { onUnlock: (name: string) => void }) {
+export function VisitorGate() {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -31,14 +31,19 @@ export function VisitorGate({ onUnlock }: { onUnlock: (name: string) => void }) 
       setError(null);
       try {
         await postJson("/api/visit", { name: name.trim(), code: code.trim() });
-        onUnlock(name.trim());
+        /*
+         * A reload rather than a state flip. The cookie is set on the response,
+         * and every page decides on the server whether to show the roster, so
+         * the page has to be asked again rather than told.
+         */
+        window.location.reload();
       } catch (err) {
         setError(err instanceof Error ? err.message : "That code is not right.");
       } finally {
         setBusy(false);
       }
     },
-    [busy, code, name, onUnlock],
+    [busy, code, name],
   );
 
   return (
