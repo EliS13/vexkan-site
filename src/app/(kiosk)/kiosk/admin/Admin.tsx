@@ -191,6 +191,12 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             Lock
           </button>
           <a
+            href="/awards"
+            className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          >
+            Awards
+          </a>
+          <a
             href="/"
             className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
           >

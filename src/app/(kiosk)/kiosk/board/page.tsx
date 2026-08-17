@@ -7,21 +7,13 @@
  */
 import { getState } from "@/lib/kiosk/store";
 import { formatDuration, formatHours, leaderboard } from "@/lib/kiosk/hours";
-import { badgeBook, type Badge } from "@/lib/kiosk/badges";
+import { badgeBook } from "@/lib/kiosk/badges";
+import { BadgeIcon } from "../BadgeIcon";
 import { Avatar } from "../Avatar";
 
-/* Shape as well as colour, so the tiers survive a photograph and colour blindness. */
-const TIER_STYLE: Record<Badge["tier"], string> = {
-  gold: "border-[#c8971a] bg-[#ffcc48]/15 text-[#ffcc48]",
-  silver: "border-[#8f9296] bg-[#d7dade]/15 text-[#d7dade]",
-  bronze: "border-[#8a5a2b] bg-[#cd8b4a]/15 text-[#cd8b4a]",
-  runnerUp: "border-[#4a525b] bg-[#20242a] text-[#c2c8cf]",
-  milestone: "border-[#2f6f52] bg-[#173a2b] text-[#7fe0ae]",
-  streak: "border-[#7a4a86] bg-[#3a2140] text-[#dbaeea]",
-  special: "border-[#8a6a1f] bg-[#3a2f12] text-[#f0cf7a]",
-};
 
 export const dynamic = "force-dynamic";
+
 
 /**
  * Ranked by total hours in the room. Quieter and denser than the kiosk: this is
@@ -58,12 +50,13 @@ export default async function BoardPage() {
           const share = most > 0 ? (totalMs / most) * 100 : 0;
 
           return (
-            <li
-              key={member.id}
-              className={`relative flex items-center gap-4 overflow-hidden rounded-xl border-2 p-3 ${
-                signedIn ? "border-[#ffb100] bg-[#1d2126]" : "border-[#2e343b] bg-[#1d2126]"
-              }`}
-            >
+            <li key={member.id}>
+              <a
+                href={`/member/${member.id}`}
+                className={`relative flex items-center gap-4 overflow-hidden rounded-xl border-2 p-3 transition-colors hover:border-[#ffb100] ${
+                  signedIn ? "border-[#ffb100] bg-[#1d2126]" : "border-[#2e343b] bg-[#1d2126]"
+                }`}
+              >
               <div
                 aria-hidden
                 className="absolute inset-y-0 left-0 bg-[#ffb100]/10"
@@ -91,9 +84,9 @@ export default async function BoardPage() {
                       <li
                         key={badge.id}
                         title={badge.detail}
-                        className={`flex items-center gap-1 rounded border px-1.5 py-0.5 font-mono text-[10px] ${TIER_STYLE[badge.tier]}`}
+                        className="flex items-center gap-1 rounded border border-[#2e343b] bg-[#14171a] py-0.5 pr-2 pl-1 font-mono text-[10px] text-[#c2c8cf]"
                       >
-                        <span aria-hidden>{badge.icon}</span>
+                        <BadgeIcon badge={badge} className="size-4" />
                         {badge.label}
                       </li>
                     ))}
@@ -117,6 +110,7 @@ export default async function BoardPage() {
                 <p className="font-mono text-xl font-bold tabular-nums">{formatHours(totalMs)}h</p>
                 <p className="font-mono text-[11px] text-[#8b949e]">{formatDuration(totalMs)}</p>
               </div>
+              </a>
             </li>
           );
         })}

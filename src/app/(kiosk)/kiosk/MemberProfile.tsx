@@ -1,0 +1,157 @@
+import type { ReactNode } from "react";
+import type { Badge } from "@/lib/kiosk/badges";
+import { awardKind } from "@/lib/kiosk/badges";
+import { formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
+import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
+import type { Member, Session } from "@/lib/kiosk/types";
+import { Avatar } from "./Avatar";
+import { BadgeIcon } from "./BadgeIcon";
+
+/**
+ * One member: who they are, what they have done, and what they have earned.
+ *
+ * Presentational and hook-free on purpose, so the same markup serves the kiosk
+ * overlay — where it carries a sign-in button — and the standalone page the
+ * leaderboard links to, which is read-only. Two copies of this would drift the
+ * first time a badge was added.
+ */
+export function MemberProfile({
+  member,
+  signedIn,
+  totalMs,
+  currentMs,
+  visits,
+  badges,
+  recent,
+  now,
+  action,
+}: {
+  member: Member;
+  signedIn: boolean;
+  totalMs: number;
+  currentMs: number | null;
+  visits: number;
+  badges: Badge[];
+  /** Their last few visits, newest first. */
+  recent: Session[];
+  now: number;
+  /** The sign-in button on the kiosk; nothing on the read-only page. */
+  action?: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        <div className="relative size-20 shrink-0 sm:size-24">
+          <Avatar member={member} signedIn={signedIn} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-serif text-2xl font-bold sm:text-3xl">
+            {member.firstName} {member.lastName}
+          </p>
+          <p className="font-mono text-[11px] tracking-widest uppercase">
+            {signedIn ? (
+              <span className="text-[#35c17a]">In the room · {formatElapsed(currentMs ?? 0)}</span>
+            ) : (
+              <span className="text-[#8b949e]">Not signed in</span>
+            )}
+          </p>
+        </div>
+      </div>
+
+      <dl className="grid grid-cols-3 gap-2">
+        {[
+          ["Hours", `${formatHours(totalMs)}h`],
+          ["Visits", String(visits)],
+          ["Badges", String(badges.length)],
+        ].map(([label, value]) => (
+          <div key={label} className="rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-3 py-2">
+            <dt className="font-mono text-[10px] tracking-widest text-[#8b949e] uppercase">
+              {label}
+            </dt>
+            <dd className="font-serif text-xl font-bold tabular-nums">{value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {action}
+
+      <section>
+        <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+          {badges.length === 0 ? "No badges yet" : "Badges"}
+        </h3>
+        {badges.length === 0 ? (
+          <p className="font-mono text-[11px] text-[#8b949e]">
+            Badges arrive with hours, visits and turning up. See the awards screen for the full
+            list.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {badges.map((badge) => (
+              <li key={badge.id}>
+                <a
+                  href={`/awards#${awardKind(badge)}`}
+                  className="flex items-center gap-3 rounded-xl border-2 border-[#2e343b] bg-[#14171a] p-2 transition-colors hover:border-[#ffb100]"
+                >
+                  <BadgeIcon badge={badge} className="size-9 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-serif text-base font-semibold">{badge.label}</p>
+                    <p className="truncate font-mono text-[10px] text-[#8b949e]">{badge.detail}</p>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {recent.length > 0 && (
+        <section>
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+            Recent visits
+          </h3>
+          <ul className="flex flex-col gap-px overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#14171a]">
+            {recent.map((sessionRow) => {
+              const open = sessionRow.signedOutAt === null;
+              return (
+                <li key={sessionRow.id} className="flex items-baseline gap-3 px-3 py-2">
+                  <span className="w-24 shrink-0 font-mono text-[11px] text-[#8b949e]">
+                    {new Date(sessionRow.signedInAt).toLocaleDateString("en-CA", {
+                      timeZone: CLUB_TIMEZONE,
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                  <span className="flex-1 font-mono text-[11px] tabular-nums">
+                    {new Date(sessionRow.signedInAt).toLocaleTimeString("en-CA", {
+                      timeZone: CLUB_TIMEZONE,
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                  <span
+                    className={`shrink-0 font-mono text-[11px] tabular-nums ${
+                      open ? "text-[#35c17a]" : "text-[#8b949e]"
+                    }`}
+                  >
+                    {open ? "here now" : formatDuration(sessionMs(sessionRow, now))}
+                    {sessionRow.autoClosed && !open && (
+                      <span className="text-[#ffb100]" title="Closed by rule, not a real sign-out">
+                        {" "}
+                        est
+                      </span>
+                    )}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
+      <p className="font-mono text-[10px] text-[#8b949e]">
+        {visits > 0 &&
+          `${visits} ${visits === 1 ? "visit" : "visits"} across every season, ${formatDuration(totalMs)} in total.`}
+      </p>
+    </div>
+  );
+}

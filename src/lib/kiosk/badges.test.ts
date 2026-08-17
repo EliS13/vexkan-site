@@ -102,14 +102,26 @@ describe("badgesFor", () => {
     expect(season?.label).toBe("2026–27");
   });
 
-  it("awards places down to fifth and no further", () => {
-    const days = ["2026-06-01"];
+  it("awards a podium three deep and no further", () => {
+    const day = "2026-06-01";
+    // m1 sits fourth of four: ahead of nobody, behind three.
     const s = [
-      visit("a", "m1", days[0], 1),
-      ...["m2", "m3", "m4", "m5", "m6"].map((id, i) => visit(`x${i}`, id, days[0], 10 - i)),
+      visit("a", "m1", day, 1),
+      visit("b", "m2", day, 4),
+      visit("c", "m3", day, 3),
+      visit("d", "m4", day, 2),
     ];
-    // m1 has the fewest hours of six, so sixth place: no season badge.
     expect(badgesFor(m1, s, NOW).some((b) => b.id.startsWith("season-"))).toBe(false);
+    expect(badgesFor(member("m4"), s, NOW).find((b) => b.id.startsWith("season-"))?.tier).toBe(
+      "bronze",
+    );
+  });
+
+  it("strikes the placing into the medal", () => {
+    const day = "2026-06-01";
+    const s = [visit("a", "m1", day, 4), visit("b", "m2", day, 1)];
+    const medal = badgesFor(m1, s, NOW).find((b) => b.shape === "medal");
+    expect(medal?.place).toBe(1);
   });
 
   it("marks a member who came back across seasons", () => {

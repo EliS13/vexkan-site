@@ -14,6 +14,8 @@ import { CameraSignIn } from "./CameraSignIn";
 import {
   countSignedIn,
   formatDuration,
+  isSignedIn,
+  recentVisits,
   formatElapsed,
   formatHours,
   placeOf,
@@ -21,6 +23,8 @@ import {
   seasonLeaderboard,
 } from "@/lib/kiosk/hours";
 import { badgeBook, topBadges, type Badge } from "@/lib/kiosk/badges";
+import { BadgeIcon } from "./BadgeIcon";
+import { MemberProfile } from "./MemberProfile";
 import { CLUB_TIMEZONE, describePhase, orderGroups } from "@/lib/kiosk/schedule";
 import { postJson, type SignOutReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
@@ -39,6 +43,13 @@ export function Kiosk({
 }) {
   const [state, setState] = useState(initial);
   const [confirmation, setConfirmation] = useState<Confirmation>(null);
+  /*
+   * Which member's profile is open. Tapping a tile opens this rather than
+   * signing straight in or out: the tile now leads to a page about the person,
+   * and the action lives on a button there. It costs a tap at the iPad, and
+   * buys somewhere for a member to see what they have earned.
+   */
+  const [profileFor, setProfileFor] = useState<Member | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [camera, setCamera] = useState<CameraMode>(null);
@@ -330,11 +341,11 @@ export function Kiosk({
         {roster.map(({ member, signedIn, currentMs, totalMs }) => (
           <button
             key={member.id}
-            onClick={() => tap(member, signedIn)}
+            onClick={() => setProfileFor(member)}
             disabled={pending === member.id}
             aria-pressed={signedIn}
             aria-label={`${member.firstName} ${member.lastName}, ${
-              signedIn ? "signed in. Tap to sign out." : "signed out. Tap to sign in with the camera."
+              signedIn ? "signed in. Open profile." : "signed out. Open profile."
             }`}
             className={`group relative flex min-h-[88px] flex-col gap-2 rounded-2xl p-3 text-left transition-[transform,background-color] duration-100 active:scale-[0.97] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100 ${
               signedIn
@@ -403,6 +414,25 @@ export function Kiosk({
           onClose={() => setCamera(null)}
         />
       )}
+      {profileFor && (
+        <Profile
+          member={profileFor}
+          signedIn={isSignedIn(state.sessions, profileFor.id)}
+          standing={roster.find((r) => r.member.id === profileFor.id)}
+          badges={book.get(profileFor.id) ?? []}
+          recent={recentVisits(state.sessions, profileFor.id)}
+          now={now}
+          busy={pending === profileFor.id}
+          onClose={() => setProfileFor(null)}
+          onAction={() => {
+            const member = profileFor;
+            const signedIn = isSignedIn(state.sessions, member.id);
+            setProfileFor(null);
+            void tap(member, signedIn);
+          }}
+        />
+      )}
+
       {confirmation && (
         <Confirm
           confirmation={confirmation}
@@ -459,6 +489,12 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
           className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
         >
           Admin
+        </a>
+        <a
+          href="/awards"
+          className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
+        >
+          Awards
         </a>
         <a
           href="/board"
@@ -618,6 +654,75 @@ function SignedOutBoard({
 }
 
 /**
+ * A member's profile, over the roster.
+ *
+ * The tile used to sign you straight in or out. It now opens this, and the
+ * action is a button here — one more tap at the iPad, in exchange for a place
+ * to see your badges, your hours and when you last came.
+ */
+function Profile({
+  member,
+  signedIn,
+  standing,
+  badges,
+  recent,
+  now,
+  busy,
+  onClose,
+  onAction,
+}: {
+  member: Member;
+  signedIn: boolean;
+  standing?: { totalMs: number; currentMs: number | null; visits: number };
+  badges: Badge[];
+  recent: KioskState["sessions"];
+  now: number;
+  busy: boolean;
+  onClose: () => void;
+  onAction: () => void;
+}) {
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="flex max-h-[88dvh] w-full max-w-lg flex-col overflow-y-auto rounded-3xl border-2 border-[#2e343b] bg-[#1d2126] p-4 sm:p-5"
+      >
+        <MemberProfile
+          member={member}
+          signedIn={signedIn}
+          totalMs={standing?.totalMs ?? 0}
+          currentMs={standing?.currentMs ?? null}
+          visits={standing?.visits ?? 0}
+          badges={badges}
+          recent={recent}
+          now={now}
+          action={
+            <button
+              onClick={onAction}
+              disabled={busy}
+              className={`min-h-[64px] w-full rounded-2xl font-serif text-2xl font-bold disabled:opacity-40 ${
+                signedIn ? "bg-[#e8eaed] text-[#14171a]" : "bg-[#ffb100] text-[#14171a]"
+              }`}
+            >
+              {busy ? "One moment…" : signedIn ? "Sign out" : "Sign in"}
+            </button>
+          }
+        />
+        <button
+          onClick={onClose}
+          className="mt-3 min-h-[48px] w-full rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
  * The three best badges, sitting on the photograph.
  *
  * Display only — the tile itself is the sign-in button, so a badge cannot be
@@ -630,32 +735,15 @@ function BadgeRow({ badges }: { badges: Badge[] }) {
   return (
     <div className="pointer-events-none absolute top-1 left-1 flex gap-1">
       {shown.map((badge) => (
-        <span
+        <BadgeIcon
           key={badge.id}
-          title={`${badge.label} — ${badge.detail}`}
-          className={`grid size-6 place-items-center rounded-md border text-[13px] leading-none shadow-sm sm:size-7 sm:text-[15px] ${TIER_STYLE[badge.tier]}`}
-        >
-          {badge.icon}
-        </span>
+          badge={badge}
+          className="size-6 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)] sm:size-7"
+        />
       ))}
     </div>
   );
 }
-
-/*
- * Never colour alone: each tier has its own glyph as well, so gold and bronze
- * are told apart by shape on a photograph and by anyone who cannot separate the
- * two by hue.
- */
-const TIER_STYLE: Record<Badge["tier"], string> = {
-  gold: "border-[#c8971a] bg-[#ffcc48] text-[#3d2c00]",
-  silver: "border-[#8f9296] bg-[#d7dade] text-[#2a2d31]",
-  bronze: "border-[#8a5a2b] bg-[#cd8b4a] text-[#33200a]",
-  runnerUp: "border-[#4a525b] bg-[#20242a] text-[#c2c8cf]",
-  milestone: "border-[#2f6f52] bg-[#173a2b] text-[#7fe0ae]",
-  streak: "border-[#7a4a86] bg-[#3a2140] text-[#dbaeea]",
-  special: "border-[#8a6a1f] bg-[#3a2f12] text-[#f0cf7a]",
-};
 
 /** 1st, 2nd, 3rd, 4th — including the 11th-to-13th exceptions. */
 function ordinal(n: number): string {

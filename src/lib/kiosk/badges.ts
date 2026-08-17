@@ -12,15 +12,20 @@ import type { Member, Session } from "./types";
  * season ends, drifts the first time a session is edited.
  */
 
-export type BadgeTier = "gold" | "silver" | "bronze" | "runnerUp" | "milestone" | "streak" | "special";
+export type BadgeTier = "gold" | "silver" | "bronze" | "milestone" | "streak" | "special";
+
+/** Which drawing to use. The renderer owns the artwork; this owns the meaning. */
+export type BadgeShape = "medal" | "star" | "gem" | "flame" | "laurel" | "clock" | "layers";
 
 export type Badge = {
   /** Stable across renders, so React keys and tests can rely on it. */
   id: string;
   label: string;
   detail: string;
-  icon: string;
+  shape: BadgeShape;
   tier: BadgeTier;
+  /** 1, 2 or 3 for a podium medal, so the numeral can be struck into it. */
+  place?: number;
   /** Higher shows first. A tile has room for three of these. */
   weight: number;
 };
@@ -69,12 +74,15 @@ export function seasonLabel(season: string): string {
 
 /* ---------------------------------------------------------------- podiums */
 
-const PODIUM: { tier: BadgeTier; icon: string; name: string; weight: number }[] = [
-  { tier: "gold", icon: "①", name: "1st", weight: 100 },
-  { tier: "silver", icon: "②", name: "2nd", weight: 90 },
-  { tier: "bronze", icon: "③", name: "3rd", weight: 80 },
-  { tier: "runnerUp", icon: "④", name: "4th", weight: 60 },
-  { tier: "runnerUp", icon: "⑤", name: "5th", weight: 55 },
+/*
+ * The podium is three deep. Fourth and fifth were dropped at Eli's request —
+ * a badge for placing fifth is a badge for having been present, and the tile
+ * only has room for three anyway.
+ */
+const PODIUM: { tier: BadgeTier; name: string; weight: number }[] = [
+  { tier: "gold", name: "1st", weight: 100 },
+  { tier: "silver", name: "2nd", weight: 90 },
+  { tier: "bronze", name: "3rd", weight: 80 },
 ];
 
 /** Total hours per member over a set of sessions, ranked, most first. */
@@ -122,9 +130,20 @@ function runLength(orderedDays: string[], attended: Set<string>): number {
 
 /* --------------------------------------------------------------- the set */
 
-const HOUR_MILESTONES = [500, 250, 100, 50, 25, 10];
+/* No 10-hour mark: that is three evenings, and everyone clears it. */
+const HOUR_MILESTONES = [500, 250, 100, 50, 25];
 const VISIT_MILESTONES = [100, 50, 25];
-const STREAK_MILESTONES = [20, 10, 5, 3];
+/*
+ * Fives, upward, with no floor at three: three club days in a row is a normal
+ * fortnight for anyone who simply attends, and a badge for it says nothing.
+ */
+const STREAK_MILESTONES = [30, 25, 20, 15, 10, 5];
+
+/* Longest first, so only the higher of the two is worn. */
+const LONG_SITTINGS = [
+  { hours: 8, id: "ultramarathon", label: "Ultramarathon", weight: 48 },
+  { hours: 4, id: "marathon", label: "Marathon", weight: 45 },
+];
 
 /**
  * Every badge a member holds, most prestigious first.
@@ -155,13 +174,14 @@ function assemble(member: Member, ctx: Context): Badge[] {
   for (const season of ctx.seasons) {
     const standings = ctx.seasonRanks.get(season) ?? [];
     const place = standings.findIndex((r) => r.memberId === member.id);
-    if (place === -1 || place > 4) continue;
+    if (place === -1 || place > 2) continue;
     const spec = PODIUM[place];
     badges.push({
       id: `season-${season}`,
       label: seasonLabel(season),
       detail: `${spec.name} place · ${hours(standings[place].ms)}`,
-      icon: spec.icon,
+      shape: "medal",
+      place: place + 1,
       tier: spec.tier,
       // A season win outranks any milestone, and recent seasons outrank old.
       weight: spec.weight + Number(season) / 1000,
@@ -177,7 +197,7 @@ function assemble(member: Member, ctx: Context): Badge[] {
       id: "all-time",
       label: "All time",
       detail: `${spec.name} overall · ${hours(allTime[overall].ms)}`,
-      icon: "★",
+      shape: "star",
       tier: spec.tier,
       weight: 200 - overall,
     });
@@ -191,7 +211,7 @@ function assemble(member: Member, ctx: Context): Badge[] {
       id: `hours-${hourMark}`,
       label: `${hourMark} hours`,
       detail: `${hours(totalMs)} in the room, all time`,
-      icon: "◆",
+      shape: "gem",
       tier: "milestone",
       weight: 70 + HOUR_MILESTONES.indexOf(hourMark) * -1 + hourMark / 1000,
     });
@@ -203,7 +223,7 @@ function assemble(member: Member, ctx: Context): Badge[] {
       id: `visits-${visitMark}`,
       label: `${visitMark} visits`,
       detail: `${mine.length} visits recorded`,
-      icon: "◇",
+      shape: "layers",
       tier: "milestone",
       weight: 40 + visitMark / 1000,
     });
@@ -216,7 +236,7 @@ function assemble(member: Member, ctx: Context): Badge[] {
       id: `streak-${streakMark}`,
       label: `${streakMark} in a row`,
       detail: `${streak} club days running`,
-      icon: "▲",
+      shape: "flame",
       tier: "streak",
       weight: 50 + streakMark / 100,
     });
@@ -233,7 +253,7 @@ function assemble(member: Member, ctx: Context): Badge[] {
       id: `veteran-${mySeasons.size}`,
       label: mySeasons.size >= 3 ? "Founder" : "Returned",
       detail: `Came back across ${mySeasons.size} seasons`,
-      icon: "❖",
+      shape: "laurel",
       tier: "special",
       weight: 75 + mySeasons.size,
     });
@@ -241,19 +261,109 @@ function assemble(member: Member, ctx: Context): Badge[] {
 
   /* One long sitting. Build nights and competition prep look like this. */
   const longest = mine.reduce((max, s) => Math.max(max, sessionMs(s, now)), 0);
-  if (longest >= 4 * 3_600_000) {
+  const sitting = LONG_SITTINGS.find((m) => longest >= m.hours * 3_600_000);
+  if (sitting) {
     badges.push({
-      id: "marathon",
-      label: "Marathon",
+      id: sitting.id,
+      label: sitting.label,
       detail: `A single visit of ${hours(longest)}`,
-      icon: "●",
+      shape: "clock",
       tier: "special",
-      weight: 45,
+      weight: sitting.weight,
     });
   }
 
   return badges.sort((a, b) => b.weight - a.weight);
 }
+
+/**
+ * Every badge that exists, and how it is earned, for the awards screen.
+ *
+ * Built from the same constants the awarding uses, so the page cannot promise
+ * a hundred hours while the code wants two hundred. A new milestone appears
+ * here the moment it is added above.
+ */
+/**
+ * Which award a badge is an instance of.
+ *
+ * A member holds "season-2025" or "hours-100"; the awards page documents the
+ * kind. One function owns this mapping because three places need it — the
+ * page's anchors, its "how many hold it" counts, and the links from the
+ * leaderboard — and when they each had their own the counts silently drifted:
+ * every medal counted as one award, and Returned read as unclaimed while five
+ * members wore it.
+ */
+export function awardKind(badge: Pick<Badge, "id" | "place">): string {
+  if (badge.id.startsWith("season-")) return `season-${badge.place ?? 1}`;
+  if (badge.id.startsWith("hours-")) return "hours";
+  if (badge.id.startsWith("visits-")) return "visits";
+  if (badge.id.startsWith("streak-")) return "streak";
+  if (badge.id.startsWith("veteran-")) return "returned";
+  return badge.id;
+}
+
+export type BadgeGuideEntry = {
+  badge: Badge;
+  how: string;
+};
+
+export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
+  {
+    heading: "Placing",
+    entries: [
+      {
+        badge: { id: "season-1", label: "Season gold", detail: "1st place in a season", shape: "medal", place: 1, tier: "gold", weight: 0 },
+        how: "Most hours in a season. The club's year runs May 1st to April 30th.",
+      },
+      {
+        badge: { id: "season-2", label: "Season silver", detail: "2nd place in a season", shape: "medal", place: 2, tier: "silver", weight: 0 },
+        how: "Second most hours in a season.",
+      },
+      {
+        badge: { id: "season-3", label: "Season bronze", detail: "3rd place in a season", shape: "medal", place: 3, tier: "bronze", weight: 0 },
+        how: "Third most hours in a season.",
+      },
+      {
+        badge: { id: "all-time", label: "All time", detail: "Top three ever", shape: "star", tier: "gold", weight: 0 },
+        how: "Top three for total hours across every season. This one can change hands at any moment.",
+      },
+    ],
+  },
+  {
+    heading: "Milestones",
+    entries: [
+      {
+        badge: { id: "hours", label: "Hours", detail: "Total time in the room", shape: "gem", tier: "milestone", weight: 0 },
+        how: `Total hours across every season: ${[...HOUR_MILESTONES].reverse().join(", ")}. Only the highest reached is worn.`,
+      },
+      {
+        badge: { id: "visits", label: "Visits", detail: "Times you came", shape: "layers", tier: "milestone", weight: 0 },
+        how: `Number of visits recorded: ${[...VISIT_MILESTONES].reverse().join(", ")}.`,
+      },
+    ],
+  },
+  {
+    heading: "Turning up",
+    entries: [
+      {
+        badge: { id: "streak", label: "Streak", detail: "Club days in a row", shape: "flame", tier: "streak", weight: 0 },
+        how: `Club days in a row without missing one: ${[...STREAK_MILESTONES].reverse().join(", ")}. Days the club was closed do not break it.`,
+      },
+      {
+        badge: { id: "returned", label: "Returned", detail: "Two seasons", shape: "laurel", tier: "special", weight: 0 },
+        how: "Came back for a second season. Becomes Founder at three.",
+      },
+      {
+        badge: { id: "marathon", label: "Marathon", detail: "One long visit", shape: "clock", tier: "special", weight: 0 },
+        how: "A single visit lasting more than four hours.",
+      },
+      {
+        badge: { id: "ultramarathon", label: "Ultramarathon", detail: "One very long visit", shape: "clock", tier: "gold", weight: 0 },
+        how: "A single visit lasting more than eight hours. Replaces Marathon.",
+      },
+    ],
+  },
+];
 
 /** The three a tile has room for. */
 export function topBadges(badges: Badge[], limit = 3): Badge[] {
