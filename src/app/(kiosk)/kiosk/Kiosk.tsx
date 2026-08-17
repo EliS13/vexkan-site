@@ -533,56 +533,74 @@ function SignedOutBoard({
   }, []);
 
   return (
+    /*
+     * The dark margin around the card dismisses it. No close button and no
+     * instruction to read: tapping away from a thing to be rid of it is the
+     * gesture everyone already has, and a kiosk overlay that clears itself in
+     * eight seconds anyway does not need to teach one.
+     *
+     * The card stops the click, so scrolling the list or dragging across a
+     * name never dismisses by accident.
+     */
     <div
       role="status"
       aria-live="polite"
       onClick={onDismiss}
-      className="fixed inset-0 z-50 flex flex-col bg-[#14171a]/95 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
+      className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
     >
-      <header className="shrink-0 text-center">
-        <p className="font-mono text-xs font-bold tracking-[0.2em] text-[#8b949e] uppercase">
-          Signed out
-        </p>
-        <p className="font-serif text-3xl font-bold sm:text-4xl">
-          {member.firstName} {member.lastName[0]}.
-        </p>
-      </header>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        /*
+         * Capped short of the screen on purpose. At full height the only place
+         * left to tap is the few pixels of padding at the edge, and "tap
+         * outside" stops being a gesture anyone can find. This keeps a band of
+         * backdrop above and below the card on every screen.
+         */
+        className="flex max-h-[82dvh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border-2 border-[#2e343b] bg-[#1d2126]"
+      >
+        <header className="shrink-0 px-6 pt-5 pb-3 text-center">
+          <p className="font-mono text-xs font-bold tracking-[0.2em] text-[#8b949e] uppercase">
+            Signed out
+          </p>
+          <p className="font-serif text-3xl font-bold sm:text-4xl">
+            {member.firstName} {member.lastName[0]}.
+          </p>
+        </header>
 
-      <ol className="mx-auto my-4 flex w-full max-w-lg flex-1 flex-col gap-1 overflow-y-auto">
-        {standings.map((standing, index) => {
-          const isMine = standing.member.id === member.id;
-          return (
-            <li
-              key={standing.member.id}
-              ref={isMine ? mine : undefined}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
-                isMine ? "bg-[#ffb100] text-[#14171a]" : "text-[#e8eaed]"
-              }`}
-            >
-              <span className="w-7 shrink-0 text-right font-mono text-sm tabular-nums opacity-60">
-                {index + 1}
-              </span>
-              <span className="min-w-0 flex-1 truncate font-serif text-lg">
-                {standing.member.firstName} {standing.member.lastName[0]}.
-              </span>
-              <span className="shrink-0 font-mono text-sm tabular-nums">
-                {formatHours(standing.totalMs)}h
-              </span>
-            </li>
-          );
-        })}
-      </ol>
+        <ol className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 pb-3">
+          {standings.map((standing, index) => {
+            const isMine = standing.member.id === member.id;
+            return (
+              <li
+                key={standing.member.id}
+                ref={isMine ? mine : undefined}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
+                  isMine ? "bg-[#ffb100] text-[#14171a]" : "text-[#e8eaed]"
+                }`}
+              >
+                <span className="w-7 shrink-0 text-right font-mono text-sm tabular-nums opacity-60">
+                  {index + 1}
+                </span>
+                <span className="min-w-0 flex-1 truncate font-serif text-lg">
+                  {standing.member.firstName} {standing.member.lastName[0]}.
+                </span>
+                <span className="shrink-0 font-mono text-sm tabular-nums">
+                  {formatHours(standing.totalMs)}h
+                </span>
+              </li>
+            );
+          })}
+        </ol>
 
-      <footer className="shrink-0 rounded-2xl bg-[#ffb100] px-6 py-4 text-center text-[#14171a]">
-        <p className="font-serif text-2xl font-bold sm:text-3xl">
-          {place === null
-            ? "Welcome to the club"
-            : `${ordinal(place)} place this season`}
-        </p>
-        <p className="font-mono text-[11px] tracking-[0.15em] uppercase opacity-70">
-          Season since May 1 · tap to close
-        </p>
-      </footer>
+        <footer className="shrink-0 bg-[#ffb100] px-6 py-4 text-center text-[#14171a]">
+          <p className="font-serif text-2xl font-bold sm:text-3xl">
+            {place === null ? "Welcome to the club" : `${ordinal(place)} place this season`}
+          </p>
+          <p className="font-mono text-[11px] tracking-[0.15em] uppercase opacity-70">
+            Season since May 1
+          </p>
+        </footer>
+      </div>
     </div>
   );
 }
