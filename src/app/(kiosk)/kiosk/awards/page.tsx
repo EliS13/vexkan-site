@@ -136,8 +136,16 @@ export default async function AwardsPage() {
                 <span className="min-w-0 flex-1">
                   <span className="font-serif text-base">{award.title}</span>
                   <span className="block truncate font-mono text-[10px] text-[#8b949e]">
-                    {award.event}
+                    {award.season} · {award.event}
                   </span>
+                  {award.members.length > 0 && (
+                    <span className="block font-mono text-[10px] text-[#c2c8cf]">
+                      {award.members.map((m) => m.split(" ")[0]).join(", ")}
+                      {award.inferred && (
+                        <span className="text-[#8b949e]"> · roster nearest this season</span>
+                      )}
+                    </span>
+                  )}
                 </span>
                 {award.worlds && (
                   <span className="shrink-0 font-mono text-[10px] tracking-widest text-[#ffcc48] uppercase">

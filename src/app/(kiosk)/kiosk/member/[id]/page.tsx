@@ -6,6 +6,8 @@ import { notFound } from "next/navigation";
 import { getState } from "@/lib/kiosk/store";
 import { badgeBook } from "@/lib/kiosk/badges";
 import { alongsideMs, recentVisits, standingFor } from "@/lib/kiosk/hours";
+import { awardsForMember, awardsForTeams } from "@/lib/kiosk/vexAwards";
+import { TEAMS } from "@/lib/kiosk/teams";
 import { MemberProfile } from "../../MemberProfile";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +27,10 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
 
   const standing = standingFor(member, state.sessions, now);
   const badges = badgeBook(state.members, state.sessions, now).get(member.id) ?? [];
+  const vex = await awardsForTeams([...new Set(TEAMS.map((t) => t.number))]);
+  const won = vex.ok
+    ? awardsForMember(vex.awards, `${member.firstName} ${member.lastName}`)
+    : [];
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-lg flex-col p-5">
@@ -38,6 +44,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
         recent={recentVisits(state.sessions, member.id)}
         now={now}
         alongside={alongsideMs(member, state.members, state.sessions, now)}
+        vexAwards={won}
       />
 
       <a

@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Badge } from "@/lib/kiosk/badges";
+import type { TeamAward } from "@/lib/kiosk/vexAwards";
 import { awardKind } from "@/lib/kiosk/badges";
 import { ALONGSIDE, formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
@@ -29,6 +30,7 @@ export function MemberProfile({
   currentMs,
   visits,
   badges,
+  vexAwards = [],
   recent,
   now,
   alongside = 0,
@@ -40,6 +42,8 @@ export function MemberProfile({
   currentMs: number | null;
   visits: number;
   badges: Badge[];
+  /** Competition awards this member shares, from the VEX API. */
+  vexAwards?: TeamAward[];
   /** Their last few visits, newest first. */
   recent: Session[];
   now: number;
@@ -188,6 +192,38 @@ export function MemberProfile({
             * credited teams that never went. The Worlds badge above says who
             * actually competed.
             */}
+        </section>
+      )}
+
+      {vexAwards.length > 0 && (
+        <section>
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+            Won at competition · {vexAwards.length}
+          </h3>
+          <ul className="flex flex-col gap-1.5">
+            {vexAwards.map((award, i) => (
+              <li
+                key={`${award.teamNumber}-${award.title}-${i}`}
+                className={`flex items-baseline gap-2 rounded-lg border-2 px-2.5 py-1.5 ${
+                  award.worlds ? "border-[#c8971a] bg-[#ffcc48]/10" : "border-[#2e343b] bg-[#14171a]"
+                }`}
+              >
+                <span
+                  className={`w-14 shrink-0 font-mono text-[10px] ${
+                    award.worlds ? "text-[#ffcc48]" : "text-[#8b949e]"
+                  }`}
+                >
+                  {award.teamNumber}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="font-serif text-sm">{award.title}</span>
+                  <span className="block truncate font-mono text-[10px] text-[#8b949e]">
+                    {award.season} · {award.event}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 
