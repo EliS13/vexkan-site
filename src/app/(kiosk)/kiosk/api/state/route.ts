@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getState } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
+import { checkNetwork } from "@/lib/kiosk/network";
 
 /** Never cached: the whole point is who is in the room right now. */
 export const dynamic = "force-dynamic";
@@ -18,6 +19,12 @@ export async function GET(request: Request) {
 async function respond(request: Request) {
   const state = await getState();
   const version = rosterVersion(state.members);
+  /*
+   * Whether this device may change the record. The kiosk uses it to hide the
+   * buttons rather than let somebody tap one and be refused — a control that
+   * cannot work should not be offered.
+   */
+  const canSign = checkNetwork(request.headers).allowed;
 
   /*
    * ?slim=1 leaves out the roster, which is almost entirely base64 photographs.
@@ -31,10 +38,11 @@ async function respond(request: Request) {
       groups: state.groups,
       now: state.now,
       rosterVersion: version,
+      canSign,
     });
   }
 
   // `now` travels with the state so every iPad measures durations against the
   // server's clock, whatever their own is set to.
-  return NextResponse.json({ ...state, rosterVersion: version });
+  return NextResponse.json({ ...state, rosterVersion: version, canSign });
 }

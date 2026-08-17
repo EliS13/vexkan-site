@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getState, signOutMember } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
+import { checkPasscode } from "@/lib/kiosk/admin";
+import { checkNetwork } from "@/lib/kiosk/network";
 
 export const dynamic = "force-dynamic";
 
@@ -18,15 +20,35 @@ export const dynamic = "force-dynamic";
  * signing in goes through /api/signin behind a face match or a organizer passcode.
  */
 export async function POST(request: Request) {
+  /*
+   * Signing out is pinned to the club's network for the same reason signing in
+   * is. It was not, which left the weaker half of a pair: somebody could not
+   * add hours from home but could end somebody else's session from anywhere,
+   * and a session ended early is a quieter kind of wrong than one invented.
+   */
+  const network = checkNetwork(request.headers);
+
   let memberId: unknown;
+  let passcode: unknown;
   try {
-    ({ memberId } = await request.json());
+    ({ memberId, passcode } = await request.json());
   } catch {
     return NextResponse.json({ error: "Expected a JSON body." }, { status: 400 });
   }
 
   if (typeof memberId !== "string" || memberId.length === 0) {
     return NextResponse.json({ error: "memberId is required." }, { status: 400 });
+  }
+
+  if (!network.allowed && !checkPasscode(passcode)) {
+    return NextResponse.json(
+      {
+        error:
+          "Sign-out only works on the club's network. Hours, awards and the " +
+          "leaderboard are readable from anywhere.",
+      },
+      { status: 403 },
+    );
   }
 
   try {

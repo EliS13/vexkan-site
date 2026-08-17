@@ -37,10 +37,13 @@ export function Kiosk({
   initial,
   initialNow,
   initialRosterVersion,
+  canSign,
 }: {
   initial: KioskState;
   initialNow: number;
   initialRosterVersion: string;
+  /** False when this device is not on the club's network. Read-only then. */
+  canSign: boolean;
 }) {
   const [state, setState] = useState(initial);
   const [confirmation, setConfirmation] = useState<Confirmation>(null);
@@ -51,6 +54,8 @@ export function Kiosk({
    * buys somewhere for a member to see what they have earned.
    */
   const [profileFor, setProfileFor] = useState<Member | null>(null);
+  /* Server's verdict first, refreshed by the poll if the connection changes. */
+  const [maySign, setMaySign] = useState(canSign);
   /*
    * Hold a tile to sign in or out; tap it to open the profile.
    *
@@ -111,6 +116,7 @@ export function Kiosk({
         const body = JSON.parse(await res.text());
 
         setState((current) => ({ ...current, sessions: body.sessions, groups: body.groups }));
+        if (typeof body.canSign === "boolean") setMaySign(body.canSign);
         anchor.current = { serverNow: body.now, at: Date.now() };
         setNow(body.now);
 
@@ -259,6 +265,7 @@ export function Kiosk({
 
   const startHold = useCallback(
     (member: Member, signedIn: boolean) => {
+      if (!maySign) return;
       acted.current = false;
       setHolding(member.id);
       if (holdTimer.current) clearTimeout(holdTimer.current);
@@ -268,7 +275,7 @@ export function Kiosk({
         void tap(member, signedIn);
       }, 550);
     },
-    [tap],
+    [tap, maySign],
   );
 
   const endHold = useCallback(() => {
@@ -437,7 +444,14 @@ export function Kiosk({
         ))}
       </div>
 
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:gap-3">
+      {!maySign && (
+        <p className="mt-3 rounded-2xl border-2 border-dashed border-[#2e343b] px-4 py-3 text-center font-mono text-[11px] text-[#8b949e]">
+          Read-only — you are not on the club&rsquo;s wifi. Tap anyone to see their hours, badges
+          and awards.
+        </p>
+      )}
+
+      <div className={`mt-3 flex flex-col gap-2 sm:flex-row sm:gap-3 ${maySign ? "" : "hidden"}`}>
         <button
           onClick={() => setCamera({ kind: "group" })}
           className="min-h-[88px] flex-1 rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] sm:text-2xl"
@@ -469,6 +483,7 @@ export function Kiosk({
           recent={recentVisits(state.sessions, profileFor.id)}
           now={now}
           alongside={alongsideMs(profileFor, state.members, state.sessions, now)}
+          maySign={maySign}
           busy={pending === profileFor.id}
           onClose={() => setProfileFor(null)}
           onAction={() => {
@@ -715,6 +730,7 @@ function Profile({
   recent,
   now,
   alongside,
+  maySign,
   busy,
   onClose,
   onAction,
@@ -726,6 +742,7 @@ function Profile({
   recent: KioskState["sessions"];
   now: number;
   alongside: number;
+  maySign: boolean;
   busy: boolean;
   onClose: () => void;
   onAction: () => void;
@@ -750,6 +767,12 @@ function Profile({
           now={now}
           alongside={alongside}
           action={
+            !maySign ? (
+              <p className="rounded-2xl border-2 border-dashed border-[#2e343b] px-4 py-3 text-center font-mono text-[11px] leading-relaxed text-[#8b949e]">
+                Signing in and out only works on the club&rsquo;s wifi. Everything else here —
+                hours, badges, awards — reads the same from anywhere.
+              </p>
+            ) : (
             <button
               onClick={onAction}
               disabled={busy}
@@ -759,6 +782,7 @@ function Profile({
             >
               {busy ? "One moment…" : signedIn ? "Sign out" : "Sign in"}
             </button>
+            )
           }
         />
         <button

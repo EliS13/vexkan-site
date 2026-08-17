@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { clientIp, matchesRule } from "./network";
+import { checkNetwork, clientIp, matchesRule } from "./network";
 
 describe("clientIp", () => {
   it("takes the first entry of x-forwarded-for, not the proxy hops", () => {
@@ -48,5 +48,33 @@ describe("matchesRule", () => {
 
   it("does not match an IPv6 address against an IPv4 rule", () => {
     expect(matchesRule("2001:db8::1", "24.108.0.0/16")).toBe(false);
+  });
+});
+
+describe("the club-network gate as the routes use it", () => {
+  it("allows everything when no rule is set, so a lapsed address cannot lock the club out", () => {
+    delete process.env.KIOSK_ALLOWED_IPS;
+    expect(checkNetwork(new Headers({ "x-forwarded-for": "24.108.5.9" }))).toEqual({
+      allowed: true,
+      reason: "check-off",
+    });
+  });
+
+  it("refuses an address outside the club's range", () => {
+    process.env.KIOSK_ALLOWED_IPS = "24.108.0.0/16";
+    expect(checkNetwork(new Headers({ "x-forwarded-for": "8.8.8.8" })).allowed).toBe(false);
+    delete process.env.KIOSK_ALLOWED_IPS;
+  });
+
+  it("accepts an address inside it", () => {
+    process.env.KIOSK_ALLOWED_IPS = "24.108.0.0/16";
+    expect(checkNetwork(new Headers({ "x-forwarded-for": "24.108.5.9" })).allowed).toBe(true);
+    delete process.env.KIOSK_ALLOWED_IPS;
+  });
+
+  it("refuses rather than allows when the platform reports no address", () => {
+    process.env.KIOSK_ALLOWED_IPS = "24.108.0.0/16";
+    expect(checkNetwork(new Headers()).reason).toBe("no-ip");
+    delete process.env.KIOSK_ALLOWED_IPS;
   });
 });
