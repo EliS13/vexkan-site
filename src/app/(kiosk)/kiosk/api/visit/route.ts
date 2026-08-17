@@ -46,12 +46,13 @@ export async function POST(request: Request) {
 }
 
 /*
- * The cookie is the whole grant. It says "this browser answered the code",
- * lasts until the browser closes, and is checked by every kiosk page — so the
- * gate cannot be walked around by typing /awards.
+ * The cookie is the whole grant. It says "this browser answered the code", it
+ * is signed so it cannot be written by hand, it outlives the tab, and it is
+ * checked by every kiosk page and by the route those pages read from — so the
+ * gate cannot be walked around by typing /awards, and it is not asked twice.
  */
 function unlocked() {
   const res = NextResponse.json({ ok: true });
-  res.cookies.set(visitCookie);
+  res.cookies.set(visitCookie());
   return res;
 }

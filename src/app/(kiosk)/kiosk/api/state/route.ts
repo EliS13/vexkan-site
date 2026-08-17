@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getState } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
 import { checkNetwork } from "@/lib/kiosk/network";
+import { mayView } from "@/lib/kiosk/visit";
 
 /** Never cached: the whole point is who is in the room right now. */
 export const dynamic = "force-dynamic";
@@ -17,6 +18,20 @@ export async function GET(request: Request) {
 }
 
 async function respond(request: Request) {
+  /*
+   * The same question the pages ask, asked again here.
+   *
+   * Gating only the pages would have been theatre: this route answers with the
+   * entire roster — every name, every photograph, every session — and it is one
+   * path anybody can type. The pages are the door; this is the wall beside it.
+   */
+  if (!(await mayView())) {
+    return NextResponse.json(
+      { error: "The roster is only visible on the club's network, or with the club code." },
+      { status: 403 },
+    );
+  }
+
   const state = await getState();
   const version = rosterVersion(state.members);
   /*
