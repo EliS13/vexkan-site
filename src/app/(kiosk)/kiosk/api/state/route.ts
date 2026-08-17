@@ -6,6 +6,16 @@ import { rosterVersion } from "@/lib/kiosk/hours";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  try {
+    return await respond(request);
+  } catch (error) {
+    // An empty 500 from here leaves the kiosk with no roster and no reason.
+    const detail = error instanceof Error ? error.message : "unknown";
+    return NextResponse.json({ error: `Could not load the roster — ${detail}` }, { status: 500 });
+  }
+}
+
+async function respond(request: Request) {
   const state = await getState();
   const version = rosterVersion(state.members);
 

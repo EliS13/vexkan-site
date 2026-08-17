@@ -82,11 +82,32 @@ export async function POST(request: Request) {
     );
   }
 
-  const { signedIn, alreadyIn } = await signInMembers(memberIds as string[], {
-    verified,
-    note: verified ? null : "Signed in by organizer override, no face match.",
-  });
+  /*
+   * Wrapped, unlike before. Anything thrown past this point — a database that
+   * refused the write, a unique index catching a session that was already open
+   * — left the platform to answer with an empty 500, which tells the kiosk
+   * nothing and the person standing at it less. Sign-out has always done this;
+   * sign-in was the one route that did not.
+   */
+  try {
+    const { signedIn, alreadyIn } = await signInMembers(memberIds as string[], {
+      verified,
+      note: verified ? null : "Signed in by organizer override, no face match.",
+    });
 
-  const { sessions, now, members } = await getState();
-  return NextResponse.json({ signedIn, alreadyIn, sessions, now, rosterVersion: rosterVersion(members) });
+    const { sessions, now, members } = await getState();
+    return NextResponse.json({
+      signedIn,
+      alreadyIn,
+      sessions,
+      now,
+      rosterVersion: rosterVersion(members),
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "unknown";
+    return NextResponse.json(
+      { error: `Could not record that sign-in — ${detail}` },
+      { status: 500 },
+    );
+  }
 }
