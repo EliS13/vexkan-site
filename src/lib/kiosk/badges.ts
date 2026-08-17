@@ -1,5 +1,6 @@
 import { CLUB_TIMEZONE } from "./schedule";
 import { sessionMs } from "./hours";
+import { teamsFor, worldsFor } from "./teams";
 import type { Member, Session } from "./types";
 
 /**
@@ -636,7 +637,38 @@ function assemble(member: Member, ctx: Context): Badge[] {
     });
   }
 
-  if (FOUNDERS.includes(`${member.firstName} ${member.lastName}`)) {
+  const fullName = `${member.firstName} ${member.lastName}`;
+
+  /*
+   * Competition history, which the attendance record knows nothing about. It
+   * comes from teams.ts, written down rather than derived, so these are the
+   * only badges here that a wrong line in a file can invent.
+   */
+  const worlds = worldsFor(fullName);
+  if (worlds.length > 0) {
+    badges.push({
+      id: "worlds",
+      label: worlds.length > 1 ? `Worlds ×${worlds.length}` : "Worlds",
+      detail: `VEX World Championship — ${worlds.join(" and ")}`,
+      shape: "crown",
+      tier: "gold",
+      weight: 250,
+    });
+  }
+
+  const teams = teamsFor(fullName);
+  if (teams.length >= 3) {
+    badges.push({
+      id: "many-teams",
+      label: "Utility Player",
+      detail: `Competed for ${teams.length} teams`,
+      shape: "shield",
+      tier: "silver",
+      weight: 82,
+    });
+  }
+
+  if (FOUNDERS.includes(fullName)) {
     badges.push({
       id: "founder",
       label: "Founder",
@@ -871,6 +903,19 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
       how: SECRET_HINTS[s.id] ?? "Found by doing something.",
       secret: true,
     })),
+  },
+  {
+    heading: "Competition",
+    entries: [
+      {
+        badge: { id: "worlds", label: "Worlds", detail: "VEX World Championship", shape: "crown", tier: "gold", weight: 0 },
+        how: "Competed at the VEX World Championship. Not something attendance can earn.",
+      },
+      {
+        badge: { id: "many-teams", label: "Utility Player", detail: "Three teams or more", shape: "shield", tier: "silver", weight: 0 },
+        how: "Competed for three or more different teams.",
+      },
+    ],
   },
   {
     heading: "Combinations",

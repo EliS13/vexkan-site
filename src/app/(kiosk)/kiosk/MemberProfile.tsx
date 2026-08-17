@@ -4,6 +4,7 @@ import { awardKind } from "@/lib/kiosk/badges";
 import { ALONGSIDE, formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
 import type { Member, Session } from "@/lib/kiosk/types";
+import { teamsFor, worldsFor } from "@/lib/kiosk/teams";
 import { Avatar } from "./Avatar";
 import { BadgeIcon } from "./BadgeIcon";
 
@@ -47,6 +48,10 @@ export function MemberProfile({
   /** The sign-in button on the kiosk; nothing on the read-only page. */
   action?: ReactNode;
 }) {
+  const fullName = `${member.firstName} ${member.lastName}`;
+  const teams = teamsFor(fullName);
+  const worlds = worldsFor(fullName);
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
@@ -160,6 +165,35 @@ export function MemberProfile({
           </details>
         )}
       </section>
+
+      {teams.length > 0 && (
+        <section>
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+            Teams
+          </h3>
+          <ul className="flex flex-wrap gap-1.5">
+            {teams.map((team) => (
+              <li
+                key={`${team.number}-${team.season}`}
+                className={`rounded-lg border-2 px-2.5 py-1.5 font-mono text-[11px] ${
+                  worlds.includes(team.season)
+                    ? "border-[#c8971a] bg-[#ffcc48]/10 text-[#ffcc48]"
+                    : "border-[#2e343b] bg-[#14171a] text-[#c2c8cf]"
+                }`}
+                title={worlds.includes(team.season) ? "Went to Worlds this season" : undefined}
+              >
+                {team.number}
+                <span className="ml-1.5 text-[#8b949e]">{team.season}</span>
+              </li>
+            ))}
+          </ul>
+          {worlds.length > 0 && (
+            <p className="mt-1.5 font-mono text-[10px] text-[#ffcc48]">
+              Gold marks a season that ended at the VEX World Championship.
+            </p>
+          )}
+        </section>
+      )}
 
       {recent.length > 0 && (
         <section>
