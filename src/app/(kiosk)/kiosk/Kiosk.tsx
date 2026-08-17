@@ -210,7 +210,7 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
         </div>
       )}
 
-      <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-3 gap-3 overflow-y-auto sm:grid-cols-4 lg:grid-cols-6">
+      <div className="grid min-h-0 flex-1 auto-rows-min grid-cols-2 gap-2 overflow-y-auto sm:grid-cols-4 sm:gap-3 lg:grid-cols-6">
         {roster.map(({ member, signedIn, currentMs, totalMs }) => (
           <button
             key={member.id}
@@ -232,7 +232,7 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
             </div>
 
             <div className="flex items-baseline justify-between gap-2">
-              <span className="truncate font-serif text-lg leading-tight font-semibold sm:text-xl">
+              <span className="truncate font-serif text-base leading-tight font-semibold sm:text-xl">
                 {member.firstName} {member.lastName[0]}.
               </span>
               {/* Not colour alone: filled vs outlined, and the word itself. */}
@@ -259,16 +259,16 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
         ))}
       </div>
 
-      <div className="mt-3 flex gap-3">
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:gap-3">
         <button
           onClick={() => setCamera({ kind: "group" })}
-          className="min-h-[88px] flex-1 rounded-2xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a]"
+          className="min-h-[88px] flex-1 rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] sm:text-2xl"
         >
           Camera sign in
         </button>
         <Link
           href="/enroll"
-          className="grid min-h-[88px] place-items-center rounded-2xl border-2 border-[#2e343b] px-6 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          className="grid min-h-[64px] place-items-center rounded-2xl border-2 border-[#2e343b] px-6 font-mono text-xs tracking-widest text-[#8b949e] uppercase sm:min-h-[88px]"
         >
           Sign up
         </Link>
@@ -295,7 +295,7 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
   });
 
   return (
-    <header className="mb-4 flex items-end justify-between gap-4">
+    <header className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:mb-4 sm:items-end">
       <div className="flex items-center gap-4">
         {/*
          * The club's own logo. It already reads "VexKan Robotics Club", so the
@@ -305,9 +305,9 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
         <img
           src="/logo-vexkan.png"
           alt="VexKan Robotics Club"
-          className="h-11 w-auto shrink-0 sm:h-14"
+          className="h-8 w-auto shrink-0 sm:h-14"
         />
-        <p className="font-serif text-3xl leading-tight font-bold sm:text-4xl">
+        <p className="font-serif text-2xl leading-tight font-bold sm:text-4xl">
           <span className="tabular-nums">{inRoom}</span>
           <span className="text-[#8b949e]"> of {total} in</span>
         </p>
@@ -315,17 +315,17 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
       <div className="flex items-center gap-3">
         <Link
           href="/admin"
-          className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+          className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
         >
           Admin
         </Link>
         <Link
           href="/board"
-          className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+          className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
         >
           Leaderboard
         </Link>
-        <p className="font-mono text-2xl tabular-nums text-[#e8eaed] sm:text-3xl">{time}</p>
+        <p className="font-mono text-lg tabular-nums text-[#e8eaed] sm:text-3xl">{time}</p>
       </div>
     </header>
   );

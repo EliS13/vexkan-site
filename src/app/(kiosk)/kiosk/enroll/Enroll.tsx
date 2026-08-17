@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { cropFace, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
 import { saveDescriptors } from "@/lib/kiosk/faceStore";
+import { useCamera } from "@/lib/kiosk/useCamera";
+import { CameraGate } from "../CameraGate";
 import type { KioskState } from "@/lib/kiosk/types";
 
 /**
@@ -25,54 +27,41 @@ const PROMPTS = [
 type Shot = { descriptor: number[]; photo: string };
 
 export function Enroll({ initial }: { initial: KioskState }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const stream = useRef<MediaStream | null>(null);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [passcode, setPasscode] = useState("");
   const [shots, setShots] = useState<Shot[]>([]);
   const [status, setStatus] = useState("Loading the face models…");
-  const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [roster, setRoster] = useState(initial.members.length);
 
+  /*
+   * Destructured at the call site. Held as one object, the React compiler infers
+   * the whole thing is ref-bearing (getVideo closes over a ref) and rejects
+   * every read of it during render.
+   */
+  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart } =
+    useCamera();
+
+  /*
+   * Models load up front; the camera waits for the tap on CameraGate. iOS
+   * Safari rejects getUserMedia outside a user gesture, so opening it from this
+   * effect would fail before the permission sheet appeared.
+   */
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
         await loadFaceEngine();
-        if (cancelled) return;
-        const media = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false,
-        });
-        if (cancelled) {
-          media.getTracks().forEach((t) => t.stop());
-          return;
-        }
-        stream.current = media;
-        if (video.current) {
-          video.current.srcObject = media;
-          await video.current.play();
-        }
-        setReady(true);
-        setStatus(PROMPTS[0]);
-      } catch (err) {
-        const name = err instanceof Error ? err.name : "";
-        setError(
-          name === "NotAllowedError"
-            ? "Camera permission was refused. A photo is required to sign someone up."
-            : "No camera is available, and a photo is required to sign someone up.",
-        );
+        if (!cancelled) setStatus(PROMPTS[0]);
+      } catch {
+        setError("The face models could not load. Check the connection and try again.");
       }
     })();
-    return () => {
-      cancelled = true;
-      stream.current?.getTracks().forEach((t) => t.stop());
-    };
+    return () => { cancelled = true; };
   }, []);
 
   /**
@@ -81,11 +70,12 @@ export function Enroll({ initial }: { initial: KioskState }) {
    * member's name, and nothing downstream would ever reveal that.
    */
   const capture = useCallback(async () => {
-    if (!video.current) return;
+    const el = getVideo();
+    if (!el) return;
     setBusy(true);
     setError(null);
     try {
-      const frame = grabFrame(video.current);
+      const frame = grabFrame(el);
       const { face, extraFaces } = await detectOne(frame);
 
       if (!face) {
@@ -113,7 +103,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
     } finally {
       setBusy(false);
     }
-  }, [shots]);
+  }, [shots, getVideo]);
 
   const save = useCallback(async () => {
     setBusy(true);
@@ -186,13 +176,28 @@ export function Enroll({ initial }: { initial: KioskState }) {
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
         <div className="flex min-h-0 flex-col gap-3">
-          <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-black">
-            <video ref={video} muted playsInline className="size-full -scale-x-100 object-contain" />
+          <div className="relative grid min-h-[40vh] flex-1 place-items-center overflow-hidden rounded-2xl bg-black">
+            <video
+            ref={attach}
+              muted
+              playsInline
+              className={`size-full -scale-x-100 object-contain ${
+                camStatus === "live" ? "" : "hidden"
+              }`}
+            />
+            {camStatus !== "live" && (
+              <CameraGate
+                status={camStatus}
+                message={camMessage}
+                onStart={camStart}
+                purpose="Signing someone up needs five photos of their face, taken here. They stay on this device."
+              />
+            )}
           </div>
           <p className="font-serif text-2xl font-semibold">{status}</p>
           <button
             onClick={capture}
-            disabled={!ready || busy || complete}
+            disabled={camStatus !== "live" || busy || complete}
             className="min-h-[88px] rounded-2xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
           >
             {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}

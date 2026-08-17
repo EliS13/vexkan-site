@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "VexKan sign in",
+  /* Homescreen launch on iPad and iPhone: no Safari chrome, dark status bar. */
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VexKan" },
+  formatDetection: { telephone: false },
   /* A kiosk is not a document. Nothing here should be indexed or shared. */
   robots: { index: false, follow: false },
 };
@@ -10,6 +13,16 @@ export const metadata: Metadata = {
  * The kiosk has no club header, no footer, and no navigation. It is one screen
  * that does one thing, on an iPad bolted to a table by the door.
  */
+export const viewport = {
+  /* A kiosk is not a document: no pinch-zoom, and the layout respects the notch. */
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover" as const,
+  themeColor: "#14171a",
+};
+
 export default function KioskLayout({ children }: { children: React.ReactNode }) {
   return (
     <main id="main" className="min-h-dvh flex-1 bg-[#14171a] text-[#e8eaed]">

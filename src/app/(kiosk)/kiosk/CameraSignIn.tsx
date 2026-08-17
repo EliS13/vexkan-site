@@ -1,7 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { detectAll, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
+import { useCamera } from "@/lib/kiosk/useCamera";
+import { CameraGate } from "./CameraGate";
 import { loadEnrolled, descriptorsFor } from "@/lib/kiosk/faceStore";
 import {
   identify,
@@ -36,10 +38,7 @@ export function CameraSignIn({
   onDone: (next: KioskState & { now: number }, signedIn: Member[]) => void;
   onClose: () => void;
 }) {
-  const video = useRef<HTMLVideoElement>(null);
-  const stream = useRef<MediaStream | null>(null);
   const [status, setStatus] = useState("Starting the camera…");
-  const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -50,6 +49,19 @@ export function CameraSignIn({
     [state.members],
   );
 
+  /*
+   * Destructured at the call site. Held as one object, the React compiler infers
+   * the whole thing is ref-bearing (getVideo closes over a ref) and rejects
+   * every read of it during render.
+   */
+  const { attach, getVideo, status: camStatus, message: camMessage, start: camStart } =
+    useCamera();
+
+  /*
+   * Only the models are loaded up front. The camera itself waits for the tap on
+   * CameraGate: iOS Safari rejects getUserMedia outside a user gesture, so
+   * starting it here would fail before the permission sheet ever appeared.
+   */
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -57,52 +69,29 @@ export function CameraSignIn({
         setStatus("Loading the face models…");
         await loadFaceEngine();
         if (cancelled) return;
-        setStatus("Starting the camera…");
-        const media = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false,
-        });
-        if (cancelled) {
-          media.getTracks().forEach((t) => t.stop());
-          return;
-        }
-        stream.current = media;
-        if (video.current) {
-          video.current.srcObject = media;
-          await video.current.play();
-        }
-        setReady(true);
         setStatus(
           mode.kind === "group"
             ? "Get everyone in frame, then take the photo."
-            : `Look at the camera, ${mode.kind === "verify" ? mode.member.firstName : ""}.`,
+            : `Look at the camera, ${mode.member.firstName}.`,
         );
-      } catch (err) {
-        const name = err instanceof Error ? err.name : "";
-        setError(
-          name === "NotAllowedError"
-            ? "Camera permission was refused. An organizer can sign people in with the passcode instead."
-            : "No camera is available. An organizer can sign people in with the passcode instead.",
-        );
+      } catch {
+        setError("The face models could not load. Check the connection and try again.");
       }
     })();
-
-    return () => {
-      cancelled = true;
-      stream.current?.getTracks().forEach((t) => t.stop());
-    };
+    return () => { cancelled = true; };
   }, [mode]);
 
   /** Samples several frames so a blink or a turned head cannot decide anything. */
   const sampleFrames = useCallback(async (): Promise<HTMLCanvasElement[]> => {
     const frames: HTMLCanvasElement[] = [];
     for (let i = 0; i < FRAMES; i++) {
-      if (!video.current) break;
-      frames.push(grabFrame(video.current));
+      const el = getVideo();
+      if (!el) break;
+      frames.push(grabFrame(el));
       if (i < FRAMES - 1) await new Promise((r) => setTimeout(r, FRAME_GAP_MS));
     }
     return frames;
-  }, []);
+  }, [getVideo]);
 
   const runGroup = useCallback(async () => {
     setBusy(true);
@@ -273,16 +262,36 @@ export function CameraSignIn({
       )}
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.4fr_1fr]">
-        <div className="relative min-h-0 overflow-hidden rounded-2xl bg-black">
+        <div className="relative grid min-h-[40vh] place-items-center overflow-hidden rounded-2xl bg-black">
           {/* Mirrored for the person standing there; the captured pixels are not. */}
-          <video ref={video} muted playsInline className="size-full -scale-x-100 object-contain" />
+          <video
+            ref={attach}
+            muted
+            playsInline
+            className={`size-full -scale-x-100 object-contain ${
+              camStatus === "live" ? "" : "hidden"
+            }`}
+          />
+          {camStatus !== "live" && (
+            <CameraGate
+              status={camStatus}
+                message={camMessage}
+                onStart={camStart}
+              purpose={
+                mode.kind === "group"
+                  ? "The camera reads faces to sign everyone in at once. It runs on this device only."
+                  : `The camera checks it is really ${mode.member.firstName} before signing them in. It runs on this device only.`
+              }
+              onCancel={onClose}
+            />
+          )}
         </div>
 
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto">
-          {!outcome && (
+          {!outcome && camStatus === "live" && (
             <button
               onClick={mode.kind === "group" ? runGroup : runVerify}
-              disabled={!ready || busy}
+              disabled={camStatus !== "live" || busy}
               className="min-h-[88px] rounded-2xl bg-[#ffb100] px-6 font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
             >
               {busy ? "Working…" : mode.kind === "group" ? "Take the photo" : "Check my face"}
