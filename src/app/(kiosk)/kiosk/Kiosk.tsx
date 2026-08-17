@@ -451,7 +451,17 @@ export function Kiosk({
         </p>
       )}
 
-      <div className={`mt-3 flex flex-col gap-2 sm:flex-row sm:gap-3 ${maySign ? "" : "hidden"}`}>
+      {/*
+        * Pinned to the bottom of the screen rather than the end of the roster.
+        * With thirty-seven tiles the camera button sat below a scroll, so
+        * anybody wanting to sign in a group had to find their way back down to
+        * it. It is the most-used control on the screen and should not move.
+        */}
+      <div
+        className={`sticky bottom-0 -mx-3 mt-3 flex flex-col gap-2 border-t-2 border-[#2e343b] bg-[#14171a] px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:-mx-5 sm:flex-row sm:gap-3 sm:px-5 ${
+          maySign ? "" : "hidden"
+        }`}
+      >
         <button
           onClick={() => setCamera({ kind: "group" })}
           className="min-h-[88px] flex-1 rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] sm:text-2xl"
