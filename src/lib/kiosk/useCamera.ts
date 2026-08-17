@@ -108,6 +108,16 @@ export function useCamera(): CameraState {
 
     setStatus("starting");
     setMessage(null);
+
+    /*
+     * Release the current camera before asking for the other one. iOS will not
+     * open a second capture device while the first is streaming — the request
+     * fails with NotReadableError — so acquiring first and stopping after, which
+     * works on desktop, never switched at all on an iPad.
+     */
+    stream.current?.getTracks().forEach((t) => t.stop());
+    stream.current = null;
+
     try {
       const media = await navigator.mediaDevices.getUserMedia({
         /*
@@ -123,9 +133,6 @@ export function useCamera(): CameraState {
         video: { facingMode: want, width: { ideal: 960 }, height: { ideal: 540 } },
         audio: false,
       });
-      // Replace rather than add: two live streams would keep the old camera's
-      // indicator light on and hold the device open.
-      stream.current?.getTracks().forEach((t) => t.stop());
       stream.current = media;
       setFacing(want);
       if (video.current) {
@@ -179,10 +186,12 @@ export function useCamera(): CameraState {
 
   const start = useCallback(() => open(false), [open]);
 
-  const flip = useCallback(
-    () => open(false, facing === "user" ? "environment" : "user"),
-    [open, facing],
-  );
+  const flip = useCallback(async () => {
+    const other: Facing = facing === "user" ? "environment" : "user";
+    await open(false, other);
+    // If the other camera refused, fall back rather than leaving a dead panel.
+    if (!stream.current) await open(true, facing);
+  }, [open, facing]);
 
   const resume = useCallback(async () => {
     let remembered = false;

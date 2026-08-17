@@ -13,6 +13,7 @@ import { Avatar } from "./Avatar";
 import { CameraSignIn } from "./CameraSignIn";
 import { countSignedIn, formatDuration, rosterOrder } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE, describePhase, orderGroups } from "@/lib/kiosk/schedule";
+import { postJson, type SignOutReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
 
 type Confirmation = { member: Member; action: "in" | "out" } | null;
@@ -72,7 +73,9 @@ export function Kiosk({
       try {
         const res = await fetch("/api/state?slim=1", { cache: "no-store" });
         if (!res.ok || stopped) return;
-        const body = await res.json();
+        // Parsed defensively: a platform error page here would otherwise throw
+        // a SyntaxError out of a background timer, with nothing to catch it.
+        const body = JSON.parse(await res.text());
 
         setState((current) => ({ ...current, sessions: body.sessions, groups: body.groups }));
         anchor.current = { serverNow: body.now, at: Date.now() };
@@ -184,13 +187,7 @@ export function Kiosk({
     showConfirmation(member, "out");
 
     try {
-      const res = await fetch("/api/signout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberId: member.id }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "That did not save.");
+      const body = await postJson<SignOutReply>("/api/signout", { memberId: member.id });
 
       anchor.current = { serverNow: body.now, at: Date.now() };
       setNow(body.now);

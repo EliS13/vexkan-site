@@ -12,6 +12,7 @@ import {
   VERIFY_DISTANCE,
   type MatchResult,
 } from "@/lib/kiosk/matching";
+import { postJson, type SignInReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
 
 /*
@@ -257,17 +258,11 @@ export function CameraSignIn({
       if (members.length === 0) return;
       setBusy(true);
       try {
-        const res = await fetch("/api/signin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+        const body = await postJson<SignInReply>("/api/signin", {
             memberIds: members.map((m) => m.id),
             verified,
             passcode: verified ? undefined : passcode,
-          }),
-        });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error ?? "That did not save.");
+          });
         onDone(body, body.signedIn ?? []);
       } catch (err) {
         setError(`Saving failed — ${describeFailure(err)}`);

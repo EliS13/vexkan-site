@@ -11,6 +11,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { describeSchedule, orderGroups } from "@/lib/kiosk/schedule";
 import { alphabetical, clubTotals, formatDuration, formatHours, isSignedIn } from "@/lib/kiosk/hours";
+import { postJson, type AdminReply } from "@/lib/kiosk/postJson";
 import type { KioskState } from "@/lib/kiosk/types";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -47,13 +48,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
       setBusy(true);
       setError(null);
       try {
-        const res = await fetch("/api/admin", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...payload, passcode }),
-        });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.error ?? "That did not save.");
+        const body = await postJson<AdminReply>("/api/admin", { ...payload, passcode });
         setState({ members: body.members, sessions: body.sessions, groups: body.groups });
       } catch (err) {
         setError(err instanceof Error ? err.message : "That did not save.");
@@ -68,13 +63,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/admin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "unlock", passcode }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "That passcode is not right.");
+      const body = await postJson<AdminReply>("/api/admin", { action: "unlock", passcode });
       setState({ members: body.members, sessions: body.sessions, groups: body.groups });
       setUnlocked(true);
     } catch (err) {

@@ -13,6 +13,7 @@ import { cropFace, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face
 import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "../CameraGate";
+import { postJson, type EnrollReply } from "@/lib/kiosk/postJson";
 import type { KioskState } from "@/lib/kiosk/types";
 
 /**
@@ -119,19 +120,13 @@ export function Enroll({ initial }: { initial: KioskState }) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/enroll", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const body = await postJson<EnrollReply>("/api/enroll", {
           firstName,
           lastName,
           // The first capture is the straight-on one, so it makes the tile.
           photoUrl: shots[0].photo,
           passcode,
-        }),
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error ?? "Could not save.");
+        });
 
       /*
        * Templates are written to this iPad only, once the member row exists and
