@@ -171,9 +171,10 @@ export function MemberProfile({
               const open = sessionRow.signedOutAt === null;
               return (
                 <li key={sessionRow.id} className="flex items-baseline gap-3 px-3 py-2">
-                  <span className="w-24 shrink-0 font-mono text-[11px] text-[#8b949e]">
+                  <span className="w-28 shrink-0 font-mono text-[11px] text-[#8b949e]">
                     {new Date(sessionRow.signedInAt).toLocaleDateString("en-CA", {
                       timeZone: CLUB_TIMEZONE,
+                      year: "numeric",
                       month: "short",
                       day: "numeric",
                     })}

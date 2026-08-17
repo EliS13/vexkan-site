@@ -40,20 +40,13 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
         alongside={alongsideMs(member, state.members, state.sessions, now)}
       />
 
-      <div className="mt-6 flex gap-2">
-        <a
-          href="/board"
-          className="flex-1 rounded-lg border-2 border-[#2e343b] px-4 py-4 text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase"
-        >
-          Leaderboard
-        </a>
-        <a
-          href="/"
-          className="flex-1 rounded-lg border-2 border-[#2e343b] px-4 py-4 text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase"
-        >
-          {standing.signedIn ? "Log out" : "Sign in"}
-        </a>
-      </div>
+      <a
+        href="/"
+        className="mt-6 rounded-lg border-2 border-[#2e343b] px-4 py-4 text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+      >
+        Back to sign in
+      </a>
+
     </div>
   );
 }

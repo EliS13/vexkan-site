@@ -727,9 +727,9 @@ function Visits({
             <span className="w-28 shrink-0 font-mono text-[11px] text-[#8b949e]">
               {new Date(visit.signedInAt).toLocaleDateString("en-CA", {
                 timeZone: CLUB_TIMEZONE,
+                year: "numeric",
                 month: "short",
                 day: "numeric",
-                year: "numeric",
               })}
             </span>
             <span className="flex-1 font-mono text-[11px] tabular-nums text-[#e8eaed]">

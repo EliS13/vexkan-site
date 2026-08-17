@@ -16,6 +16,10 @@ export const dynamic = "force-dynamic";
  * this can see whether a thing is rare before deciding to chase it — and an
  * award nobody holds is visibly worth going after.
  */
+/* Past this many, a section folds the rest behind a count. Twenty-one secrets
+   is a scroll nobody finishes; six is a list somebody reads. */
+const SHOWN_PER_SECTION = 6;
+
 export default async function AwardsPage() {
   const { now, ...state } = await getState();
   const book = badgeBook(state.members, state.sessions, now);
@@ -39,12 +43,20 @@ export default async function AwardsPage() {
           </p>
           <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Awards</h1>
         </div>
-        <a
-          href="/board"
-          className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
-        >
-          Leaderboard
-        </a>
+        <div className="flex shrink-0 gap-2">
+          <a
+            href="/"
+            className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+          >
+            Sign in
+          </a>
+          <a
+            href="/board"
+            className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+          >
+            Leaderboard
+          </a>
+        </div>
       </header>
 
       <section className="mb-7">
@@ -97,8 +109,10 @@ export default async function AwardsPage() {
             <h2 className="mb-3 font-mono text-[11px] tracking-[0.18em] text-[#8b949e] uppercase">
               {section.heading}
             </h2>
-            <ul className="flex flex-col gap-2">
-              {section.entries.map(({ badge, how, secret }) => {
+            {(() => {
+              const render = (rows: typeof section.entries) => (
+                <ul className="flex flex-col gap-2">
+                  {rows.map(({ badge, how, secret }) => {
                 const count = held.get(badge.id) ?? 0;
                 /* A secret stays secret until somebody in the club finds it. */
                 const locked = secret === true && count === 0;
@@ -129,17 +143,29 @@ export default async function AwardsPage() {
                   </li>
                 );
               })}
-            </ul>
+                </ul>
+              );
+              const first = section.entries.slice(0, SHOWN_PER_SECTION);
+              const rest = section.entries.slice(SHOWN_PER_SECTION);
+              return (
+                <>
+                  {render(first)}
+                  {rest.length > 0 && (
+                    <details className="group mt-2">
+                      <summary className="cursor-pointer list-none rounded-lg border-2 border-[#2e343b] px-3 py-3 text-center font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+                        <span className="group-open:hidden">Show {rest.length} more</span>
+                        <span className="hidden group-open:inline">Show fewer</span>
+                      </summary>
+                      <div className="mt-2">{render(rest)}</div>
+                    </details>
+                  )}
+                </>
+              );
+            })()}
           </section>
         ))}
       </div>
 
-      <a
-        href="/"
-        className="mt-8 rounded-lg border-2 border-[#2e343b] px-4 py-4 text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase"
-      >
-        Back to sign in
-      </a>
     </div>
   );
 }
