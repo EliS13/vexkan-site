@@ -49,7 +49,7 @@ export function CameraSignIn({
 }: {
   mode: Mode;
   state: KioskState;
-  onDone: (next: KioskState & { now: number }, signedIn: Member[]) => void;
+  onDone: (next: { sessions: KioskState["sessions"]; now: number }, signedIn: Member[]) => void;
   onClose: () => void;
 }) {
   const [status, setStatus] = useState("Starting the camera…");

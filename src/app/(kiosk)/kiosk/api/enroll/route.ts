@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addMember, getState } from "@/lib/kiosk/store";
+import { addMember } from "@/lib/kiosk/store";
 import { checkPasscode, isAdminGateConfigured } from "@/lib/kiosk/admin";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +39,9 @@ export async function POST(request: Request) {
 
   try {
     const member = await addMember({ firstName, lastName, photoUrl });
-    return NextResponse.json({ member, ...(await getState()) });
+    // The new member only. The sign-up screen redirects to the kiosk, which
+    // loads a fresh roster anyway.
+    return NextResponse.json({ member });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Could not add that member.";
     return NextResponse.json({ error: message }, { status: 400 });

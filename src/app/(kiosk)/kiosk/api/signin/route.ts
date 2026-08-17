@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getState, signInMembers } from "@/lib/kiosk/store";
+import { rosterVersion } from "@/lib/kiosk/hours";
 import { checkPasscode } from "@/lib/kiosk/admin";
 import { checkNetwork } from "@/lib/kiosk/network";
 
@@ -86,9 +87,6 @@ export async function POST(request: Request) {
     note: verified ? null : "Signed in by organizer override, no face match.",
   });
 
-  return NextResponse.json({
-    signedIn,
-    alreadyIn,
-    ...(await getState()),
-  });
+  const { sessions, now, members } = await getState();
+  return NextResponse.json({ signedIn, alreadyIn, sessions, now, rosterVersion: rosterVersion(members) });
 }

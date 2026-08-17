@@ -223,3 +223,28 @@ export function alphabetical(
     .map((m) => standingFrom(m, byMember.get(m.id) ?? EMPTY, now))
     .sort(byName);
 }
+
+/**
+ * A fingerprint covering everything a tile draws: who exists, their name, their
+ * photograph, their groups, and whether they are active. Any change to those
+ * changes this, so a kiosk holding a stale roster notices on the next tap.
+ */
+export function rosterVersion(members: Member[]): string {
+  let hash = 2166136261;
+  const feed = (text: string) => {
+    for (let i = 0; i < text.length; i++) {
+      hash ^= text.charCodeAt(i);
+      hash = Math.imul(hash, 16777619);
+    }
+  };
+  for (const m of [...members].sort((a, b) => a.id.localeCompare(b.id))) {
+    feed(m.id);
+    feed(m.firstName);
+    feed(m.lastName);
+    feed(m.active ? "1" : "0");
+    feed(m.groupIds.join(","));
+    // The photo itself is large; its length moves whenever it is replaced.
+    feed(String(m.photoUrl?.length ?? 0));
+  }
+  return `${members.length}-${(hash >>> 0).toString(36)}`;
+}

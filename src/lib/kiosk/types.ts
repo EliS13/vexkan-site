@@ -51,6 +51,17 @@ export type Session = {
   note: string | null;
 };
 
+/**
+ * Identifies a roster without describing it.
+ *
+ * Sign-in and sign-out return sessions only, because the member list is almost
+ * entirely photographs and rarely changes. This travels with them so a kiosk
+ * can notice that somebody was signed up — or deactivated — on another device
+ * and go fetch the roster again. Cheap to compute, cheap to compare, and it
+ * changes whenever anything a tile renders changes.
+ */
+export type RosterVersion = string;
+
 export type KioskState = {
   members: Member[];
   sessions: Session[];

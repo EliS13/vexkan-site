@@ -141,7 +141,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
       saveDescriptors(body.member.id, shots.map((s) => s.descriptor));
 
       setSaved(`${body.member.firstName} ${body.member.lastName}`);
-      setRoster(body.members.length);
+      setRoster((n) => n + 1);
       setShots([]);
       setStatus("Saved. Taking you back…");
 

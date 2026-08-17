@@ -18,12 +18,21 @@ import type { KioskState, Member } from "@/lib/kiosk/types";
 type Confirmation = { member: Member; action: "in" | "out" } | null;
 type CameraMode = { kind: "group" } | { kind: "verify"; member: Member } | null;
 
-export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow: number }) {
+export function Kiosk({
+  initial,
+  initialNow,
+  initialRosterVersion,
+}: {
+  initial: KioskState;
+  initialNow: number;
+  initialRosterVersion: string;
+}) {
   const [state, setState] = useState(initial);
   const [confirmation, setConfirmation] = useState<Confirmation>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [camera, setCamera] = useState<CameraMode>(null);
+  const rosterVersion = useRef(initialRosterVersion);
 
   /*
    * Clock. The server's `now` is the anchor and the browser only measures
@@ -45,6 +54,48 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
       setNow(anchor.current.serverNow + (Date.now() - anchor.current.at));
     }, 10_000);
     return () => clearInterval(id);
+  }, []);
+
+  /*
+   * Stay in step with the other devices.
+   *
+   * Sessions signed on a phone, and members added on a laptop, both have to
+   * reach this screen without somebody reloading it. The poll is the slim
+   * endpoint — sessions and a roster fingerprint, no photographs — so it costs
+   * about two kilobytes. The full roster is only refetched when that
+   * fingerprint says it actually changed, which is rarely.
+   */
+  useEffect(() => {
+    let stopped = false;
+
+    const sync = async () => {
+      try {
+        const res = await fetch("/api/state?slim=1", { cache: "no-store" });
+        if (!res.ok || stopped) return;
+        const body = await res.json();
+
+        setState((current) => ({ ...current, sessions: body.sessions, groups: body.groups }));
+        anchor.current = { serverNow: body.now, at: Date.now() };
+        setNow(body.now);
+
+        if (body.rosterVersion !== rosterVersion.current) {
+          const full = await fetch("/api/state", { cache: "no-store" });
+          if (!full.ok || stopped) return;
+          const state = await full.json();
+          rosterVersion.current = state.rosterVersion;
+          setState({ members: state.members, sessions: state.sessions, groups: state.groups });
+        }
+      } catch {
+        // Offline, or the server is busy. The next tick tries again; nothing
+        // here is worth interrupting somebody signing in for.
+      }
+    };
+
+    const id = setInterval(sync, 15_000);
+    return () => {
+      stopped = true;
+      clearInterval(id);
+    };
   }, []);
 
   /*
@@ -143,7 +194,9 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
 
       anchor.current = { serverNow: body.now, at: Date.now() };
       setNow(body.now);
-      setState({ members: body.members, sessions: body.sessions, groups: body.groups });
+      // Sessions only: the roster and its photographs are unchanged and already here.
+      setState((current) => ({ ...current, sessions: body.sessions }));
+      if (body.rosterVersion) rosterVersion.current = body.rosterVersion;
     } catch (err) {
       setState(previous);
       setConfirmation(null);
@@ -154,10 +207,10 @@ export function Kiosk({ initial, initialNow }: { initial: KioskState; initialNow
   }, [pending, showConfirmation, state, now]);
 
   const cameraDone = useCallback(
-    (next: KioskState & { now: number }, signedIn: Member[]) => {
+    (next: { sessions: KioskState["sessions"]; now: number }, signedIn: Member[]) => {
       anchor.current = { serverNow: next.now, at: Date.now() };
       setNow(next.now);
-      setState({ members: next.members, sessions: next.sessions, groups: next.groups });
+      setState((current) => ({ ...current, sessions: next.sessions }));
       setCamera(null);
       if (signedIn.length === 1) showConfirmation(signedIn[0], "in");
     },
