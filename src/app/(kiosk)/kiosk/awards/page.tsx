@@ -50,7 +50,7 @@ export default async function AwardsPage() {
           <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
             Every badge, and how to get it
           </p>
-          <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Awards</h1>
+          <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Badges</h1>
         </div>
         <div className="flex shrink-0 gap-2">
           <a

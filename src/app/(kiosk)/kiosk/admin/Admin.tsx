@@ -194,7 +194,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             href="/awards"
             className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
           >
-            Awards
+            Badges
           </a>
           <a
             href="/"

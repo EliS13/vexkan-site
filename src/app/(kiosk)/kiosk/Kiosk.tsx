@@ -556,7 +556,7 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
           href="/awards"
           className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
         >
-          Awards
+          Badges
         </a>
         <a
           href="/board"
