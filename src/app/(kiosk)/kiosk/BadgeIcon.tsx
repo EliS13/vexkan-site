@@ -20,6 +20,8 @@ const METAL: Record<BadgeTier, { light: string; mid: string; dark: string; ink: 
   milestone: { light: "#9df0c4", mid: "#3fbb82", dark: "#1d6b48", ink: "#0c2e1f" },
   streak: { light: "#f5b98a", mid: "#e8743c", dark: "#a13d13", ink: "#3d1808" },
   special: { light: "#cbb6f5", mid: "#9b7ae0", dark: "#5b3fa0", ink: "#241640" },
+  /* Diamond: the rung above gold, and the only cold one in the set. */
+  diamond: { light: "#dff4ff", mid: "#6fc7f5", dark: "#1f6fa8", ink: "#082a3d" },
   /* Secrets read as ink and neon rather than metal — they are not ranked. */
   secret: { light: "#8ee9ff", mid: "#33b6d8", dark: "#155e75", ink: "#04222b" },
 };

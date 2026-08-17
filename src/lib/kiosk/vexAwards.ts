@@ -201,3 +201,49 @@ export async function awardsForTeams(numbers: string[]): Promise<AwardsResult> {
   if (awards.length === 0) return { ok: false, reason: "unavailable" };
   return { ok: true, awards: withClubRecords(awards) };
 }
+
+/* ------------------------------------------------------- worlds, from VEX */
+
+type ApiEvent = { name?: string; sku?: string };
+
+/**
+ * Which of the club's teams competed at a World Championship, and in which
+ * season, read from VEX's own event records.
+ *
+ * The teams file carries a `worlds` flag that somebody has to remember to set.
+ * This is the same fact without the remembering: if a team qualifies next
+ * spring, its entry appears here the day the event does, and nobody edits
+ * anything.
+ *
+ * Attendance rather than awards. A team can go to Worlds and win nothing —
+ * both of the club's IQ trips did — so the awards list, which was the first
+ * thing tried, could not see them at all.
+ */
+export async function worldsTeamSeasons(numbers: string[]): Promise<Set<string>> {
+  const found = new Set<string>();
+
+  for (const number of numbers) {
+    const teams = await get<{ data?: ApiTeam[] }>(
+      `teams?number%5B%5D=${encodeURIComponent(number)}`,
+    );
+    const team = teams?.data?.find((t) => t.location?.region === REGION);
+    if (!team) continue;
+
+    const events = await get<{ data?: ApiEvent[] }>(`teams/${team.id}/events?per_page=250`);
+    for (const event of events?.data ?? []) {
+      if (!/world championship/i.test(event.name ?? "")) continue;
+      /*
+       * The season comes from the year in the name, not the SKU. Worlds is
+       * held in the spring at the end of a season, so the 2026 event closes
+       * 2025-26 — and the SKU cannot be trusted for this: VEX coded the 2025
+       * Worlds as -24- and the 2026 Worlds as -26-, the season start in one
+       * case and the season end in the other.
+       */
+      const year = /(\d{4})/.exec(event.name ?? "")?.[1];
+      if (!year) continue;
+      const end = Number(year);
+      found.add(`${number}|${end - 1}-${String(end).slice(2)}`);
+    }
+  }
+  return found;
+}

@@ -30,7 +30,14 @@ export type Team = {
 
 export const TEAMS: Team[] = [
   { program: "IQ", number: "595C", season: "2023-24", members: ["Eli Seeliger"] },
-  { program: "IQ", number: "595C", season: "2024-25", members: ["Eli Seeliger", "Chris Shang", "Nicholas Ma"] },
+  {
+    program: "IQ",
+    number: "595C",
+    season: "2024-25",
+    members: ["Eli Seeliger", "Chris Shang", "Nicholas Ma"],
+    /* VEX lists 595C at the 2025 World Championship. */
+    worlds: true,
+  },
   { program: "IQ", number: "595C", season: "2025-26", members: ["Eric Lin", "Cyrus Yu", "Alex Fang"] },
   { program: "IQ", number: "595C", season: "2026-27", members: ["Evia Seeliger", "Zhizhi Gao", "Laura Kaastra"] },
 
@@ -44,7 +51,14 @@ export const TEAMS: Team[] = [
     members: ["Ethan Han", "Graham Xiong", "Ashton Zhou", "Matthias Liew"],
   },
 
-  { program: "IQ", number: "595Y", season: "2025-26", members: ["Eli Seeliger", "Ryan Feng"] },
+  {
+    program: "IQ",
+    number: "595Y",
+    season: "2025-26",
+    members: ["Eli Seeliger", "Ryan Feng"],
+    /* VEX lists 595Y at the 2026 World Championship. */
+    worlds: true,
+  },
   {
     program: "V5RC",
     number: "16688A",
@@ -63,30 +77,6 @@ export const TEAMS: Team[] = [
   },
 ];
 
-/*
- * Trips to the VEX World Championship, by season and by person.
- *
- * Qualification was individual, not by team: the 2024-25 squad came from
- * several different teams, so a season's Worlds list cannot be read back onto
- * the teams that ran that season. 36467E ran in 2024-25 and did not go.
- */
-export const WORLDS: { season: string; program: "IQ" | "V5RC"; members: string[] }[] = [
-  {
-    season: "2024-25",
-    program: "IQ",
-    members: ["Michael Li", "Eli Seeliger", "Ethan Han"],
-  },
-  {
-    season: "2025-26",
-    program: "IQ",
-    members: ["Eric Lin", "Cyrus Yu", "Luke Shen", "Alex Fang", "Eli Seeliger"],
-  },
-  {
-    season: "2025-26",
-    program: "V5RC",
-    members: ["Eli Seeliger", "Michael Lian", "Michael Li"],
-  },
-];
 
 /** Every team a member has competed for, newest season first. */
 export function teamsFor(fullName: string): Team[] {
@@ -95,9 +85,17 @@ export function teamsFor(fullName: string): Team[] {
   );
 }
 
-/** Every Worlds trip a member made, as "2025-26 V5RC". */
+/**
+ * Every Worlds trip a member made, as "2025-26 V5RC".
+ *
+ * Derived from the teams they were on rather than kept as its own list. The
+ * two disagreed the moment they existed side by side — the hand-written list
+ * had people at the 2024-25 Worlds who were not on the team VEX records as
+ * having gone. A team either went or it did not, and its roster says who was
+ * there.
+ */
 export function worldsFor(fullName: string): string[] {
-  return WORLDS.filter((w) => w.members.includes(fullName)).map(
-    (w) => `${w.season} ${w.program}`,
+  return TEAMS.filter((t) => t.worlds && t.members.includes(fullName)).map(
+    (t) => `${t.season} ${t.program ?? "IQ"}`,
   );
 }

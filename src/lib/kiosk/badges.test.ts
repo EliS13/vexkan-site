@@ -211,11 +211,11 @@ describe("secret achievements", () => {
     expect(has([at("b", "m1", "2026-06-01", 18, 2)], "all-nighter")).toBe(false);
   });
 
-  it("gives Half-day sittings the top rung of the ladder", () => {
+  it("gives the longest sittings the diamond rung, above gold", () => {
     const badges = badgesFor(m1, [at("a", "m1", "2026-06-01", 6, 15)], NOW);
     const sitting = badges.find((b) => b.shape === "clock");
     expect(sitting?.label).toBe("Super Ultramarathon");
-    expect(sitting?.tier).toBe("gold");
+    expect(sitting?.tier).toBe("diamond");
   });
 
   it("gives Ironclad only for hours and a streak together", () => {

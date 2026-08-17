@@ -14,7 +14,7 @@ import type { Member, Session } from "./types";
  */
 
 export type BadgeTier =
-  | "gold" | "silver" | "bronze" | "milestone" | "streak" | "special" | "secret";
+  | "gold" | "silver" | "bronze" | "milestone" | "streak" | "special" | "secret" | "diamond";
 
 /** Which drawing to use. The renderer owns the artwork; this owns the meaning. */
 export type BadgeShape =
@@ -789,7 +789,8 @@ function assemble(member: Member, ctx: Context): Badge[] {
       label: sitting.label,
       detail: `A single visit of ${hours(longest)}`,
       shape: "clock",
-      tier: rungTier(LONG_SITTINGS.indexOf(sitting)),
+      /* The top rung is its own colour: past gold there is nowhere left to go. */
+      tier: sitting.id === "super-ultramarathon" ? "diamond" : rungTier(LONG_SITTINGS.indexOf(sitting)),
       weight: sitting.weight,
     });
   }
@@ -971,7 +972,7 @@ export const BADGE_GUIDE: { heading: string; entries: BadgeGuideEntry[] }[] = [
         how: "A single visit lasting more than eight hours. Replaces Marathon.",
       },
       {
-        badge: { id: "super-ultramarathon", label: "Super Ultramarathon", detail: "The longest sitting there is", shape: "clock", tier: "gold", weight: 0 },
+        badge: { id: "super-ultramarathon", label: "Super Ultramarathon", detail: "The longest sitting there is", shape: "clock", tier: "diamond", weight: 0 },
         how: "A single visit lasting more than eleven hours. Replaces Ultramarathon.",
       },
     ],

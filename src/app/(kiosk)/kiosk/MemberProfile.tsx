@@ -21,6 +21,27 @@ import { BadgeIcon } from "./BadgeIcon";
 const ALONGSIDE_LABEL = Object.values(ALONGSIDE)[0]?.join(" and ") ?? "others";
 
 /* Five fit without the visits below being pushed off a phone screen. */
+const AWARDS_AT_FIRST = 5;
+
+/*
+ * Which awards a member would name first.
+ *
+ * Twenty-two in a list makes them all the same size, and they are not: a
+ * Worlds award and Excellence are the ones somebody tells you about, and Robot
+ * Skills Champion at a December qualifier is the twelfth. Worlds first, then
+ * the judged and overall awards, then everything else in the order VEX gave.
+ */
+const AWARD_RANK = ["Excellence", "Inspire", "Tournament Champions", "Design", "Teamwork Champion"];
+
+function rankAwards(awards: TeamAward[]): TeamAward[] {
+  const score = (a: TeamAward) => {
+    if (a.worlds) return -100;
+    const hit = AWARD_RANK.findIndex((name) => a.title.startsWith(name));
+    return hit === -1 ? 50 : hit;
+  };
+  return [...awards].sort((a, b) => score(a) - score(b));
+}
+
 const SHOWN_AT_FIRST = 5;
 
 export function MemberProfile({
@@ -211,7 +232,7 @@ export function MemberProfile({
             Won at competition · {vexAwards.length}
           </h3>
           <ul className="flex flex-col gap-1.5">
-            {vexAwards.map((award, i) => (
+            {rankAwards(vexAwards).slice(0, AWARDS_AT_FIRST).map((award, i) => (
               <li
                 key={`${award.teamNumber}-${award.title}-${i}`}
                 className={`flex items-baseline gap-2 rounded-lg border-2 px-2.5 py-1.5 ${
@@ -234,6 +255,36 @@ export function MemberProfile({
               </li>
             ))}
           </ul>
+          {vexAwards.length > AWARDS_AT_FIRST && (
+            <details className="group mt-2">
+              <summary className="cursor-pointer list-none rounded-lg border-2 border-[#2e343b] px-3 py-2 text-center font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+                <span className="group-open:hidden">
+                  View {vexAwards.length - AWARDS_AT_FIRST} more
+                </span>
+                <span className="hidden group-open:inline">Show fewer</span>
+              </summary>
+              <ul className="mt-2 flex flex-col gap-1.5">
+                {rankAwards(vexAwards)
+                  .slice(AWARDS_AT_FIRST)
+                  .map((award, i) => (
+                    <li
+                      key={`rest-${award.teamNumber}-${award.title}-${i}`}
+                      className="flex items-baseline gap-2 rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-2.5 py-1.5"
+                    >
+                      <span className="w-14 shrink-0 font-mono text-[10px] text-[#8b949e]">
+                        {award.teamNumber}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="font-serif text-sm">{award.title}</span>
+                        <span className="block truncate font-mono text-[10px] text-[#8b949e]">
+                          {award.season} · {award.event}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+            </details>
+          )}
         </section>
       )}
 
