@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getState, signInMembers } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
-import { checkPasscode } from "@/lib/kiosk/admin";
+import { checkMemberCode, checkPasscode, isMemberCodeRequired, nameMatches } from "@/lib/kiosk/admin";
 import { checkNetwork } from "@/lib/kiosk/network";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +28,13 @@ export async function POST(request: Request) {
    */
   const network = checkNetwork(request.headers);
 
-  let body: { memberIds?: unknown; verified?: unknown; passcode?: unknown };
+  let body: {
+    memberIds?: unknown;
+    verified?: unknown;
+    passcode?: unknown;
+    code?: unknown;
+    typedName?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -41,6 +47,33 @@ export async function POST(request: Request) {
   }
   if (memberIds.length === 0) {
     return NextResponse.json({ error: "No one was selected." }, { status: 400 });
+  }
+
+  /*
+   * The members' code, which administration gives out, plus the member typing
+   * their own name. A tap says a tile was pressed; the name says who pressed
+   * it. Both are skipped when an organizer supplies the admin passcode, and
+   * the whole check is off until KIOSK_MEMBER_CODE is set.
+   */
+  const asOrganizer = checkPasscode(body.passcode);
+  if (isMemberCodeRequired() && !asOrganizer) {
+    if (!checkMemberCode(body.code)) {
+      return NextResponse.json(
+        { error: "That club code is not right. Ask an organizer for today's code." },
+        { status: 403 },
+      );
+    }
+    /* Typed names are only asked for when one person is signing themselves in. */
+    if (memberIds.length === 1) {
+      const { members } = await getState();
+      const member = members.find((m) => m.id === memberIds[0]);
+      if (!member || !nameMatches(body.typedName, member.firstName)) {
+        return NextResponse.json(
+          { error: "Type your first name exactly as it appears on your tile." },
+          { status: 403 },
+        );
+      }
+    }
   }
 
   /*

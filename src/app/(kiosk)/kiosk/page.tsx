@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { getState } from "@/lib/kiosk/store";
 import { rosterVersion } from "@/lib/kiosk/hours";
 import { checkNetwork } from "@/lib/kiosk/network";
+import { isMemberCodeRequired } from "@/lib/kiosk/admin";
 import { Kiosk } from "./Kiosk";
 
 /** Presence is live by definition, so nothing on this route is prerendered. */
@@ -21,6 +22,7 @@ export default async function KioskPage() {
       initialNow={now}
       initialRosterVersion={rosterVersion(state.members)}
       canSign={canSign}
+      needsCode={isMemberCodeRequired()}
     />
   );
 }
