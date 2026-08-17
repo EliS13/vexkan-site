@@ -4,6 +4,7 @@ import {
   clubTotals,
   countSignedIn,
   formatDuration,
+  formatElapsed,
   formatHours,
   isSignedIn,
   leaderboard,
@@ -217,8 +218,8 @@ describe("countSignedIn", () => {
 
 describe("formatting", () => {
   it.each([
-    [0, "just now"],
-    [30_000, "just now"],
+    [0, "under a minute"],
+    [30_000, "under a minute"],
     [60_000, "1m"],
     [45 * 60_000, "45m"],
     [HOUR, "1h"],
@@ -372,5 +373,17 @@ describe("recentVisits", () => {
   it("includes an open session", () => {
     const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", null)];
     expect(recentVisits(s, "m1")).toHaveLength(1);
+  });
+});
+
+describe("formatElapsed", () => {
+  it("says just now only for the first minute", () => {
+    expect(formatElapsed(0)).toBe("just now");
+    expect(formatElapsed(59_000)).toBe("just now");
+  });
+
+  it("reads as a duration once a minute has passed", () => {
+    expect(formatElapsed(60_000)).toBe("1m");
+    expect(formatElapsed(HOUR)).toBe("1h");
   });
 });
