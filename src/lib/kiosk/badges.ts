@@ -101,6 +101,23 @@ export function seasonLabel(season: string): string {
   return `${season}–${String(Number(season) + 1).slice(2)}`;
 }
 
+/** The season the club is in right now. */
+export function seasonAt(now: number): string {
+  return seasonOf(new Date(now).toISOString());
+}
+
+/**
+ * The visits that began inside one season.
+ *
+ * Attributed by when a visit started rather than when it ended. A meeting is
+ * two hours and the boundary is the first of May, so the two can only disagree
+ * for somebody left signed in across a season — and that visit belongs to the
+ * season it was part of, not the one the clock rolled into.
+ */
+export function sessionsInSeason(sessions: Session[], season: string): Session[] {
+  return sessions.filter((session) => seasonOf(session.signedInAt) === season);
+}
+
 /* ---------------------------------------------------------------- podiums */
 
 /*

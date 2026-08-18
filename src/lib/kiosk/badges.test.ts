@@ -1,5 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { badgesFor, clubDay, longestStreak, seasonLabel, seasonOf, topBadges } from "./badges";
+import {
+  badgesFor,
+  clubDay,
+  longestStreak,
+  seasonAt,
+  seasonLabel,
+  seasonOf,
+  sessionsInSeason,
+  topBadges,
+} from "./badges";
 import type { Member, Session } from "./types";
 
 const NOW = Date.parse("2026-08-16T19:00:00.000Z");
@@ -30,6 +39,40 @@ function visit(id: string, memberId: string, day: string, hours = 2): Session {
     note: null,
   };
 }
+
+describe("ranking one season at a time", () => {
+  it("knows which season the club is in now", () => {
+    expect(seasonAt(Date.parse("2026-08-16T19:00:00.000Z"))).toBe("2026");
+    expect(seasonAt(Date.parse("2026-04-30T19:00:00.000Z"))).toBe("2025");
+  });
+
+  it("keeps only the visits that began in the season asked for", () => {
+    const sessions = [
+      visit("s1", "m1", "2026-04-30"),
+      visit("s2", "m1", "2026-05-01"),
+      visit("s3", "m1", "2026-09-15"),
+      visit("s4", "m1", "2027-04-30"),
+      visit("s5", "m1", "2027-05-01"),
+    ];
+    expect(sessionsInSeason(sessions, "2026").map((s) => s.id)).toEqual(["s2", "s3", "s4"]);
+    expect(sessionsInSeason(sessions, "2025").map((s) => s.id)).toEqual(["s1"]);
+  });
+
+  it("gives a visit to the season it started in, not the one it ended in", () => {
+    /* Signed in on the last evening of a season and never signed out. */
+    const straggler: Session = {
+      id: "s1",
+      memberId: "m1",
+      signedInAt: new Date("2026-04-30T18:00:00.000-06:00").toISOString(),
+      signedOutAt: new Date("2026-05-01T09:00:00.000-06:00").toISOString(),
+      autoClosed: true,
+      verified: false,
+      note: null,
+    };
+    expect(sessionsInSeason([straggler], "2025").map((s) => s.id)).toEqual(["s1"]);
+    expect(sessionsInSeason([straggler], "2026")).toEqual([]);
+  });
+});
 
 describe("seasons", () => {
   it("names a season by the year it began", () => {

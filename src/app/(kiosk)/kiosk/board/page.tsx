@@ -9,7 +9,7 @@ import { mayView } from "@/lib/kiosk/visit";
 import { redirect } from "next/navigation";
 import { getState } from "@/lib/kiosk/store";
 import { formatDuration, formatHours, leaderboard } from "@/lib/kiosk/hours";
-import { badgeBook } from "@/lib/kiosk/badges";
+import { badgeBook, seasonAt, seasonLabel, sessionsInSeason } from "@/lib/kiosk/badges";
 import { BadgeIcon } from "../BadgeIcon";
 import { Avatar } from "../Avatar";
 
@@ -21,10 +21,20 @@ const BADGES_ON_A_ROW = 4;
 
 
 /**
- * Ranked by total hours in the room. Quieter and denser than the kiosk: this is
- * read standing still, not tapped in passing.
+ * Ranked by hours in the room. Quieter and denser than the kiosk: this is read
+ * standing still, not tapped in passing.
+ *
+ * Two boards, and the season is the one it opens on. All time is the honest
+ * total but it is also a seniority list — a member in their third year sits
+ * above one in their first no matter who turned up this week, and a board
+ * nobody new can move on is a board they stop reading. The season resets that
+ * every May while all time keeps the long record intact.
  */
-export default async function BoardPage() {
+export default async function BoardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ range?: string }>;
+}) {
   /*
    * One gate, on the sign-in screen, rather than the same form on four pages.
    * Somebody who typed /awards without a cookie lands where the code is asked
@@ -34,8 +44,17 @@ export default async function BoardPage() {
   if (!(await mayView())) redirect("/");
 
   const { now, ...state } = await getState();
-  const standings = leaderboard(state.members, state.sessions, now);
+  const season = seasonAt(now);
+  /* In the URL rather than in client state, so the choice survives a reload
+     and can be linked to — the same reason the gate stopped living in React. */
+  const allTime = (await searchParams).range === "all";
+  const counted = allTime ? state.sessions : sessionsInSeason(state.sessions, season);
+
+  const standings = leaderboard(state.members, counted, now);
   const most = standings[0]?.totalMs ?? 0;
+  /* Badges are read from every session either way. They are things a member
+     earned, not a ranking, and having them blink out when the board is
+     switched to this season would read as losing them. */
   const book = badgeBook(state.members, state.sessions, now);
 
   return (
@@ -43,7 +62,7 @@ export default async function BoardPage() {
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
-            Hours in the room
+            {allTime ? "Hours in the room, all time" : `Hours in the room, ${seasonLabel(season)}`}
           </p>
           <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Leaderboard</h1>
         </div>
@@ -54,6 +73,31 @@ export default async function BoardPage() {
           Back to sign in
         </a>
       </header>
+
+      {/*
+        * Two plain links rather than a control, for the same reason every other
+        * link here is one: this crosses the subdomain rewrite, and client-side
+        * navigation would resolve the href against the wrong route tree.
+        */}
+      <nav aria-label="Which hours to rank by" className="mb-4 flex gap-2">
+        {[
+          { href: "/board", label: seasonLabel(season), on: !allTime },
+          { href: "/board?range=all", label: "All time", on: allTime },
+        ].map((tab) => (
+          <a
+            key={tab.href}
+            href={tab.href}
+            aria-current={tab.on ? "page" : undefined}
+            className={`rounded-lg border-2 px-4 py-2 font-mono text-xs tracking-widest uppercase transition-colors ${
+              tab.on
+                ? "border-[#ffb100] bg-[#ffb100]/10 text-[#ffb100]"
+                : "border-[#2e343b] text-[#8b949e] hover:border-[#ffb100] hover:text-[#ffb100]"
+            }`}
+          >
+            {tab.label}
+          </a>
+        ))}
+      </nav>
 
       <ol className="flex flex-col gap-2">
         {standings.map((standing, index) => {
@@ -129,7 +173,11 @@ export default async function BoardPage() {
 
               <div className="relative shrink-0 text-right">
                 <p className="font-mono text-xl font-bold tabular-nums">{formatHours(totalMs)}h</p>
-                <p className="font-mono text-[11px] text-[#8b949e]">{formatDuration(totalMs)}</p>
+                {/* Somebody with no visits has not been for under a minute — they
+                    have not been. Common on a season board in May. */}
+                <p className="font-mono text-[11px] text-[#8b949e]">
+                  {visits === 0 ? "not yet" : formatDuration(totalMs)}
+                </p>
               </div>
               </a>
             </li>
@@ -139,12 +187,13 @@ export default async function BoardPage() {
 
       {standings.length === 0 && (
         <p className="py-16 text-center font-serif text-2xl font-semibold text-[#8b949e]">
-          No hours recorded yet.
+          {allTime ? "No hours recorded yet." : `Nobody has hours in ${seasonLabel(season)} yet.`}
         </p>
       )}
 
       <p className="mt-6 border-t border-[#2e343b] pt-4 font-mono text-[11px] text-[#8b949e]">
         Totals include the visit in progress.
+        {!allTime && ` A season runs from the first of May, so this is ${seasonLabel(season)} only.`}
       </p>
     </div>
   );
