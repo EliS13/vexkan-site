@@ -471,6 +471,10 @@ export function Kiosk({
         * whole roster — far more weight than one control needs, and still only
         * one thumb wide of actual target. Narrow enough to read as a button,
         * wide enough to hit without looking.
+        *
+        * They grow only from sm up. Stacked on a phone the two together
+        * already take a fifth of the screen, and the roster is what the screen
+        * is for.
         */}
       <div
         className={`pointer-events-none sticky bottom-0 z-30 mt-3 flex flex-col gap-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-center sm:gap-3 ${
@@ -479,13 +483,13 @@ export function Kiosk({
       >
         <button
           onClick={() => setCamera({ kind: "group" })}
-          className="pointer-events-auto min-h-[88px] rounded-2xl bg-[#ffb100] px-10 font-serif text-xl font-bold text-[#14171a] shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:text-2xl"
+          className="pointer-events-auto min-h-[88px] rounded-2xl bg-[#ffb100] px-10 font-serif text-xl font-bold text-[#14171a] shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:min-h-[104px] sm:px-14 sm:text-3xl"
         >
           Camera sign in
         </button>
         <a
           href="/enroll"
-          className="pointer-events-auto grid min-h-[64px] place-items-center rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] px-6 font-mono text-xs tracking-widest text-[#8b949e] uppercase shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:min-h-[88px]"
+          className="pointer-events-auto grid min-h-[64px] place-items-center rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] px-6 font-mono text-xs tracking-widest text-[#8b949e] uppercase shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:min-h-[104px] sm:px-8 sm:text-sm"
         >
           Sign up
         </a>
