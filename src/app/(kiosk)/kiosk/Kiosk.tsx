@@ -464,15 +464,22 @@ export function Kiosk({
         * The bar itself is transparent and ignores pointer events; the buttons
         * float over the roster on their own shadows. A solid strip across the
         * bottom cut the grid in half and read as a second, emptier screen.
+        *
+        * They sit centred at their own width rather than stretched across it.
+        * The camera button used to take every pixel the sign-up button did not,
+        * so on a landscape iPad it became a yellow band the width of the room's
+        * whole roster — far more weight than one control needs, and still only
+        * one thumb wide of actual target. Narrow enough to read as a button,
+        * wide enough to hit without looking.
         */}
       <div
-        className={`pointer-events-none sticky bottom-0 z-30 mt-3 flex flex-col gap-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:flex-row sm:gap-3 ${
+        className={`pointer-events-none sticky bottom-0 z-30 mt-3 flex flex-col gap-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-center sm:gap-3 ${
           maySign ? "" : "hidden"
         }`}
       >
         <button
           onClick={() => setCamera({ kind: "group" })}
-          className="pointer-events-auto min-h-[88px] flex-1 rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:text-2xl"
+          className="pointer-events-auto min-h-[88px] rounded-2xl bg-[#ffb100] px-10 font-serif text-xl font-bold text-[#14171a] shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:text-2xl"
         >
           Camera sign in
         </button>
