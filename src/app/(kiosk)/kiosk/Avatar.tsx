@@ -5,16 +5,33 @@ import type { Member } from "@/lib/kiosk/types";
  * colour derived from their id, which at least stays the same tile every
  * meeting so it can be found by position and colour rather than by reading.
  */
-function hueFor(seed: string): number {
-  // FNV-1a, then spaced by the golden angle. Taking the hash modulo 360
-  // directly clusters ids that share a prefix — "member-01" through
-  // "member-12" all landed within a few degrees of each other, which is
-  // exactly the case this has to separate.
+function fnv1a(seed: string): number {
   let hash = 2166136261;
   for (let i = 0; i < seed.length; i++) {
     hash ^= seed.charCodeAt(i);
     hash = Math.imul(hash, 16777619);
   }
+  return Math.abs(hash);
+}
+
+/**
+ * A second and third reading of the same name, in 0..1.
+ *
+ * Salted rather than sliced out of the one hash, so depth does not move in
+ * step with hue — taking different bits of a single FNV value leaves them
+ * correlated enough that the greens all came out light and the blues all came
+ * out deep, which is a pattern the eye finds and then cannot unsee.
+ */
+function spread(seed: string, salt: string): number {
+  return (fnv1a(`${salt}:${seed}`) % 997) / 997;
+}
+
+function hueFor(seed: string): number {
+  // FNV-1a, then spaced by the golden angle. Taking the hash modulo 360
+  // directly clusters ids that share a prefix — "member-01" through
+  // "member-12" all landed within a few degrees of each other, which is
+  // exactly the case this has to separate.
+  const hash = fnv1a(seed);
   /*
    * Spread across the wheel, minus the orange stretch of it.
    *
@@ -29,8 +46,8 @@ function hueFor(seed: string): number {
    * it lands within a whisker of three sevenths — so ids collapsed into seven
    * clumps and half the room turned up wearing the same cyan.
    */
-  const spread = (Math.abs(hash % 1000) * (322 * 0.3819660113)) % 322;
-  return spread < 12 ? spread : spread + 38;
+  const stepped = ((hash % 1000) * (322 * 0.3819660113)) % 322;
+  return stepped < 12 ? stepped : stepped + 38;
 }
 
 export function Avatar({ member, signedIn }: { member: Member; signedIn: boolean }) {
@@ -47,7 +64,23 @@ export function Avatar({ member, signedIn }: { member: Member; signedIn: boolean
     );
   }
 
-  const hue = hueFor(`${member.firstName}${member.lastName}`);
+  const name = `${member.firstName}${member.lastName}`;
+  const hue = hueFor(name);
+  /*
+   * Two more dials off the same name, so a hue is not the only thing that
+   * makes a tile theirs.
+   *
+   * Every tile used one saturation and one lightness, and thirty-seven of them
+   * side by side read as a single band of pastel with the hue sliding along
+   * it — pleasant, and completely even. Letting depth and vividness vary as
+   * well gives the wall some weather: one member is a deep moss, the next a
+   * barely-there mint, and the grid stops looking printed.
+   *
+   * The ranges stay inside pastel at both ends. The darkest is still soft and
+   * the palest still holds its initials.
+   */
+  const depth = spread(name, "depth");
+  const vivid = spread(name, "vivid");
   return (
     /*
      * Initials, dashed. Sign-up always takes a photograph, so a member without
@@ -87,14 +120,27 @@ export function Avatar({ member, signedIn }: { member: Member; signedIn: boolean
                * white fails on the yellows — and keeps the tile one colour
                * rather than a colour with type on top.
                */
-              background: `hsl(${hue} 60% 74%)`,
-              color: `hsl(${hue} 60% 24%)`,
-              borderColor: `hsl(${hue} 50% 58%)`,
+              background: `hsl(${hue} ${46 + vivid * 38}% ${69 + depth * 13}%)`,
+              color: `hsl(${hue} ${52 + vivid * 22}% ${21 + depth * 8}%)`,
+              borderColor: `hsl(${hue} ${44 + vivid * 26}% ${52 + depth * 12}%)`,
             }
           : {
-              background: `hsl(${hue} 55% 94%)`,
-              color: `hsl(${hue} 35% 55%)`,
-              borderColor: `hsl(${hue} 40% 86%)`,
+              background: `hsl(${hue} ${38 + vivid * 30}% ${91 + depth * 5}%)`,
+              /*
+               * Kept dark enough to survive the palest end of the range. At
+               * the lightness that looked right against a mid tile, the
+               * faintest fell to 2:1 and their initials all but vanished — and
+               * the signed-out tiles are exactly the ones somebody is scanning
+               * when they are looking for their own name.
+               *
+               * 28% is chosen by sweeping every hue the wheel can produce
+               * against both dials, not by eye: the worst case on screen at the
+               * time read 3.05, while the worst the wheel can actually make was
+               * 2.72 for a hue no member happened to have yet. At 28 the floor
+               * is 3.62 and no future name can fall through it.
+               */
+              color: `hsl(${hue} ${30 + vivid * 18}% ${28 + depth * 8}%)`,
+              borderColor: `hsl(${hue} ${32 + vivid * 22}% ${83 + depth * 6}%)`,
             }
       }
     >
