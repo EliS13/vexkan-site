@@ -208,9 +208,16 @@ export function Enroll({ initial }: { initial: KioskState }) {
         </p>
       )}
 
-      <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.3fr_1fr]">
+      {/*
+        * Two columns from tablet width rather than from a laptop's. The iPad
+        * this runs on is 768px across in portrait, which missed the old lg
+        * breakpoint by a hair — so the screen it was designed for was the one
+        * screen that never got the side-by-side layout, and the camera was a
+        * letterbox strip above a stack of form fields.
+        */}
+      <div className="grid min-h-0 flex-1 gap-4 md:grid-cols-[1.6fr_1fr]">
         <div className="flex min-h-0 flex-col gap-3">
-          <div className="relative min-h-[40vh] flex-1 overflow-hidden rounded-2xl bg-black">
+          <div className="relative min-h-[45vh] flex-1 overflow-hidden rounded-2xl bg-black md:min-h-0">
             <video
             ref={attach}
               muted
@@ -229,6 +236,36 @@ export function Enroll({ initial }: { initial: KioskState }) {
               />
               </div>
             )}
+
+            {/*
+              * The captures, stacked in the corner of the picture rather than
+              * laid out as five squares beside it. Five empty boxes spent a
+              * quarter of the screen showing nothing, and what they said —
+              * how many are left — the capture button already says. Overlapped
+              * so the row stays the same width whether one has been taken or
+              * all five.
+              */}
+            {shots.length > 0 && (
+              <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-[#14171a]/80 py-1.5 pr-3 pl-2">
+                <div className="flex">
+                  {shots.map((shot, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element -- local data URL
+                    <img
+                      key={i}
+                      src={shot.photo}
+                      alt=""
+                      style={{ zIndex: i }}
+                      className={`relative size-9 rounded-md border-2 border-[#35c17a] object-cover ${
+                        i === 0 ? "" : "-ml-4"
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="font-mono text-[11px] tabular-nums text-[#c2c8cf]">
+                  {shots.length} of {CAPTURES}
+                </span>
+              </div>
+            )}
           </div>
           <p className="font-serif text-2xl font-semibold">{status}</p>
           <button
@@ -240,23 +277,9 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </button>
         </div>
 
-        <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-5 gap-2">
-            {Array.from({ length: CAPTURES }, (_, i) => (
-              <div
-                key={i}
-                className={`aspect-square overflow-hidden rounded-lg border-2 ${
-                  shots[i] ? "border-[#35c17a]" : "border-dashed border-[#2e343b]"
-                }`}
-              >
-                {shots[i] && (
-                  // eslint-disable-next-line @next/next/no-img-element -- local data URL
-                  <img src={shots[i].photo} alt="" className="size-full object-cover" />
-                )}
-              </div>
-            ))}
-          </div>
-
+        {/* Scrolls only once it is a column of its own; on a phone this is
+            part of the one page scroll and a nested one would fight it. */}
+        <div className="flex min-h-0 flex-col gap-3 md:overflow-y-auto">
           <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
             First name
             <input
