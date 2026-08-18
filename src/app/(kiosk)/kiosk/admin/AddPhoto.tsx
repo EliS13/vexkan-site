@@ -86,12 +86,12 @@ export function AddPhoto({
        * Templates land on this iPad only once the save succeeded, so a failed
        * write never leaves a face matching a member whose photo was not stored.
        */
-      saveDescriptors(member.id, shots.map((s) => s.descriptor));
+      saveDescriptors(member, shots.map((s) => s.descriptor));
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save.");
     }
-  }, [onSave, onClose, shots, member.id]);
+  }, [onSave, onClose, shots, member]);
 
   const complete = shots.length >= CAPTURES;
 

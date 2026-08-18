@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { detectAll, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "./CameraGate";
-import { loadEnrolled, descriptorsFor } from "@/lib/kiosk/faceStore";
+import { reconcile, adopt, saveDescriptors, descriptorsFor } from "@/lib/kiosk/faceStore";
+import { descriptorFromPhoto, planRecovery } from "@/lib/kiosk/faceRecovery";
 import {
   identify,
   voteAcrossFrames,
@@ -49,6 +50,30 @@ function describeFailure(err: unknown): string {
   return err.name && err.name !== "Error" ? `${err.name}: ${err.message}` : err.message;
 }
 
+/**
+ * Why the camera has nothing to compare against.
+ *
+ * Three different problems used to wear one sentence. An iPad that has never
+ * been enrolled on needs members signed up. An iPad holding templates that
+ * match nobody needs those particular members again — telling its owner to
+ * "sign members up first" sends them to add people already on the roster. And
+ * an iPad where the roster has been photographed but this device has not seen
+ * any of those faces needs neither: the photographs are enough to start from.
+ */
+function unenrolledMessage(orphaned: number, fromPhotos: number): string {
+  const photos =
+    fromPhotos === 0
+      ? ""
+      : fromPhotos === 1
+        ? " One member already has a sign-up photo their face can be read from."
+        : ` ${fromPhotos} members already have a sign-up photo their face can be read from.`;
+
+  if (orphaned === 0) return `Nobody is enrolled on this iPad yet.${photos || " Sign members up first."}`;
+  return orphaned === 1
+    ? `This iPad has one face saved, but it belongs to somebody no longer on the roster.${photos}`
+    : `This iPad has ${orphaned} faces saved, but none of them match anybody on the roster.${photos}`;
+}
+
 type Outcome = {
   matched: Member[];
   ambiguous: Member[];
@@ -76,6 +101,16 @@ export function CameraSignIn({
   const [shot, setShot] = useState<string | null>(null);
   /** Whether the code entry is showing instead of waiting on a face. */
   const [usingCode, setUsingCode] = useState(false);
+  /**
+   * What a pass over the members' photographs could do for this iPad, kept in
+   * state so the error can offer the work rather than only naming the problem.
+   *
+   * `stranded` is templates here that belong to nobody on the roster.
+   * `fromPhotos` is members with a photograph but no face on this device —
+   * which on a fresh iPad is everybody who was ever photographed.
+   */
+  const [stranded, setStranded] = useState(0);
+  const [fromPhotos, setFromPhotos] = useState(0);
 
   const memberById = useCallback(
     (id: string) => state.members.find((m) => m.id === id) ?? null,
@@ -134,15 +169,21 @@ export function CameraSignIn({
     setStatus("Looking…");
     try {
       /*
-       * Only templates whose member still exists. Enrolments from before the
-       * move to Postgres are keyed by ids the database rejects as malformed,
-       * and one of those in a batch fails the whole sign-in with a message
-       * about a string being invalid.
+       * Squared against the roster first. Templates keyed to a member id that
+       * no longer exists are re-linked by name, which is what the roster being
+       * rebuilt in Postgres broke: every id changed, so every template on the
+       * iPad pointed at nobody and the group photo insisted the club had never
+       * enrolled anyone. Whatever cannot be placed is left alone rather than
+       * carried into the match, because an id the database rejects fails the
+       * whole batch with a message about a string being invalid.
        */
-      const known = new Set(state.members.map((m) => m.id));
-      const enrolled = loadEnrolled().filter((f) => known.has(f.memberId));
+      const { enrolled, orphaned } = reconcile(state.members);
+      const have = new Set(enrolled.map((f) => f.memberId));
+      const photographed = state.members.filter((m) => m.photoUrl && !have.has(m.id)).length;
+      setStranded(orphaned.length);
+      setFromPhotos(photographed);
       if (enrolled.length === 0) {
-        setError("Nobody is enrolled on this iPad yet. Sign members up first.");
+        setError(unenrolledMessage(orphaned.length, photographed));
         return;
       }
 
@@ -206,11 +247,109 @@ export function CameraSignIn({
     }
   }, [memberById, sampleFrames, state.members]);
 
+  /**
+   * Puts stranded templates back on their owners, using the photograph each
+   * member had taken when they signed up.
+   *
+   * Every member without a template is read once, and the orphans are matched
+   * against those readings. Anything the match is not sure of is left where it
+   * is, so the worst outcome is that somebody still has to enroll again — the
+   * one outcome ruled out is a face attached to the wrong person.
+   */
+  /**
+   * Gives this iPad faces to compare against, using the photograph each member
+   * had taken when they signed up.
+   *
+   * Two different jobs, in the order that loses the least. A template that is
+   * merely stranded on an old id is reattached whole, keeping the five angles
+   * it was enrolled with. A member this device has never seen gets a template
+   * read out of their photograph instead — one angle rather than five, which
+   * is weaker at a turned head and still far better than not being recognised
+   * at all. Enrolling properly from their tile replaces it outright.
+   */
+  const recover = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    setStatus("Reading the sign-up photos…");
+    try {
+      const { enrolled, orphaned } = reconcile(state.members);
+      const have = new Set(enrolled.map((f) => f.memberId));
+
+      const photos: { memberId: string; descriptor: number[] }[] = [];
+      let unreadable = 0;
+      let unphotographed = 0;
+      for (const member of state.members) {
+        if (have.has(member.id)) continue;
+        if (!member.photoUrl) {
+          unphotographed++;
+          continue;
+        }
+        const descriptor = await descriptorFromPhoto(member.photoUrl);
+        if (descriptor) photos.push({ memberId: member.id, descriptor });
+        else unreadable++;
+      }
+
+      /* Stranded templates first, so anybody who really was enrolled here
+         keeps the five angles rather than being flattened to one. */
+      const { links } = planRecovery(orphaned, photos);
+      const reclaimed = adopt(
+        links.flatMap((link) => {
+          const member = memberById(link.memberId);
+          return member ? [{ orphanId: link.orphanId, member }] : [];
+        }),
+      );
+      const claimed = new Set(links.map((link) => link.memberId));
+
+      let seeded = 0;
+      for (const photo of photos) {
+        if (claimed.has(photo.memberId)) continue;
+        const member = memberById(photo.memberId);
+        if (!member) continue;
+        saveDescriptors(member, [photo.descriptor]);
+        seeded++;
+      }
+
+      const after = reconcile(state.members);
+      setStranded(after.orphaned.length);
+      setFromPhotos(0);
+
+      const done = reclaimed + seeded;
+      if (done === 0) {
+        setError(
+          unreadable > 0
+            ? `No faces could be read. ${unreadable} sign-up ${unreadable === 1 ? "photo has" : "photos have"} no face the camera can make out, so ${unreadable === 1 ? "that member needs" : "those members need"} enrolling from their ${unreadable === 1 ? "tile" : "tiles"}.`
+            : "There are no sign-up photos to read faces from. Members have to be enrolled from their tiles first.",
+        );
+        setStatus("Nothing could be read.");
+        return;
+      }
+
+      const leftovers = [
+        unphotographed > 0 ? `${unphotographed} ${unphotographed === 1 ? "has" : "have"} no photo` : "",
+        unreadable > 0 ? `${unreadable} had no readable face` : "",
+      ].filter(Boolean);
+
+      setError(
+        leftovers.length > 0
+          ? `${leftovers.join(" and ")}, so ${leftovers.length === 1 && unphotographed === 1 ? "that member still needs" : "those members still need"} enrolling from their tiles.`
+          : null,
+      );
+      setStatus(`${done} ${done === 1 ? "member is" : "members are"} ready. Take the photo again.`);
+    } catch (err) {
+      setError(`Reading the sign-up photos failed — ${describeFailure(err)}`);
+    } finally {
+      setBusy(false);
+    }
+  }, [memberById, state.members]);
+
   const runVerify = useCallback(async () => {
     if (mode.kind !== "verify") return;
     setBusy(true);
     setStatus("Checking…");
     try {
+      /* Same repair as the group photo, so one tile is not stuck on a stale
+         id while the group shot has already moved past it. */
+      reconcile(state.members);
       const mine = descriptorsFor(mode.member.id);
       if (mine.length === 0) {
         setError(`${mode.member.firstName} is not enrolled on this iPad yet.`);
@@ -252,7 +391,7 @@ export function CameraSignIn({
     } finally {
       setBusy(false);
     }
-  }, [mode, sampleFrames]);
+  }, [mode, sampleFrames, state.members]);
 
   /** Writes the sign-ins. Verified when a face decided it, organizer-gated when not. */
   const commit = useCallback(
@@ -303,9 +442,24 @@ export function CameraSignIn({
       </header>
 
       {error && (
-        <p role="alert" className="mb-3 rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
-          {error}
-        </p>
+        <div role="alert" className="mb-3 rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+          <p>{error}</p>
+          {/*
+            * Offered here rather than buried in admin, because this banner is
+            * where somebody actually meets the problem: they tapped the group
+            * photo and were told the faces on this iPad belong to nobody.
+            */}
+          {(stranded > 0 || fromPhotos > 0) && (
+            <button
+              type="button"
+              onClick={recover}
+              disabled={busy}
+              className="mt-3 min-h-[44px] w-full rounded-lg border-2 border-[#ffb4b4] px-4 font-mono text-xs tracking-widest text-[#ffb4b4] uppercase disabled:opacity-40"
+            >
+              {busy ? "Reading…" : "Use the sign-up photos"}
+            </button>
+          )}
+        </div>
       )}
 
       <div className="grid min-h-0 flex-1 gap-4 lg:grid-cols-[1.4fr_1fr]">

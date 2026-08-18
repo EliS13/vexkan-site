@@ -139,7 +139,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
        * we have its id. They are never posted to the server: members.face_embedding
        * stays null until written parent consent is actually in place.
        */
-      saveDescriptors(body.member.id, shots.map((s) => s.descriptor));
+      saveDescriptors(body.member, shots.map((s) => s.descriptor));
 
       setSaved(`${body.member.firstName} ${body.member.lastName}`);
       setRoster((n) => n + 1);
