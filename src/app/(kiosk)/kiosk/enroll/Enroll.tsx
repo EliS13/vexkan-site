@@ -13,6 +13,7 @@ import { cropFace, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face
 import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "../CameraGate";
+import { CaptureStack } from "../CaptureStack";
 import { postJson, type EnrollReply } from "@/lib/kiosk/postJson";
 import type { KioskState } from "@/lib/kiosk/types";
 
@@ -237,35 +238,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
               </div>
             )}
 
-            {/*
-              * The captures, stacked in the corner of the picture rather than
-              * laid out as five squares beside it. Five empty boxes spent a
-              * quarter of the screen showing nothing, and what they said —
-              * how many are left — the capture button already says. Overlapped
-              * so the row stays the same width whether one has been taken or
-              * all five.
-              */}
-            {shots.length > 0 && (
-              <div className="absolute bottom-3 left-3 flex items-center gap-2 rounded-full bg-[#14171a]/80 py-1.5 pr-3 pl-2">
-                <div className="flex">
-                  {shots.map((shot, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element -- local data URL
-                    <img
-                      key={i}
-                      src={shot.photo}
-                      alt=""
-                      style={{ zIndex: i }}
-                      className={`relative size-9 rounded-md border-2 border-[#35c17a] object-cover ${
-                        i === 0 ? "" : "-ml-4"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="font-mono text-[11px] tabular-nums text-[#c2c8cf]">
-                  {shots.length} of {CAPTURES}
-                </span>
-              </div>
-            )}
+            <CaptureStack photos={shots.map((s) => s.photo)} of={CAPTURES} />
           </div>
           <p className="font-serif text-2xl font-semibold">{status}</p>
           <button

@@ -5,6 +5,7 @@ import { cropFace, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face
 import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "../CameraGate";
+import { CaptureStack } from "../CaptureStack";
 import type { Member } from "@/lib/kiosk/types";
 
 /** Same five angles sign-up uses; matching is only as good as its enrollment. */
@@ -130,61 +131,64 @@ export function AddPhoto({
         </p>
       )}
 
-      <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-black">
-        <video
-          ref={attach}
-          muted
-          playsInline
-          className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""} ${
-            camStatus === "live" ? "" : "hidden"
-          }`}
-        />
-        {camStatus !== "live" && (
-          <div className="absolute inset-0 grid place-items-center">
-            <CameraGate
-              status={camStatus}
-              message={camMessage}
-              onStart={start}
-              purpose={`Five photos of ${member.firstName}, taken here. They stay on this device.`}
-              onCancel={onClose}
+      {/*
+        * Laid out like sign-up, because it is the same job: five angles of one
+        * person, taken by somebody holding an iPad in front of them. Two
+        * columns from tablet width so the picture is not a letterbox strip,
+        * and the captures stack over it rather than taking a row of their own.
+        */}
+      <div className="grid min-h-0 flex-1 gap-4 md:grid-cols-[1.6fr_1fr]">
+        <div className="flex min-h-0 flex-col gap-3">
+          <div className="relative min-h-[45vh] flex-1 overflow-hidden rounded-2xl bg-black md:min-h-0">
+            <video
+              ref={attach}
+              muted
+              playsInline
+              className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""} ${
+                camStatus === "live" ? "" : "hidden"
+              }`}
             />
-          </div>
-        )}
-      </div>
-
-      <div className="grid grid-cols-5 gap-2">
-        {Array.from({ length: CAPTURES }, (_, i) => (
-          <div
-            key={i}
-            className={`aspect-square overflow-hidden rounded-lg border-2 ${
-              shots[i] ? "border-[#35c17a]" : "border-dashed border-[#2e343b]"
-            }`}
-          >
-            {shots[i] && (
-              // eslint-disable-next-line @next/next/no-img-element -- in-memory crop
-              <img src={shots[i].photo} alt="" className="size-full object-cover" />
+            {camStatus !== "live" && (
+              <div className="absolute inset-0 grid place-items-center">
+                <CameraGate
+                  status={camStatus}
+                  message={camMessage}
+                  onStart={start}
+                  purpose={`Five photos of ${member.firstName}, taken here. They stay on this device.`}
+                  onCancel={onClose}
+                />
+              </div>
             )}
+            <CaptureStack photos={shots.map((s) => s.photo)} of={CAPTURES} />
           </div>
-        ))}
-      </div>
 
-      <p className="font-serif text-xl font-semibold">{note}</p>
+          <p className="font-serif text-2xl font-semibold">{note}</p>
 
-      <div className="flex gap-3">
-        <button
-          onClick={capture}
-          disabled={camStatus !== "live" || complete || busy}
-          className="min-h-[80px] flex-1 rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
-        >
-          {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
-        </button>
-        <button
-          onClick={save}
-          disabled={!complete || busy}
-          className="min-h-[80px] flex-1 rounded-2xl bg-[#35c17a] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
-        >
-          {busy ? "Saving…" : "Save photo"}
-        </button>
+          <button
+            onClick={capture}
+            disabled={camStatus !== "live" || complete || busy}
+            className="min-h-[88px] rounded-2xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+          >
+            {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
+          </button>
+        </div>
+
+        {/* Scrolls only once it is a column of its own; on a phone this is
+            part of the one page scroll and a nested one would fight it. */}
+        <div className="flex min-h-0 flex-col gap-3 md:overflow-y-auto">
+          <button
+            onClick={save}
+            disabled={!complete || busy}
+            className="min-h-[88px] rounded-2xl bg-[#35c17a] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+          >
+            {busy ? "Saving…" : "Save photo"}
+          </button>
+
+          <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
+            The last of the five becomes {member.firstName}&rsquo;s tile photo. The face
+            templates stay on this iPad and are never uploaded.
+          </p>
+        </div>
       </div>
     </div>
   );
