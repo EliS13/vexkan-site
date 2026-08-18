@@ -61,14 +61,14 @@ export default async function BoardPage({
     <div className="mx-auto flex min-h-dvh max-w-4xl flex-col p-5">
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             {allTime ? "Hours in the room, all time" : `Hours in the room, ${seasonLabel(season)}`}
           </p>
           <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Leaderboard</h1>
         </div>
         <a
           href="/"
-          className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+          className="rounded-lg border-2 border-k-rule px-4 py-3 font-mono text-xs tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink"
         >
           Back to sign in
         </a>
@@ -90,8 +90,8 @@ export default async function BoardPage({
             aria-current={tab.on ? "page" : undefined}
             className={`rounded-lg border-2 px-4 py-2 font-mono text-xs tracking-widest uppercase transition-colors ${
               tab.on
-                ? "border-[#ffb100] bg-[#ffb100]/10 text-[#ffb100]"
-                : "border-[#2e343b] text-[#8b949e] hover:border-[#ffb100] hover:text-[#ffb100]"
+                ? "border-k-bolt bg-k-bolt/10 text-k-bolt-ink"
+                : "border-k-rule text-k-sketch hover:border-k-bolt hover:text-k-bolt-ink"
             }`}
           >
             {tab.label}
@@ -110,17 +110,17 @@ export default async function BoardPage({
             <li key={member.id}>
               <a
                 href={`/member/${member.id}`}
-                className={`relative flex items-center gap-4 overflow-hidden rounded-xl border-2 p-3 transition-colors hover:border-[#ffb100] ${
-                  signedIn ? "border-[#ffb100] bg-[#1d2126]" : "border-[#2e343b] bg-[#1d2126]"
+                className={`relative flex items-center gap-4 overflow-hidden rounded-xl border-2 p-3 transition-colors hover:border-k-bolt ${
+                  signedIn ? "border-k-grass bg-k-card" : "border-k-rule bg-k-card"
                 }`}
               >
               <div
                 aria-hidden
-                className="absolute inset-y-0 left-0 bg-[#ffb100]/10"
+                className="absolute inset-y-0 left-0 bg-k-bolt/10"
                 style={{ width: `${share}%` }}
               />
 
-              <span className="relative w-8 shrink-0 text-center font-mono text-lg font-bold tabular-nums text-[#8b949e]">
+              <span className="relative w-8 shrink-0 text-center font-mono text-lg font-bold tabular-nums text-k-sketch">
                 {index + 1}
               </span>
 
@@ -141,18 +141,18 @@ export default async function BoardPage({
                       <li
                         key={badge.id}
                         title={badge.detail}
-                        className="flex items-center gap-1 rounded border border-[#2e343b] bg-[#14171a] py-0.5 pr-2 pl-1 font-mono text-[10px] text-[#c2c8cf]"
+                        className="flex items-center gap-1 rounded border border-k-rule bg-k-paper py-0.5 pr-2 pl-1 font-mono text-[10px] text-k-sketch"
                       >
                         <BadgeIcon badge={badge} className="size-4" />
                         {badge.label}
                       </li>
                     ))}
                     {(book.get(member.id) ?? []).length > BADGES_ON_A_ROW && (
-                      <li className="font-mono text-[10px] text-[#8b949e]">
+                      <li className="font-mono text-[10px] text-k-sketch">
                         +{(book.get(member.id) ?? []).length - BADGES_ON_A_ROW}
                       </li>
                     )}
-                    <li className="ml-1 font-mono text-[10px] text-[#4a525b]">
+                    <li className="ml-1 font-mono text-[10px] text-k-faint">
                       {(book.get(member.id) ?? []).length} badges
                     </li>
                   </ul>
@@ -160,10 +160,10 @@ export default async function BoardPage({
                 <p className="truncate font-serif text-lg font-semibold">
                   {member.firstName} {member.lastName}
                 </p>
-                <p className="font-mono text-[11px] text-[#8b949e]">
+                <p className="font-mono text-[11px] text-k-sketch">
                   {visits} {visits === 1 ? "visit" : "visits"}
                   {signedIn && (
-                    <span className="text-[#ffb100]">
+                    <span className="text-k-grass-ink">
                       {" · here now, "}
                       {formatDuration(currentMs ?? 0)}
                     </span>
@@ -175,7 +175,7 @@ export default async function BoardPage({
                 <p className="font-mono text-xl font-bold tabular-nums">{formatHours(totalMs)}h</p>
                 {/* Somebody with no visits has not been for under a minute — they
                     have not been. Common on a season board in May. */}
-                <p className="font-mono text-[11px] text-[#8b949e]">
+                <p className="font-mono text-[11px] text-k-sketch">
                   {visits === 0 ? "not yet" : formatDuration(totalMs)}
                 </p>
               </div>
@@ -186,12 +186,12 @@ export default async function BoardPage({
       </ol>
 
       {standings.length === 0 && (
-        <p className="py-16 text-center font-serif text-2xl font-semibold text-[#8b949e]">
+        <p className="py-16 text-center font-serif text-2xl font-semibold text-k-sketch">
           {allTime ? "No hours recorded yet." : `Nobody has hours in ${seasonLabel(season)} yet.`}
         </p>
       )}
 
-      <p className="mt-6 border-t border-[#2e343b] pt-4 font-mono text-[11px] text-[#8b949e]">
+      <p className="mt-6 border-t border-k-rule pt-4 font-mono text-[11px] text-k-sketch">
         Totals include the visit in progress.
         {!allTime && ` A season runs from the first of May, so this is ${seasonLabel(season)} only.`}
       </p>

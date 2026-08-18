@@ -394,3 +394,75 @@ body {
     animation: none !important;
   }
 }
+
+/*
+ * The kiosk.
+ *
+ * The club site is written for parents reading at a desk; the kiosk is an iPad
+ * by the door, tapped by nine year olds on their way in, and it was near-black
+ * — which read as equipment rather than as somewhere they belonged. So it
+ * stands on warm chalk instead, and the colour comes from the one place in this
+ * room that is already bright: the parts bin. Bolt orange, grass green and sky
+ * blue are the plastic these robots are actually built out of.
+ *
+ * The discipline that keeps it from becoming a toy: nothing is coloured except
+ * a member and the thing they came here to press. Every other surface is chalk,
+ * every other line is a hairline, every other word is ink.
+ */
+:root {
+  --k-paper: #fbf7f0;
+  --k-card: #ffffff;
+  --k-tint: #f2ece3;
+  --k-rule: #e7dfd4;
+
+  /* Ink is violet-cast rather than blue-grey. It warms every page it sits on. */
+  --k-ink: #241f2e;
+  --k-sketch: #6b6478;
+  --k-faint: #a8a1b0;
+
+  /*
+   * The parts bin. Bolt is every action, grass is being here, sky is going
+   * elsewhere.
+   *
+   * Bolt is yellow rather than the orange it started as. Orange sat too close
+   * to the warm chalk underneath it — a hot button on a warm page, with the
+   * two arguing rather than one lifting off the other — and it dragged the
+   * whole screen towards rust. Yellow parts company with the paper cleanly and
+   * is the happier colour of the two by some distance.
+   *
+   * Every fill here is a pastel, and every one has a darker ink beside it. The
+   * fill is what you see across the room; the ink is what the words are set in,
+   * because a pastel cannot hold small dark type on its own and a page of
+   * washed-out labels is not friendly, only faint.
+   */
+  --k-bolt: #ffdf7a;
+  --k-bolt-ink: #7d5104;
+  --k-grass: #9fe3c0;
+  /* The same green with the lightness taken down: the rim of a tile whose
+     member is actually here. Still a pastel, just a deeper one. */
+  --k-grass-deep: #63cb9a;
+  --k-grass-ink: #0b6038;
+  --k-sky: #a9d6f7;
+  --k-sun: #ffeab3;
+  --k-berry: #f6b3b8;
+  --k-berry-ink: #98232f;
+}
+
+@theme inline {
+  --color-k-paper: var(--k-paper);
+  --color-k-card: var(--k-card);
+  --color-k-tint: var(--k-tint);
+  --color-k-rule: var(--k-rule);
+  --color-k-ink: var(--k-ink);
+  --color-k-sketch: var(--k-sketch);
+  --color-k-faint: var(--k-faint);
+  --color-k-bolt: var(--k-bolt);
+  --color-k-bolt-ink: var(--k-bolt-ink);
+  --color-k-grass: var(--k-grass);
+  --color-k-grass-deep: var(--k-grass-deep);
+  --color-k-grass-ink: var(--k-grass-ink);
+  --color-k-sky: var(--k-sky);
+  --color-k-sun: var(--k-sun);
+  --color-k-berry: var(--k-berry);
+  --color-k-berry-ink: var(--k-berry-ink);
+}

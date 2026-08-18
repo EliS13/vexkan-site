@@ -97,10 +97,10 @@ export function AddPhoto({
   const complete = shots.length >= CAPTURES;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col gap-3 bg-[#14171a]/97 p-5">
+    <div className="fixed inset-0 z-50 flex flex-col gap-3 bg-k-paper/97 p-5">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             Photo for
           </p>
           <p className="font-serif text-2xl font-bold">
@@ -111,14 +111,14 @@ export function AddPhoto({
           {camStatus === "live" && (
             <button
               onClick={() => void flip()}
-              className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              className="min-h-[56px] rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
             >
               {facing === "user" ? "Back camera" : "Front camera"}
             </button>
           )}
           <button
             onClick={onClose}
-            className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            className="min-h-[56px] rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
           >
             Close
           </button>
@@ -126,7 +126,7 @@ export function AddPhoto({
       </header>
 
       {error && (
-        <p role="alert" className="rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+        <p role="alert" className="rounded-lg border-2 border-k-berry bg-k-berry/15 px-4 py-3 text-sm text-k-berry-ink">
           {error}
         </p>
       )}
@@ -167,7 +167,7 @@ export function AddPhoto({
           <button
             onClick={capture}
             disabled={camStatus !== "live" || complete || busy}
-            className="min-h-[88px] rounded-2xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[88px] rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
           >
             {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
           </button>
@@ -179,12 +179,12 @@ export function AddPhoto({
           <button
             onClick={save}
             disabled={!complete || busy}
-            className="min-h-[88px] rounded-2xl bg-[#35c17a] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[88px] rounded-2xl bg-k-grass font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
           >
             {busy ? "Saving…" : "Save photo"}
           </button>
 
-          <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
+          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
             The last of the five becomes {member.firstName}&rsquo;s tile photo. The face
             templates stay on this iPad and are never uploaded.
           </p>

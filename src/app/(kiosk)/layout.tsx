@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "VexKan sign in",
   /* Homescreen launch on iPad and iPhone: no Safari chrome, dark status bar. */
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "VexKan" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "VexKan" },
   formatDetection: { telephone: false },
   manifest: "/manifest.webmanifest",
   /*
@@ -33,12 +33,12 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover" as const,
-  themeColor: "#14171a",
+  themeColor: "#fbf7f0",
 };
 
 export default function KioskLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main id="main" className="min-h-dvh flex-1 bg-[#14171a] text-[#e8eaed]">
+    <main id="main" className="min-h-dvh flex-1 bg-k-paper text-k-ink">
       {/*
        * The tap confirmation is the only animation in the kiosk. Both keyframes
        * are applied through motion-safe: variants, so `prefers-reduced-motion`

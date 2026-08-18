@@ -19,8 +19,8 @@ export function GET() {
       scope: "/",
       display: "standalone",
       orientation: "any",
-      background_color: "#14171a",
-      theme_color: "#14171a",
+      background_color: "#fbf7f0",
+      theme_color: "#fbf7f0",
       /*
        * The V mark, not the wordmark. A 996x248 logo gets letterboxed into a
        * square homescreen tile with most of it empty; the V is the club's mark

@@ -311,8 +311,8 @@ export function Kiosk({
             aria-pressed={filter === null}
             className={`min-h-[56px] rounded-xl border-2 px-4 text-left ${
               filter === null
-                ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
-                : "border-[#2e343b] bg-[#1d2126] text-[#e8eaed]"
+                ? "border-k-bolt bg-k-bolt text-k-ink"
+                : "border-k-rule bg-k-card text-k-ink"
             }`}
           >
             <span className="block font-serif font-semibold">Everyone</span>
@@ -331,16 +331,16 @@ export function Kiosk({
                 aria-pressed={selected}
                 className={`min-h-[56px] rounded-xl border-2 px-4 text-left ${
                   selected
-                    ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
+                    ? "border-k-bolt bg-k-bolt text-k-ink"
                     : live
-                      ? "border-[#ffb100]/60 bg-[#1d2126] text-[#e8eaed]"
-                      : "border-[#2e343b] bg-[#1d2126] text-[#8b949e]"
+                      ? "border-k-bolt/60 bg-k-card text-k-ink"
+                      : "border-k-rule bg-k-card text-k-sketch"
                 }`}
               >
                 <span className="block font-serif font-semibold">{standing.group.name}</span>
                 <span
                   className={`block font-mono text-[10px] ${
-                    selected ? "opacity-70" : live ? "text-[#ffb100]" : "opacity-70"
+                    selected ? "opacity-70" : live ? "text-k-bolt-ink" : "opacity-70"
                   }`}
                 >
                   {describePhase(standing)}
@@ -354,7 +354,7 @@ export function Kiosk({
       {error && (
         <p
           role="alert"
-          className="mb-3 rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 font-mono text-sm text-[#ffb4b4]"
+          className="mb-3 rounded-lg border-2 border-k-berry bg-k-berry/15 px-4 py-3 font-mono text-sm text-k-berry-ink"
         >
           {error}
         </p>
@@ -369,12 +369,12 @@ export function Kiosk({
        */}
       {roster.length === 0 && (
         <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 text-center">
-          <p className="font-serif text-2xl font-semibold text-[#8b949e]">
+          <p className="font-serif text-2xl font-semibold text-k-sketch">
             {state.members.length === 0
               ? "Nobody is signed up yet."
               : "Nobody in this group yet."}
           </p>
-          <p className="max-w-sm font-mono text-xs text-[#8b949e]">
+          <p className="max-w-sm font-mono text-xs text-k-sketch">
             {state.members.length === 0
               ? "Sign up takes a photo and five face captures, one person at a time."
               : "Add members to this group from the admin screen."}
@@ -403,11 +403,20 @@ export function Kiosk({
               signedIn ? "signed in" : "signed out"
             }. Open profile, or hold to sign ${signedIn ? "out" : "in"}.`}
             className={`group relative flex min-h-[88px] flex-col gap-2 rounded-2xl p-3 text-left select-none transition-[transform,background-color] duration-100 active:scale-[0.97] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100 ${
-              holding === member.id ? "ring-4 ring-[#ffb100]" : ""
+              holding === member.id ? "ring-4 ring-k-bolt" : ""
             } ${
+              /*
+               * On the dark kiosk a signed-in tile was filled solid amber,
+               * because amber against near-black was the only way to carry
+               * across a room. On chalk that same fill swallows the tile: the
+               * member's own colour sits inside it, and an orange card under a
+               * purple face is two loud things arguing. So the card holds still
+               * — a green rim and the faintest wash — and what changes is the
+               * face, from a pale outline to a solid piece of plastic.
+               */
               signedIn
-                ? "border-4 border-[#ffb100] bg-[#ffb100] text-[#14171a]"
-                : "border-2 border-[#2e343b] bg-[#1d2126] text-[#e8eaed]"
+                ? "border-4 border-k-grass-deep bg-k-grass/15 text-k-ink"
+                : "border-2 border-k-rule bg-k-card text-k-ink"
             }`}
           >
             {/* Square, so the photo is never stretched to fill a tall row. */}
@@ -424,8 +433,8 @@ export function Kiosk({
               <span
                 className={`shrink-0 rounded px-1.5 py-0.5 font-mono text-[11px] font-bold tracking-widest ${
                   signedIn
-                    ? "bg-[#14171a] text-[#ffb100]"
-                    : "border border-[#4a525b] text-[#8b949e]"
+                    ? "bg-k-grass text-k-grass-ink"
+                    : "border border-k-faint text-k-sketch"
                 }`}
               >
                 {signedIn ? "IN" : "OUT"}
@@ -434,12 +443,12 @@ export function Kiosk({
 
             <div
               className={`flex justify-between font-mono text-[11px] tabular-nums ${
-                signedIn ? "text-[#14171a]/75" : "text-[#8b949e]"
+                signedIn ? "text-k-grass-ink" : "text-k-sketch"
               }`}
             >
               <span>{signedIn ? `here ${formatElapsed(currentMs ?? 0)}` : "—"}</span>
               {/* Two durations side by side read as one number without this. */}
-              <span aria-hidden className={signedIn ? "text-[#14171a]/35" : "text-[#4a525b]"}>
+              <span aria-hidden className={signedIn ? "text-k-grass/50" : "text-k-faint"}>
                 |
               </span>
               <span title="Total time this season">{formatDuration(totalMs)}</span>
@@ -449,7 +458,7 @@ export function Kiosk({
       </div>
 
       {!maySign && (
-        <p className="mt-3 rounded-2xl border-2 border-dashed border-[#2e343b] px-4 py-3 text-center font-mono text-[11px] text-[#8b949e]">
+        <p className="mt-3 rounded-2xl border-2 border-dashed border-k-rule px-4 py-3 text-center font-mono text-[11px] text-k-sketch">
           Read-only — you are not on the club&rsquo;s wifi. Tap anyone to see their hours, badges
           and awards.
         </p>
@@ -483,13 +492,13 @@ export function Kiosk({
       >
         <button
           onClick={() => setCamera({ kind: "group" })}
-          className="pointer-events-auto min-h-[88px] rounded-2xl bg-[#ffb100] px-10 font-serif text-xl font-bold text-[#14171a] shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:min-h-[104px] sm:px-14 sm:text-3xl"
+          className="pointer-events-auto min-h-[88px] rounded-2xl bg-k-bolt px-10 font-serif text-xl font-bold text-k-ink shadow-[0_6px_18px_rgba(36,31,46,0.13)] sm:min-h-[104px] sm:px-14 sm:text-3xl"
         >
           Camera sign in
         </button>
         <a
           href="/enroll"
-          className="pointer-events-auto grid min-h-[64px] place-items-center rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] px-6 font-mono text-xs tracking-widest text-[#8b949e] uppercase shadow-[0_8px_24px_rgba(0,0,0,0.55)] sm:min-h-[104px] sm:px-8 sm:text-sm"
+          className="pointer-events-auto grid min-h-[64px] place-items-center rounded-2xl border-2 border-k-rule bg-k-card px-6 font-mono text-xs tracking-widest text-k-sketch uppercase shadow-[0_6px_18px_rgba(36,31,46,0.13)] sm:min-h-[104px] sm:px-8 sm:text-sm"
         >
           Sign up
         </a>
@@ -572,29 +581,29 @@ function Header({ inRoom, total, now }: { inRoom: number; total: number; now: nu
         />
         <p className="font-serif text-2xl leading-tight font-bold sm:text-4xl">
           <span className="tabular-nums">{inRoom}</span>
-          <span className="text-[#8b949e]"> of {total} in</span>
+          <span className="text-k-sketch"> of {total} in</span>
         </p>
       </div>
       <div className="flex items-center gap-3">
         <a
           href="/admin"
-          className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
+          className="rounded-lg border-2 border-k-rule px-3 py-2 font-mono text-[10px] tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink sm:px-4 sm:py-3 sm:text-xs"
         >
           Admin
         </a>
         <a
           href="/awards"
-          className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
+          className="rounded-lg border-2 border-k-rule px-3 py-2 font-mono text-[10px] tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink sm:px-4 sm:py-3 sm:text-xs"
         >
           Badges
         </a>
         <a
           href="/board"
-          className="rounded-lg border-2 border-[#2e343b] px-3 py-2 font-mono text-[10px] tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100] sm:px-4 sm:py-3 sm:text-xs"
+          className="rounded-lg border-2 border-k-rule px-3 py-2 font-mono text-[10px] tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink sm:px-4 sm:py-3 sm:text-xs"
         >
           Leaderboard
         </a>
-        <p className="font-mono text-lg tabular-nums text-[#e8eaed] sm:text-3xl">{time}</p>
+        <p className="font-mono text-lg tabular-nums text-k-ink sm:text-3xl">{time}</p>
       </div>
     </header>
   );
@@ -623,9 +632,9 @@ function Confirm({
       <div
         role="status"
         aria-live="polite"
-        className="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-[#14171a]/80 motion-safe:animate-[fadeIn_120ms_ease-out]"
+        className="pointer-events-none fixed inset-0 z-50 grid place-items-center bg-k-paper/80 motion-safe:animate-[fadeIn_120ms_ease-out]"
       >
-        <div className="rounded-3xl bg-[#ffb100] px-12 py-10 text-center text-[#14171a] motion-safe:animate-[pop_160ms_cubic-bezier(0.2,0.9,0.3,1.2)]">
+        <div className="rounded-3xl bg-k-bolt px-12 py-10 text-center text-k-ink motion-safe:animate-[pop_160ms_cubic-bezier(0.2,0.9,0.3,1.2)]">
           <p className="font-mono text-sm font-bold tracking-[0.2em] uppercase opacity-70">
             Signed in
           </p>
@@ -686,7 +695,7 @@ function SignedOutBoard({
       role="status"
       aria-live="polite"
       onClick={onDismiss}
-      className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
+      className="fixed inset-0 z-50 grid place-items-center bg-k-paper/90 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -696,10 +705,10 @@ function SignedOutBoard({
          * outside" stops being a gesture anyone can find. This keeps a band of
          * backdrop above and below the card on every screen.
          */
-        className="flex max-h-[82dvh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border-2 border-[#2e343b] bg-[#1d2126]"
+        className="flex max-h-[82dvh] w-full max-w-lg flex-col overflow-hidden rounded-3xl border-2 border-k-rule bg-k-card"
       >
         <header className="shrink-0 px-6 pt-5 pb-3 text-center">
-          <p className="font-mono text-xs font-bold tracking-[0.2em] text-[#8b949e] uppercase">
+          <p className="font-mono text-xs font-bold tracking-[0.2em] text-k-sketch uppercase">
             Signed out
           </p>
           <p className="font-serif text-3xl font-bold sm:text-4xl">
@@ -715,7 +724,7 @@ function SignedOutBoard({
                 key={standing.member.id}
                 ref={isMine ? mine : undefined}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
-                  isMine ? "bg-[#ffb100] text-[#14171a]" : "text-[#e8eaed]"
+                  isMine ? "bg-k-bolt text-k-ink" : "text-k-ink"
                 }`}
               >
                 <span className="w-7 shrink-0 text-right font-mono text-sm tabular-nums opacity-60">
@@ -732,7 +741,7 @@ function SignedOutBoard({
           })}
         </ol>
 
-        <footer className="shrink-0 bg-[#ffb100] px-6 py-4 text-center text-[#14171a]">
+        <footer className="shrink-0 bg-k-bolt px-6 py-4 text-center text-k-ink">
           <p className="font-serif text-2xl font-bold sm:text-3xl">
             {place === null ? "Welcome to the club" : `${ordinal(place)} place this season`}
           </p>
@@ -782,11 +791,11 @@ function Profile({
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
+      className="fixed inset-0 z-50 grid place-items-center bg-k-paper/90 p-4 motion-safe:animate-[fadeIn_120ms_ease-out] sm:p-8"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[88dvh] w-full max-w-lg flex-col overflow-y-auto rounded-3xl border-2 border-[#2e343b] bg-[#1d2126] p-4 sm:p-5"
+        className="flex max-h-[88dvh] w-full max-w-lg flex-col overflow-y-auto rounded-3xl border-2 border-k-rule bg-k-card p-4 sm:p-5"
       >
         <MemberProfile
           member={member}
@@ -801,7 +810,7 @@ function Profile({
           vexAwards={vexAwards}
           action={
             !maySign ? (
-              <p className="rounded-2xl border-2 border-dashed border-[#2e343b] px-4 py-3 text-center font-mono text-[11px] leading-relaxed text-[#8b949e]">
+              <p className="rounded-2xl border-2 border-dashed border-k-rule px-4 py-3 text-center font-mono text-[11px] leading-relaxed text-k-sketch">
                 Signing in and out only works on the club&rsquo;s wifi. Everything else here —
                 hours, badges, awards — reads the same from anywhere.
               </p>
@@ -810,7 +819,7 @@ function Profile({
               onClick={() => onAction()}
               disabled={busy}
               className={`min-h-[64px] w-full rounded-2xl font-serif text-2xl font-bold disabled:opacity-40 ${
-                signedIn ? "bg-[#e8eaed] text-[#14171a]" : "bg-[#ffb100] text-[#14171a]"
+                signedIn ? "bg-k-ink text-k-paper" : "bg-k-bolt text-k-ink"
               }`}
             >
               {busy ? "One moment…" : signedIn ? "Sign out" : "Sign in"}
@@ -820,7 +829,7 @@ function Profile({
         />
         <button
           onClick={onClose}
-          className="mt-3 min-h-[48px] w-full rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          className="mt-3 min-h-[48px] w-full rounded-xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase"
         >
           Close
         </button>

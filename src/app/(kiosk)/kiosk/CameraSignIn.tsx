@@ -415,10 +415,10 @@ export function CameraSignIn({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#14171a]/97 p-5">
+    <div className="fixed inset-0 z-50 flex flex-col bg-k-paper/97 p-5">
       <header className="mb-3 flex items-center justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             {mode.kind === "group" ? "Camera sign in" : `Confirm ${mode.member.firstName}`}
           </p>
           <p className="font-serif text-2xl font-bold">{status}</p>
@@ -427,14 +427,14 @@ export function CameraSignIn({
           {flip && camStatus === "live" && (
             <button
               onClick={() => { setShot(null); void flip(); }}
-              className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-5 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              className="min-h-[56px] rounded-lg border-2 border-k-rule px-5 font-mono text-xs tracking-widest text-k-sketch uppercase"
             >
               {facing === "user" ? "Use back camera" : "Use front camera"}
             </button>
           )}
           <button
             onClick={onClose}
-            className="min-h-[56px] rounded-lg border-2 border-[#2e343b] px-5 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            className="min-h-[56px] rounded-lg border-2 border-k-rule px-5 font-mono text-xs tracking-widest text-k-sketch uppercase"
           >
             Close
           </button>
@@ -442,7 +442,7 @@ export function CameraSignIn({
       </header>
 
       {error && (
-        <div role="alert" className="mb-3 rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+        <div role="alert" className="mb-3 rounded-lg border-2 border-k-berry bg-k-berry/15 px-4 py-3 text-sm text-k-berry-ink">
           <p>{error}</p>
           {/*
             * Offered here rather than buried in admin, because this banner is
@@ -454,7 +454,7 @@ export function CameraSignIn({
               type="button"
               onClick={recover}
               disabled={busy}
-              className="mt-3 min-h-[44px] w-full rounded-lg border-2 border-[#ffb4b4] px-4 font-mono text-xs tracking-widest text-[#ffb4b4] uppercase disabled:opacity-40"
+              className="mt-3 min-h-[44px] w-full rounded-lg border-2 border-k-berry px-4 font-mono text-xs tracking-widest text-k-berry-ink uppercase disabled:opacity-40"
             >
               {busy ? "Reading…" : "Use the sign-up photos"}
             </button>
@@ -509,7 +509,7 @@ export function CameraSignIn({
             <button
               onClick={mode.kind === "group" ? runGroup : runVerify}
               disabled={camStatus !== "live" || busy}
-              className="min-h-[88px] rounded-2xl bg-[#ffb100] px-6 font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+              className="min-h-[88px] rounded-2xl bg-k-bolt px-6 font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
             >
               {busy ? "Working…" : mode.kind === "group" ? "Take the photo" : "Check my face"}
             </button>
@@ -525,7 +525,7 @@ export function CameraSignIn({
           {!outcome && !usingCode && (
             <button
               onClick={() => setUsingCode(true)}
-              className="min-h-[64px] rounded-2xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              className="min-h-[64px] rounded-2xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase"
             >
               Use a code instead
             </button>
@@ -538,7 +538,7 @@ export function CameraSignIn({
                 const who = mode.kind === "verify" ? [mode.member] : [];
                 if (who.length > 0) void commit(who, false);
               }}
-              className="flex flex-col gap-3 rounded-2xl border-2 border-[#2e343b] p-4"
+              className="flex flex-col gap-3 rounded-2xl border-2 border-k-rule p-4"
             >
               <p className="font-serif text-lg font-semibold">
                 {mode.kind === "verify"
@@ -554,17 +554,17 @@ export function CameraSignIn({
                     value={passcode}
                     onChange={(e) => setPasscode(e.target.value)}
                     aria-label="Organizer code"
-                    className="min-h-[64px] rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-4 text-center font-mono text-2xl tracking-[0.3em] text-[#e8eaed]"
+                    className="min-h-[64px] rounded-xl border-2 border-k-rule bg-k-paper px-4 text-center font-mono text-2xl tracking-[0.3em] text-k-ink"
                   />
                   <button
                     type="submit"
                     disabled={busy || passcode.length === 0}
-                    className="min-h-[72px] rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
+                    className="min-h-[72px] rounded-2xl bg-k-bolt font-serif text-xl font-bold text-k-ink disabled:opacity-40"
                   >
                     {busy ? "Signing in…" : "Sign in"}
                   </button>
                   {/* Recorded unverified, so a coach can tell these apart later. */}
-                  <p className="font-mono text-[10px] leading-relaxed text-[#8b949e]">
+                  <p className="font-mono text-[10px] leading-relaxed text-k-sketch">
                     Recorded without a face match, and marked as such.
                   </p>
                 </>
@@ -572,7 +572,7 @@ export function CameraSignIn({
               <button
                 type="button"
                 onClick={() => { setUsingCode(false); setPasscode(""); }}
-                className="min-h-[56px] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+                className="min-h-[56px] font-mono text-xs tracking-widest text-k-sketch uppercase"
               >
                 Back to the camera
               </button>
@@ -606,13 +606,13 @@ function Results({
   return (
     <div className="flex flex-col gap-3">
       {matched.length > 0 && (
-        <section className="rounded-xl border-2 border-[#35c17a] p-3">
-          <h2 className="mb-2 font-mono text-[11px] tracking-widest text-[#35c17a] uppercase">
+        <section className="rounded-xl border-2 border-k-grass p-3">
+          <h2 className="mb-2 font-mono text-[11px] tracking-widest text-k-grass-ink uppercase">
             Recognised — {matched.length}
           </h2>
           <ul className="mb-3 flex flex-wrap gap-2">
             {matched.map((m) => (
-              <li key={m.id} className="rounded-lg bg-[#35c17a]/15 px-3 py-2 font-serif font-semibold">
+              <li key={m.id} className="rounded-lg bg-k-grass/15 px-3 py-2 font-serif font-semibold">
                 {m.firstName} {m.lastName[0]}.
               </li>
             ))}
@@ -620,7 +620,7 @@ function Results({
           <button
             onClick={() => onCommit(matched, true)}
             disabled={busy}
-            className="min-h-[64px] w-full rounded-xl bg-[#35c17a] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[64px] w-full rounded-xl bg-k-grass font-serif text-xl font-bold text-k-ink disabled:opacity-40"
           >
             Sign {matched.length === 1 ? "them" : "all"} in
           </button>
@@ -628,38 +628,38 @@ function Results({
       )}
 
       {(ambiguous.length > 0 || unknownFaces > 0) && (
-        <section className="rounded-xl border-2 border-[#2e343b] p-3">
-          <h2 className="mb-2 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+        <section className="rounded-xl border-2 border-k-rule p-3">
+          <h2 className="mb-2 font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             Needs an organizer
           </h2>
           {ambiguous.length > 0 && (
-            <p className="mb-2 text-sm text-[#9aa4ae]">
+            <p className="mb-2 text-sm text-k-sketch">
               Too close to call for{" "}
-              <span className="text-[#e8eaed]">
+              <span className="text-k-ink">
                 {ambiguous.map((m) => `${m.firstName} ${m.lastName[0]}.`).join(", ")}
               </span>
               . The camera would be guessing, so it did not.
             </p>
           )}
           {unknownFaces > 0 && (
-            <p className="mb-2 text-sm text-[#9aa4ae]">
+            <p className="mb-2 text-sm text-k-sketch">
               {unknownFaces} {unknownFaces === 1 ? "face was" : "faces were"} not recognised.
             </p>
           )}
-          <label className="mb-2 block font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <label className="mb-2 block font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             Organizer passcode
             <input
               type="password"
               value={passcode}
               onChange={(e) => setPasscode(e.target.value)}
-              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-lg text-[#e8eaed]"
+              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-3 font-mono text-lg text-k-ink"
             />
           </label>
           {ambiguous.length > 0 && (
             <button
               onClick={() => onCommit(ambiguous, false)}
               disabled={busy || passcode.length === 0}
-              className="min-h-[64px] w-full rounded-xl border-2 border-[#ffb100] font-serif text-lg font-bold text-[#ffb100] disabled:opacity-40"
+              className="min-h-[64px] w-full rounded-xl border-2 border-k-bolt font-serif text-lg font-bold text-k-bolt-ink disabled:opacity-40"
             >
               Sign in anyway, unverified
             </button>
@@ -668,13 +668,13 @@ function Results({
       )}
 
       {rejected.length > 0 && (
-        <p className="font-mono text-[11px] text-[#8b949e]">Skipped: {rejected.join(", ")}.</p>
+        <p className="font-mono text-[11px] text-k-sketch">Skipped: {rejected.join(", ")}.</p>
       )}
 
       <button
         onClick={onRetry}
         disabled={busy}
-        className="min-h-[56px] rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+        className="min-h-[56px] rounded-xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase"
       >
         Try again
       </button>

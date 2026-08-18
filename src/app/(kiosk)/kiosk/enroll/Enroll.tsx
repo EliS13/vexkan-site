@@ -173,7 +173,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
     <div className="mx-auto flex min-h-dvh max-w-5xl flex-col p-5">
       <header className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             {roster} on the roster
           </p>
           <h1 className="font-serif text-3xl font-bold">Sign up a member</h1>
@@ -184,14 +184,14 @@ export function Enroll({ initial }: { initial: KioskState }) {
           {flip && camStatus === "live" && (
             <button
               onClick={() => void flip()}
-              className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+              className="rounded-lg border-2 border-k-rule px-4 py-3 font-mono text-xs tracking-widest text-k-sketch uppercase"
             >
               {facing === "user" ? "Back camera" : "Front camera"}
             </button>
           )}
           <a
             href="/"
-            className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            className="grid place-items-center rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
           >
             Back
           </a>
@@ -199,12 +199,12 @@ export function Enroll({ initial }: { initial: KioskState }) {
       </header>
 
       {saved && (
-        <p className="mb-3 rounded-lg border-2 border-[#35c17a] bg-[#35c17a]/15 px-4 py-3 text-sm text-[#a7e9c6]">
+        <p className="mb-3 rounded-lg border-2 border-k-grass bg-k-grass/15 px-4 py-3 text-sm text-k-grass-ink">
           {saved} is signed up and enrolled on this iPad.
         </p>
       )}
       {error && (
-        <p role="alert" className="mb-3 rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+        <p role="alert" className="mb-3 rounded-lg border-2 border-k-berry bg-k-berry/15 px-4 py-3 text-sm text-k-berry-ink">
           {error}
         </p>
       )}
@@ -244,7 +244,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
           <button
             onClick={capture}
             disabled={camStatus !== "live" || busy || complete}
-            className="min-h-[88px] rounded-2xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[88px] rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
           >
             {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
           </button>
@@ -253,41 +253,41 @@ export function Enroll({ initial }: { initial: KioskState }) {
         {/* Scrolls only once it is a column of its own; on a phone this is
             part of the one page scroll and a nested one would fight it. */}
         <div className="flex min-h-0 flex-col gap-3 md:overflow-y-auto">
-          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             First name
             <input
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#1d2126] px-3 font-serif text-xl text-[#e8eaed]"
+              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-card px-3 font-serif text-xl text-k-ink"
             />
           </label>
-          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             Last name
             <input
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#1d2126] px-3 font-serif text-xl text-[#e8eaed]"
+              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-card px-3 font-serif text-xl text-k-ink"
             />
           </label>
-          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             Organizer passcode
             <input
               type="password"
               value={passcode}
               onChange={(e) => setPasscode(e.target.value)}
-              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#1d2126] px-3 font-mono text-lg text-[#e8eaed]"
+              className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-card px-3 font-mono text-lg text-k-ink"
             />
           </label>
 
           <button
             onClick={save}
             disabled={!canSave || busy}
-            className="min-h-[88px] rounded-2xl bg-[#35c17a] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[88px] rounded-2xl bg-k-grass font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
           >
             Save member
           </button>
 
-          <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
+          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
             Face templates stay on this iPad and are never uploaded. Clearing this
             site&rsquo;s data deletes them. Written parent consent is required before
             enrolling a member under 18.

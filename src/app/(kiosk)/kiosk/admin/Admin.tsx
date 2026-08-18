@@ -124,7 +124,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
     return (
       <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-5 p-6">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             Administrator
           </p>
           <h1 className="font-serif text-3xl font-bold">Enter the passcode</h1>
@@ -144,26 +144,26 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             value={passcode}
             onChange={(e) => setPasscode(e.target.value)}
             aria-label="Administrator passcode"
-            className="min-h-[72px] rounded-xl border-2 border-[#2e343b] bg-[#1d2126] px-4 text-center font-mono text-3xl tracking-[0.3em] text-[#e8eaed]"
+            className="min-h-[72px] rounded-xl border-2 border-k-rule bg-k-card px-4 text-center font-mono text-3xl tracking-[0.3em] text-k-ink"
           />
           <button
             type="submit"
             disabled={busy || passcode.length === 0}
-            className="min-h-[72px] rounded-xl bg-[#ffb100] font-serif text-2xl font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[72px] rounded-xl bg-k-bolt font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
           >
             {busy ? "Checking…" : "Unlock"}
           </button>
         </form>
 
         {error && (
-          <p role="alert" className="rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+          <p role="alert" className="rounded-lg border-2 border-k-berry bg-k-berry/15 px-4 py-3 text-sm text-k-berry-ink">
             {error}
           </p>
         )}
 
         <a
           href="/"
-          className="text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          className="text-center font-mono text-xs tracking-widest text-k-sketch uppercase"
         >
           Back to kiosk
         </a>
@@ -175,7 +175,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
     <div className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-5 p-5">
       <header className="flex items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             Administrator
           </p>
           <h1 className="font-serif text-3xl font-bold">Groups and roster</h1>
@@ -186,19 +186,19 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               setUnlocked(false);
               setPasscode("");
             }}
-            className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            className="rounded-lg border-2 border-k-rule px-4 py-3 font-mono text-xs tracking-widest text-k-sketch uppercase"
           >
             Lock
           </button>
           <a
             href="/awards"
-            className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            className="grid place-items-center rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
           >
             Badges
           </a>
           <a
             href="/"
-            className="grid place-items-center rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+            className="grid place-items-center rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
           >
             Back to kiosk
           </a>
@@ -213,8 +213,8 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             aria-pressed={tab === t}
             className={`min-h-[52px] rounded-xl border-2 px-5 font-serif font-semibold capitalize ${
               tab === t
-                ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
-                : "border-[#2e343b] bg-[#1d2126] text-[#8b949e]"
+                ? "border-k-bolt bg-k-bolt text-k-ink"
+                : "border-k-rule bg-k-card text-k-sketch"
             }`}
           >
             {t === "roster" ? "Groups & roster" : "Analytics"}
@@ -223,7 +223,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
       </nav>
 
       {error && (
-        <p role="alert" className="rounded-lg border-2 border-[#e04f4f] bg-[#e04f4f]/15 px-4 py-3 text-sm text-[#ffb4b4]">
+        <p role="alert" className="rounded-lg border-2 border-k-berry bg-k-berry/15 px-4 py-3 text-sm text-k-berry-ink">
           {error}
         </p>
       )}
@@ -238,16 +238,16 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
           {standings.map(({ group, phase }) => (
             <li
               key={group.id}
-              className="flex items-center gap-3 rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3"
+              className="flex items-center gap-3 rounded-xl border-2 border-k-rule bg-k-card p-3"
             >
               <div className="min-w-0 flex-1">
                 <p className="font-serif text-lg font-semibold">{group.name}</p>
-                <p className="font-mono text-[11px] text-[#8b949e]">
+                <p className="font-mono text-[11px] text-k-sketch">
                   {describeSchedule(group)}
-                  {phase === "in-session" && <span className="text-[#35c17a]"> · on now</span>}
+                  {phase === "in-session" && <span className="text-k-grass-ink"> · on now</span>}
                 </p>
               </div>
-              <span className="font-mono text-[11px] text-[#8b949e]">
+              <span className="font-mono text-[11px] text-k-sketch">
                 {state.members.filter((m) => m.active && m.groupIds.includes(group.id)).length}{" "}
                 members
               </span>
@@ -258,13 +258,13 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                   onClick={() => setGroupMenuFor(groupMenuFor === group.id ? null : group.id)}
                   aria-label={`Options for ${group.name}`}
                   aria-expanded={groupMenuFor === group.id}
-                  className="min-h-[44px] w-11 rounded-lg border-2 border-[#2e343b] text-lg leading-none text-[#8b949e]"
+                  className="min-h-[44px] w-11 rounded-lg border-2 border-k-rule text-lg leading-none text-k-sketch"
                 >
                   ⋯
                 </button>
 
                 {groupMenuFor === group.id && (
-                  <div className="absolute right-0 z-20 mt-1 w-56 overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#1d2126] shadow-xl">
+                  <div className="absolute right-0 z-20 mt-1 w-56 overflow-hidden rounded-xl border-2 border-k-rule bg-k-card shadow-xl">
                     <button
                       onClick={() => {
                         setEditingGroup(group);
@@ -274,7 +274,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                         setGTo(group.endsAt);
                         setGroupMenuFor(null);
                       }}
-                      className="block w-full px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b]"
+                      className="block w-full px-4 py-3 text-left font-serif text-sm hover:bg-k-tint"
                     >
                       Rename and set the time
                     </button>
@@ -289,7 +289,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                         setMembersOf(group);
                         setGroupMenuFor(null);
                       }}
-                      className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b]"
+                      className="block w-full border-t border-k-rule px-4 py-3 text-left font-serif text-sm hover:bg-k-tint"
                     >
                       Add or remove members
                     </button>
@@ -299,7 +299,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                         setGroupMenuFor(null);
                       }}
                       disabled={busy}
-                      className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm text-[#e04f4f] hover:bg-[#2e343b] disabled:opacity-40"
+                      className="block w-full border-t border-k-rule px-4 py-3 text-left font-serif text-sm text-k-berry-ink hover:bg-k-tint disabled:opacity-40"
                     >
                       Retire this group
                     </button>
@@ -309,21 +309,21 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             </li>
           ))}
           {standings.length === 0 && (
-            <li className="font-mono text-sm text-[#8b949e]">No groups yet.</li>
+            <li className="font-mono text-sm text-k-sketch">No groups yet.</li>
           )}
         </ul>
 
-        <div className="flex flex-wrap items-end gap-3 rounded-xl border-2 border-dashed border-[#2e343b] p-3">
-          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+        <div className="flex flex-wrap items-end gap-3 rounded-xl border-2 border-dashed border-k-rule p-3">
+          <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             New group
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="V5RC Build"
-              className="mt-1 block min-h-[48px] rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-lg text-[#e8eaed]"
+              className="mt-1 block min-h-[48px] rounded-lg border-2 border-k-rule bg-k-paper px-3 font-serif text-lg text-k-ink"
             />
           </label>
-          <div className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <div className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             Meets
             <div className="mt-1 flex gap-1">
               {DAYS.map((day, i) => (
@@ -336,8 +336,8 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                   }
                   className={`min-h-[48px] w-11 rounded-lg border-2 text-[11px] ${
                     meetsOn.includes(i)
-                      ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
-                      : "border-[#2e343b] text-[#8b949e]"
+                      ? "border-k-bolt bg-k-bolt text-k-ink"
+                      : "border-k-rule text-k-sketch"
                   }`}
                 >
                   {day}
@@ -345,22 +345,22 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               ))}
             </div>
           </div>
-          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             From
             <input
               type="time"
               value={startsAt}
               onChange={(e) => setStartsAt(e.target.value)}
-              className="mt-1 block min-h-[48px] rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+              className="mt-1 block min-h-[48px] rounded-lg border-2 border-k-rule bg-k-paper px-3 font-mono text-k-ink"
             />
           </label>
-          <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+          <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
             To
             <input
               type="time"
               value={endsAt}
               onChange={(e) => setEndsAt(e.target.value)}
-              className="mt-1 block min-h-[48px] rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+              className="mt-1 block min-h-[48px] rounded-lg border-2 border-k-rule bg-k-paper px-3 font-mono text-k-ink"
             />
           </label>
           <button
@@ -369,7 +369,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               setName("");
             }}
             disabled={busy || name.trim().length === 0}
-            className="min-h-[48px] rounded-lg bg-[#ffb100] px-5 font-serif font-bold text-[#14171a] disabled:opacity-40"
+            className="min-h-[48px] rounded-lg bg-k-bolt px-5 font-serif font-bold text-k-ink disabled:opacity-40"
           >
             Add group
           </button>
@@ -379,7 +379,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
       <section>
         <h2 className="mb-2 font-serif text-xl font-semibold">Roster</h2>
         {state.members.length === 0 && (
-          <p className="mb-2 font-mono text-sm text-[#8b949e]">
+          <p className="mb-2 font-mono text-sm text-k-sketch">
             Nobody signed up yet. Members are added from the kiosk&rsquo;s Sign up
             screen, which captures the photo and the face templates.
           </p>
@@ -392,10 +392,10 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               type="search"
               placeholder="Search the roster"
               aria-label="Search the roster"
-              className="min-h-[48px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-base"
+              className="min-h-[48px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-4 font-serif text-base"
             />
             {search && (
-              <span className="shrink-0 font-mono text-[11px] text-[#8b949e]">
+              <span className="shrink-0 font-mono text-[11px] text-k-sketch">
                 {matching.length} of {state.members.length}
               </span>
             )}
@@ -409,7 +409,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                 <li
                   key={member.id}
                   className={`rounded-xl border-2 p-3 ${
-                    member.active ? "border-[#2e343b] bg-[#1d2126]" : "border-[#2e343b]/50 opacity-50"
+                    member.active ? "border-k-rule bg-k-card" : "border-k-rule/50 opacity-50"
                   }`}
                 >
                   <div className="mb-2 flex items-center gap-3">
@@ -418,14 +418,14 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                         // eslint-disable-next-line @next/next/no-img-element -- stored crop
                         <img src={member.photoUrl} alt="" className="size-full object-cover" />
                       ) : (
-                        <div className="grid size-full place-items-center rounded-lg border-2 border-dashed border-[#4a525b] font-mono text-[10px] text-[#8b949e]">
+                        <div className="grid size-full place-items-center rounded-lg border-2 border-dashed border-k-faint font-mono text-[10px] text-k-sketch">
                           ?
                         </div>
                       )}
                     </div>
                     <p className="min-w-0 flex-1 truncate font-serif text-lg font-semibold">
                       {member.firstName} {member.lastName}
-                      {here && <span className="ml-2 font-mono text-[11px] text-[#35c17a]">in the room</span>}
+                      {here && <span className="ml-2 font-mono text-[11px] text-k-grass-ink">in the room</span>}
                     </p>
 
                     {/*
@@ -439,17 +439,17 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                         onClick={() => setMenuFor(menuFor === member.id ? null : member.id)}
                         aria-label={`Options for ${member.firstName} ${member.lastName}`}
                         aria-expanded={menuFor === member.id}
-                        className="min-h-[44px] w-11 rounded-lg border-2 border-[#2e343b] text-lg leading-none text-[#8b949e]"
+                        className="min-h-[44px] w-11 rounded-lg border-2 border-k-rule text-lg leading-none text-k-sketch"
                       >
                         ⋯
                       </button>
 
                       {menuFor === member.id && (
-                        <div className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#1d2126] shadow-xl">
+                        <div className="absolute right-0 z-20 mt-1 w-52 overflow-hidden rounded-xl border-2 border-k-rule bg-k-card shadow-xl">
                           <button
                             onClick={() => { setPhotoFor(member); setMenuFor(null); }}
                             disabled={!member.active}
-                            className="block w-full px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b] disabled:opacity-40"
+                            className="block w-full px-4 py-3 text-left font-serif text-sm hover:bg-k-tint disabled:opacity-40"
                           >
                             {member.photoUrl ? "Replace photo" : "Add photo"}
                           </button>
@@ -460,7 +460,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                               setDraftLast(member.lastName === "—" ? "" : member.lastName);
                               setMenuFor(null);
                             }}
-                            className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm hover:bg-[#2e343b]"
+                            className="block w-full border-t border-k-rule px-4 py-3 text-left font-serif text-sm hover:bg-k-tint"
                           >
                             Rename
                           </button>
@@ -470,7 +470,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                               setMenuFor(null);
                             }}
                             disabled={busy}
-                            className="block w-full border-t border-[#2e343b] px-4 py-3 text-left font-serif text-sm text-[#e04f4f] hover:bg-[#2e343b] disabled:opacity-40"
+                            className="block w-full border-t border-k-rule px-4 py-3 text-left font-serif text-sm text-k-berry-ink hover:bg-k-tint disabled:opacity-40"
                           >
                             {member.active ? "Deactivate" : "Restore"}
                           </button>
@@ -487,7 +487,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                   <button
                     onClick={() => setVisitsFor(visitsFor === member.id ? null : member.id)}
                     aria-expanded={visitsFor === member.id}
-                    className="w-full rounded-lg border-2 border-[#2e343b] px-3 py-2 text-left font-mono text-[11px] text-[#8b949e]"
+                    className="w-full rounded-lg border-2 border-k-rule px-3 py-2 text-left font-mono text-[11px] text-k-sketch"
                   >
                     {visitsFor === member.id ? "Hide visits" : "Recent visits"}
                     <span className="float-right">{visitsFor === member.id ? "−" : "+"}</span>
@@ -503,7 +503,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
       </section>
 
       {editingGroup && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-6">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-k-paper/90 p-6">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -517,22 +517,22 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               });
               setEditingGroup(null);
             }}
-            className="flex w-full max-w-md flex-col gap-3 rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] p-5"
+            className="flex w-full max-w-md flex-col gap-3 rounded-2xl border-2 border-k-rule bg-k-card p-5"
           >
-            <p className="font-mono text-[11px] tracking-widest text-[#ffb100] uppercase">
+            <p className="font-mono text-[11px] tracking-widest text-k-bolt-ink uppercase">
               Edit group
             </p>
-            <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
               Name
               <input
                 autoFocus
                 value={gName}
                 onChange={(e) => setGName(e.target.value)}
-                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-xl text-[#e8eaed]"
+                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-3 font-serif text-xl text-k-ink"
               />
             </label>
 
-            <div className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            <div className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
               Meets
               <div className="mt-1 flex gap-1">
                 {DAYS.map((day, i) => (
@@ -546,8 +546,8 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                     }
                     className={`min-h-[48px] flex-1 rounded-lg border-2 text-[11px] ${
                       gDays.includes(i)
-                        ? "border-[#ffb100] bg-[#ffb100] text-[#14171a]"
-                        : "border-[#2e343b] text-[#8b949e]"
+                        ? "border-k-bolt bg-k-bolt text-k-ink"
+                        : "border-k-rule text-k-sketch"
                     }`}
                   >
                     {day}
@@ -557,27 +557,27 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
             </div>
 
             <div className="flex gap-3">
-              <label className="flex-1 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              <label className="flex-1 font-mono text-[11px] tracking-widest text-k-sketch uppercase">
                 From
                 <input
                   type="time"
                   value={gFrom}
                   onChange={(e) => setGFrom(e.target.value)}
-                  className="mt-1 block min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+                  className="mt-1 block min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-3 font-mono text-k-ink"
                 />
               </label>
-              <label className="flex-1 font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              <label className="flex-1 font-mono text-[11px] tracking-widest text-k-sketch uppercase">
                 To
                 <input
                   type="time"
                   value={gTo}
                   onChange={(e) => setGTo(e.target.value)}
-                  className="mt-1 block min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-mono text-[#e8eaed]"
+                  className="mt-1 block min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-3 font-mono text-k-ink"
                 />
               </label>
             </div>
 
-            <p className="font-mono text-[10px] leading-relaxed text-[#8b949e]">
+            <p className="font-mono text-[10px] leading-relaxed text-k-sketch">
               The kiosk opens on whichever group is meeting or about to. A group
               with no days set never rises to the top.
             </p>
@@ -586,14 +586,14 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               <button
                 type="button"
                 onClick={() => setEditingGroup(null)}
-                className="min-h-[56px] flex-1 rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+                className="min-h-[56px] flex-1 rounded-xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={busy || !gName.trim()}
-                className="min-h-[56px] flex-1 rounded-xl bg-[#ffb100] font-serif font-bold text-[#14171a] disabled:opacity-40"
+                className="min-h-[56px] flex-1 rounded-xl bg-k-bolt font-serif font-bold text-k-ink disabled:opacity-40"
               >
                 Save
               </button>
@@ -603,7 +603,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
       )}
 
       {renaming && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-[#14171a]/90 p-6">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-k-paper/90 p-6">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -615,38 +615,38 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               });
               setRenaming(null);
             }}
-            className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border-2 border-[#2e343b] bg-[#1d2126] p-5"
+            className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border-2 border-k-rule bg-k-card p-5"
           >
-            <p className="font-mono text-[11px] tracking-widest text-[#ffb100] uppercase">Rename</p>
-            <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            <p className="font-mono text-[11px] tracking-widest text-k-bolt-ink uppercase">Rename</p>
+            <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
               First name
               <input
                 autoFocus
                 value={draftFirst}
                 onChange={(e) => setDraftFirst(e.target.value)}
-                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-xl text-[#e8eaed]"
+                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-3 font-serif text-xl text-k-ink"
               />
             </label>
-            <label className="font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            <label className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
               Last name
               <input
                 value={draftLast}
                 onChange={(e) => setDraftLast(e.target.value)}
-                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-3 font-serif text-xl text-[#e8eaed]"
+                className="mt-1 min-h-[56px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-3 font-serif text-xl text-k-ink"
               />
             </label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setRenaming(null)}
-                className="min-h-[56px] flex-1 rounded-xl border-2 border-[#2e343b] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+                className="min-h-[56px] flex-1 rounded-xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={busy || !draftFirst.trim() || !draftLast.trim()}
-                className="min-h-[56px] flex-1 rounded-xl bg-[#ffb100] font-serif font-bold text-[#14171a] disabled:opacity-40"
+                className="min-h-[56px] flex-1 rounded-xl bg-k-bolt font-serif font-bold text-k-ink disabled:opacity-40"
               >
                 Save
               </button>
@@ -684,7 +684,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         />
       )}
 
-      <p className="border-t border-[#2e343b] pt-4 font-mono text-[11px] text-[#8b949e]">
+      <p className="border-t border-k-rule pt-4 font-mono text-[11px] text-k-sketch">
         Retiring a group and deactivating a member both keep every recorded hour.
         Nothing here deletes session history.
       </p>
@@ -713,18 +713,18 @@ function Visits({
   const visits = recentVisits(sessions, memberId);
   if (visits.length === 0) {
     return (
-      <p className="rounded-lg bg-[#14171a] px-3 py-2 font-mono text-[11px] text-[#8b949e]">
+      <p className="rounded-lg bg-k-paper px-3 py-2 font-mono text-[11px] text-k-sketch">
         No visits recorded yet.
       </p>
     );
   }
   return (
-    <ul className="flex flex-col gap-px overflow-hidden rounded-lg bg-[#14171a]">
+    <ul className="flex flex-col gap-px overflow-hidden rounded-lg bg-k-paper">
       {visits.map((visit) => {
         const open = visit.signedOutAt === null;
         return (
           <li key={visit.id} className="flex items-baseline gap-3 px-3 py-2">
-            <span className="w-28 shrink-0 font-mono text-[11px] text-[#8b949e]">
+            <span className="w-28 shrink-0 font-mono text-[11px] text-k-sketch">
               {new Date(visit.signedInAt).toLocaleDateString("en-CA", {
                 timeZone: CLUB_TIMEZONE,
                 year: "numeric",
@@ -732,7 +732,7 @@ function Visits({
                 day: "numeric",
               })}
             </span>
-            <span className="flex-1 font-mono text-[11px] tabular-nums text-[#e8eaed]">
+            <span className="flex-1 font-mono text-[11px] tabular-nums text-k-ink">
               {new Date(visit.signedInAt).toLocaleTimeString("en-CA", {
                 timeZone: CLUB_TIMEZONE,
                 hour: "numeric",
@@ -741,11 +741,11 @@ function Visits({
             </span>
             <span
               className={`shrink-0 font-mono text-[11px] tabular-nums ${
-                open ? "text-[#35c17a]" : "text-[#8b949e]"
+                open ? "text-k-grass-ink" : "text-k-sketch"
               }`}
             >
               {open ? "here now" : formatDuration(sessionMs(visit, now))}
-              {visit.autoClosed && !open && <span className="text-[#ffb100]"> ·est</span>}
+              {visit.autoClosed && !open && <span className="text-k-bolt-ink"> ·est</span>}
             </span>
           </li>
         );
@@ -782,15 +782,15 @@ function GroupMembers({
   const count = members.filter((m) => m.active && m.groupIds.includes(group.id)).length;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#14171a]/95 p-4 sm:p-8">
+    <div className="fixed inset-0 z-50 flex flex-col bg-k-paper/95 p-4 sm:p-8">
       <header className="mx-auto flex w-full max-w-lg shrink-0 items-center gap-3 pb-3">
         <div className="min-w-0 flex-1">
           <h2 className="truncate font-serif text-xl font-semibold">{group.name}</h2>
-          <p className="font-mono text-[11px] text-[#8b949e]">{count} members</p>
+          <p className="font-mono text-[11px] text-k-sketch">{count} members</p>
         </div>
         <button
           onClick={onClose}
-          className="min-h-[44px] shrink-0 rounded-lg border-2 border-[#2e343b] px-4 font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          className="min-h-[44px] shrink-0 rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
         >
           Done
         </button>
@@ -802,7 +802,7 @@ function GroupMembers({
         type="search"
         placeholder="Search"
         aria-label="Search members"
-        className="mx-auto mb-2 min-h-[48px] w-full max-w-lg shrink-0 rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-base"
+        className="mx-auto mb-2 min-h-[48px] w-full max-w-lg shrink-0 rounded-lg border-2 border-k-rule bg-k-paper px-4 font-serif text-base"
       />
 
       <ul className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-1 overflow-y-auto">
@@ -816,8 +816,8 @@ function GroupMembers({
                 aria-pressed={inGroup}
                 className={`flex min-h-[52px] w-full items-center gap-3 rounded-lg border-2 px-3 text-left disabled:opacity-40 ${
                   inGroup
-                    ? "border-[#ffb100] bg-[#ffb100]/15 text-[#ffb100]"
-                    : "border-[#2e343b] text-[#8b949e]"
+                    ? "border-k-bolt bg-k-bolt/15 text-k-bolt-ink"
+                    : "border-k-rule text-k-sketch"
                 }`}
               >
                 <span className="w-5 shrink-0 text-center font-mono">{inGroup ? "✓" : ""}</span>
@@ -829,7 +829,7 @@ function GroupMembers({
           );
         })}
         {shown.length === 0 && (
-          <li className="font-mono text-sm text-[#8b949e]">Nobody matches that.</li>
+          <li className="font-mono text-sm text-k-sketch">Nobody matches that.</li>
         )}
       </ul>
     </div>
@@ -871,10 +871,10 @@ function Analytics({ state, now }: { state: KioskState; now: number }) {
     <>
       <section className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         {stats.map(([label, value, sub]) => (
-          <div key={label} className="rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3">
-            <p className="font-mono text-[10px] tracking-widest text-[#8b949e] uppercase">{label}</p>
+          <div key={label} className="rounded-xl border-2 border-k-rule bg-k-card p-3">
+            <p className="font-mono text-[10px] tracking-widest text-k-sketch uppercase">{label}</p>
             <p className="font-serif text-3xl font-bold tabular-nums">{value}</p>
-            {sub && <p className="font-mono text-[10px] text-[#8b949e]">{sub}</p>}
+            {sub && <p className="font-mono text-[10px] text-k-sketch">{sub}</p>}
           </div>
         ))}
       </section>
@@ -888,17 +888,17 @@ function Analytics({ state, now }: { state: KioskState; now: number }) {
             type="search"
             placeholder="Search members"
             aria-label="Search hours per member"
-            className="mb-2 min-h-[48px] w-full rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-base"
+            className="mb-2 min-h-[48px] w-full rounded-lg border-2 border-k-rule bg-k-paper px-4 font-serif text-base"
           />
         )}
         {rows.length === 0 ? (
-          <p className="font-mono text-sm text-[#8b949e]">
+          <p className="font-mono text-sm text-k-sketch">
             {search ? "Nobody matches that." : "Nobody is signed up yet."}
           </p>
         ) : (
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="border-b-2 border-[#2e343b] font-mono text-[10px] tracking-widest text-[#8b949e] uppercase">
+              <tr className="border-b-2 border-k-rule font-mono text-[10px] tracking-widest text-k-sketch uppercase">
                 <th className="py-2">Member</th>
                 <th className="py-2 text-right">Visits</th>
                 <th className="py-2 text-right">Hours</th>
@@ -906,17 +906,17 @@ function Analytics({ state, now }: { state: KioskState; now: number }) {
             </thead>
             <tbody>
               {rows.map(({ member, totalMs, visits, signedIn }) => (
-                <tr key={member.id} className="border-b border-[#2e343b]">
+                <tr key={member.id} className="border-b border-k-rule">
                   <td className="py-2 font-serif">
                     {member.firstName} {member.lastName}
                     {!member.active && (
-                      <span className="ml-2 font-mono text-[10px] text-[#8b949e]">inactive</span>
+                      <span className="ml-2 font-mono text-[10px] text-k-sketch">inactive</span>
                     )}
                     {signedIn && (
-                      <span className="ml-2 font-mono text-[10px] text-[#35c17a]">here now</span>
+                      <span className="ml-2 font-mono text-[10px] text-k-grass-ink">here now</span>
                     )}
                   </td>
-                  <td className="py-2 text-right font-mono tabular-nums text-[#8b949e]">{visits}</td>
+                  <td className="py-2 text-right font-mono tabular-nums text-k-sketch">{visits}</td>
                   <td className="py-2 text-right font-mono font-bold tabular-nums">
                     {formatHours(totalMs)}h
                   </td>

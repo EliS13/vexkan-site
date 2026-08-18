@@ -15,7 +15,22 @@ function hueFor(seed: string): number {
     hash ^= seed.charCodeAt(i);
     hash = Math.imul(hash, 16777619);
   }
-  return Math.abs(hash % 1000) * 137.508 % 360;
+  /*
+   * Spread across the wheel, minus the orange stretch of it.
+   *
+   * Orange is out of this palette everywhere else, and a member who happened to
+   * hash into it wore the one colour the kiosk does not use — a tile that
+   * looked like a mistake rather than like theirs. So the wheel is 322 degrees
+   * wide and the gap from 12 to 50 is stepped over: true reds survive, yellow
+   * picks up on the far side, and nobody lands in between.
+   *
+   * The step is the golden angle of *this* wheel rather than of a full circle.
+   * 137.508 is 360 times the golden ratio's complement, and reused against 322
+   * it lands within a whisker of three sevenths — so ids collapsed into seven
+   * clumps and half the room turned up wearing the same cyan.
+   */
+  const spread = (Math.abs(hash % 1000) * (322 * 0.3819660113)) % 322;
+  return spread < 12 ? spread : spread + 38;
 }
 
 export function Avatar({ member, signedIn }: { member: Member; signedIn: boolean }) {
@@ -42,17 +57,44 @@ export function Avatar({ member, signedIn }: { member: Member; signedIn: boolean
     <div
       aria-hidden
       className="grid size-full place-items-center rounded-xl border-2 border-dashed font-serif text-[clamp(1.5rem,4vw,2.5rem)] font-bold"
+      /*
+       * Signed in, the tile is a solid piece of plastic in their colour.
+       * Signed out it is the same colour drained to a wash of itself — the same
+       * hue either way, because finding your own tile by its colour is the
+       * whole reason the colour exists, and it must not change while you are
+       * out of the room.
+       *
+       * Lightness is fixed per state rather than per hue so a yellow member and
+       * a blue one carry the same weight on the wall, and white always reads on
+       * the filled version.
+       */
       style={
         signedIn
           ? {
-              background: `hsl(${hue} 55% 22%)`,
-              color: `hsl(${hue} 70% 82%)`,
-              borderColor: `hsl(${hue} 45% 40%)`,
+              /*
+               * Both states are pastels of one hue; only the depth changes.
+               * Signed in is the darker of the two, signed out the lighter, so
+               * a member's colour is recognisably theirs whether they are in
+               * the room or not — which is the whole reason they have one.
+               *
+               * Lightness does the work and saturation stays put, because
+               * dropping saturation instead is what sends the reds and yellows
+               * to mud: a member was a brown square while the one beside her
+               * was violet, and nobody wants to be the brown one.
+               *
+               * The letters are a deep version of the member's own hue rather
+               * than white or black, which stays readable across every hue —
+               * white fails on the yellows — and keeps the tile one colour
+               * rather than a colour with type on top.
+               */
+              background: `hsl(${hue} 60% 74%)`,
+              color: `hsl(${hue} 60% 24%)`,
+              borderColor: `hsl(${hue} 50% 58%)`,
             }
           : {
-              background: `hsl(${hue} 12% 20%)`,
-              color: `hsl(${hue} 10% 55%)`,
-              borderColor: "#3a424b",
+              background: `hsl(${hue} 55% 94%)`,
+              color: `hsl(${hue} 35% 55%)`,
+              borderColor: `hsl(${hue} 40% 86%)`,
             }
       }
     >

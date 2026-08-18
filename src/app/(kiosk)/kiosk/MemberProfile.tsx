@@ -88,9 +88,9 @@ export function MemberProfile({
           </p>
           <p className="font-mono text-[11px] tracking-widest uppercase">
             {signedIn ? (
-              <span className="text-[#35c17a]">In the room · {formatElapsed(currentMs ?? 0)}</span>
+              <span className="text-k-grass-ink">In the room · {formatElapsed(currentMs ?? 0)}</span>
             ) : (
-              <span className="text-[#8b949e]">Not signed in</span>
+              <span className="text-k-sketch">Not signed in</span>
             )}
           </p>
         </div>
@@ -102,8 +102,8 @@ export function MemberProfile({
           ["Visits", String(visits)],
           ["Badges", String(badges.length)],
         ].map(([label, value]) => (
-          <div key={label} className="rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-3 py-2">
-            <dt className="font-mono text-[10px] tracking-widest text-[#8b949e] uppercase">
+          <div key={label} className="rounded-xl border-2 border-k-rule bg-k-paper px-3 py-2">
+            <dt className="font-mono text-[10px] tracking-widest text-k-sketch uppercase">
               {label}
             </dt>
             <dd className="font-serif text-xl font-bold tabular-nums">{value}</dd>
@@ -118,8 +118,8 @@ export function MemberProfile({
         * for somebody else's, which is true but is not the same claim.
         */}
       {alongside > 0 && (
-        <p className="rounded-xl border-2 border-dashed border-[#2e343b] px-3 py-2 font-mono text-[11px] leading-relaxed text-[#8b949e]">
-          <span className="text-[#ffb100]">+{formatHours(alongside)}h alongside</span> — as team
+        <p className="rounded-xl border-2 border-dashed border-k-rule px-3 py-2 font-mono text-[11px] leading-relaxed text-k-sketch">
+          <span className="text-k-bolt-ink">+{formatHours(alongside)}h alongside</span> — as team
           leader, in the room whenever {ALONGSIDE_LABEL} were, without signing in separately. Not
           counted in the hours above, the leaderboard, or any club total. A floor rather than a
           total: build time, management and course prep were never signed in at all.
@@ -129,11 +129,11 @@ export function MemberProfile({
       {action}
 
       <section>
-        <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+        <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-k-sketch uppercase">
           {badges.length === 0 ? "No badges yet" : `Badges · ${badges.length}`}
         </h3>
         {badges.length === 0 ? (
-          <p className="font-mono text-[11px] text-[#8b949e]">
+          <p className="font-mono text-[11px] text-k-sketch">
             Badges arrive with hours, visits and turning up. See the awards screen for the full
             list.
           </p>
@@ -143,12 +143,12 @@ export function MemberProfile({
               <li key={badge.id}>
                 <a
                   href={`/awards#${awardKind(badge)}`}
-                  className="flex items-center gap-3 rounded-xl border-2 border-[#2e343b] bg-[#14171a] p-2 transition-colors hover:border-[#ffb100]"
+                  className="flex items-center gap-3 rounded-xl border-2 border-k-rule bg-k-paper p-2 transition-colors hover:border-k-bolt"
                 >
                   <BadgeIcon badge={badge} className="size-9 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-serif text-base font-semibold">{badge.label}</p>
-                    <p className="truncate font-mono text-[10px] text-[#8b949e]">{badge.detail}</p>
+                    <p className="truncate font-mono text-[10px] text-k-sketch">{badge.detail}</p>
                   </div>
                 </a>
               </li>
@@ -164,7 +164,7 @@ export function MemberProfile({
           */}
         {badges.length > SHOWN_AT_FIRST && (
           <details className="mt-2 group">
-            <summary className="cursor-pointer list-none rounded-lg border-2 border-[#2e343b] px-3 py-2 text-center font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+            <summary className="cursor-pointer list-none rounded-lg border-2 border-k-rule px-3 py-2 text-center font-mono text-[11px] tracking-widest text-k-sketch uppercase">
               <span className="group-open:hidden">
                 View {badges.length - SHOWN_AT_FIRST} more
               </span>
@@ -175,12 +175,12 @@ export function MemberProfile({
                 <li key={badge.id}>
                   <a
                     href={`/awards#${awardKind(badge)}`}
-                    className="flex items-center gap-3 rounded-xl border-2 border-[#2e343b] bg-[#14171a] p-2 transition-colors hover:border-[#ffb100]"
+                    className="flex items-center gap-3 rounded-xl border-2 border-k-rule bg-k-paper p-2 transition-colors hover:border-k-bolt"
                   >
                     <BadgeIcon badge={badge} className="size-9 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-serif text-base font-semibold">{badge.label}</p>
-                      <p className="truncate font-mono text-[10px] text-[#8b949e]">{badge.detail}</p>
+                      <p className="truncate font-mono text-[10px] text-k-sketch">{badge.detail}</p>
                     </div>
                   </a>
                 </li>
@@ -192,7 +192,7 @@ export function MemberProfile({
 
       {teams.length > 0 && (
         <section>
-          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-k-sketch uppercase">
             Teams
           </h3>
           <ul className="flex flex-wrap gap-1.5">
@@ -202,19 +202,19 @@ export function MemberProfile({
                 title={team.worlds ? "Competed at the World Championship" : undefined}
                 className={`rounded-lg border-2 px-2.5 py-1.5 font-mono text-[11px] ${
                   team.worlds
-                    ? "border-[#c8971a] bg-[#ffcc48]/10 text-[#ffcc48]"
-                    : "border-[#2e343b] bg-[#14171a] text-[#c2c8cf]"
+                    ? "border-k-bolt-ink bg-k-sun/10 text-k-bolt-ink"
+                    : "border-k-rule bg-k-paper text-k-sketch"
                 }`}
               >
                 {team.number}
-                <span className={`ml-1.5 ${team.worlds ? "text-[#ffcc48]/70" : "text-[#8b949e]"}`}>
+                <span className={`ml-1.5 ${team.worlds ? "text-k-bolt-ink/70" : "text-k-sketch"}`}>
                   {team.season}
                 </span>
               </li>
             ))}
           </ul>
           {teams.some((t) => t.worlds) && (
-            <p className="mt-1.5 font-mono text-[10px] text-[#ffcc48]">
+            <p className="mt-1.5 font-mono text-[10px] text-k-bolt-ink">
               Gold marks a team that competed at the World Championship.
             </p>
           )}
@@ -228,7 +228,7 @@ export function MemberProfile({
 
       {vexAwards.length > 0 && (
         <section>
-          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-k-sketch uppercase">
             Won at competition · {vexAwards.length}
           </h3>
           <ul className="flex flex-col gap-1.5">
@@ -236,19 +236,19 @@ export function MemberProfile({
               <li
                 key={`${award.teamNumber}-${award.title}-${i}`}
                 className={`flex items-baseline gap-2 rounded-lg border-2 px-2.5 py-1.5 ${
-                  award.worlds ? "border-[#c8971a] bg-[#ffcc48]/10" : "border-[#2e343b] bg-[#14171a]"
+                  award.worlds ? "border-k-bolt-ink bg-k-sun/10" : "border-k-rule bg-k-paper"
                 }`}
               >
                 <span
                   className={`w-14 shrink-0 font-mono text-[10px] ${
-                    award.worlds ? "text-[#ffcc48]" : "text-[#8b949e]"
+                    award.worlds ? "text-k-bolt-ink" : "text-k-sketch"
                   }`}
                 >
                   {award.teamNumber}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="font-serif text-sm">{award.title}</span>
-                  <span className="block truncate font-mono text-[10px] text-[#8b949e]">
+                  <span className="block truncate font-mono text-[10px] text-k-sketch">
                     {award.season} · {award.event}
                   </span>
                 </span>
@@ -257,7 +257,7 @@ export function MemberProfile({
           </ul>
           {vexAwards.length > AWARDS_AT_FIRST && (
             <details className="group mt-2">
-              <summary className="cursor-pointer list-none rounded-lg border-2 border-[#2e343b] px-3 py-2 text-center font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+              <summary className="cursor-pointer list-none rounded-lg border-2 border-k-rule px-3 py-2 text-center font-mono text-[11px] tracking-widest text-k-sketch uppercase">
                 <span className="group-open:hidden">
                   View {vexAwards.length - AWARDS_AT_FIRST} more
                 </span>
@@ -269,14 +269,14 @@ export function MemberProfile({
                   .map((award, i) => (
                     <li
                       key={`rest-${award.teamNumber}-${award.title}-${i}`}
-                      className="flex items-baseline gap-2 rounded-lg border-2 border-[#2e343b] bg-[#14171a] px-2.5 py-1.5"
+                      className="flex items-baseline gap-2 rounded-lg border-2 border-k-rule bg-k-paper px-2.5 py-1.5"
                     >
-                      <span className="w-14 shrink-0 font-mono text-[10px] text-[#8b949e]">
+                      <span className="w-14 shrink-0 font-mono text-[10px] text-k-sketch">
                         {award.teamNumber}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="font-serif text-sm">{award.title}</span>
-                        <span className="block truncate font-mono text-[10px] text-[#8b949e]">
+                        <span className="block truncate font-mono text-[10px] text-k-sketch">
                           {award.season} · {award.event}
                         </span>
                       </span>
@@ -290,15 +290,15 @@ export function MemberProfile({
 
       {recent.length > 0 && (
         <section>
-          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-[#8b949e] uppercase">
+          <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-k-sketch uppercase">
             Recent visits
           </h3>
-          <ul className="flex flex-col gap-px overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#14171a]">
+          <ul className="flex flex-col gap-px overflow-hidden rounded-xl border-2 border-k-rule bg-k-paper">
             {recent.map((sessionRow) => {
               const open = sessionRow.signedOutAt === null;
               return (
                 <li key={sessionRow.id} className="flex items-baseline gap-3 px-3 py-2">
-                  <span className="w-28 shrink-0 font-mono text-[11px] text-[#8b949e]">
+                  <span className="w-28 shrink-0 font-mono text-[11px] text-k-sketch">
                     {new Date(sessionRow.signedInAt).toLocaleDateString("en-CA", {
                       timeZone: CLUB_TIMEZONE,
                       year: "numeric",
@@ -315,12 +315,12 @@ export function MemberProfile({
                   </span>
                   <span
                     className={`shrink-0 font-mono text-[11px] tabular-nums ${
-                      open ? "text-[#35c17a]" : "text-[#8b949e]"
+                      open ? "text-k-grass-ink" : "text-k-sketch"
                     }`}
                   >
                     {open ? "here now" : formatDuration(sessionMs(sessionRow, now))}
                     {sessionRow.autoClosed && !open && (
-                      <span className="text-[#ffb100]" title="Closed by rule, not a real sign-out">
+                      <span className="text-k-bolt-ink" title="Closed by rule, not a real sign-out">
                         {" "}
                         est
                       </span>
@@ -333,7 +333,7 @@ export function MemberProfile({
         </section>
       )}
 
-      <p className="font-mono text-[10px] text-[#8b949e]">
+      <p className="font-mono text-[10px] text-k-sketch">
         {visits > 0 &&
           `${visits} ${visits === 1 ? "visit" : "visits"} across every season, ${formatDuration(totalMs)} in total.`}
       </p>

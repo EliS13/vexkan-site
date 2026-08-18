@@ -58,7 +58,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
 
       <a
         href="/"
-        className="mt-6 rounded-lg border-2 border-[#2e343b] px-4 py-4 text-center font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+        className="mt-6 rounded-lg border-2 border-k-rule px-4 py-4 text-center font-mono text-xs tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink"
       >
         Back to sign in
       </a>

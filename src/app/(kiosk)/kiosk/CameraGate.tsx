@@ -29,7 +29,7 @@ export function CameraGate({
     <div className="mx-auto flex w-full max-w-md flex-col justify-center gap-4 p-2 text-center">
       <div
         aria-hidden
-        className="mx-auto grid size-20 place-items-center rounded-2xl border-2 border-[#ffb100] text-4xl"
+        className="mx-auto grid size-20 place-items-center rounded-2xl border-2 border-k-bolt text-4xl"
       >
         📷
       </div>
@@ -38,12 +38,12 @@ export function CameraGate({
         {blocked ? "The camera is not available" : "Turn on the camera"}
       </h2>
 
-      <p className="text-[15px] leading-relaxed text-[#9aa4ae]">
+      <p className="text-[15px] leading-relaxed text-k-sketch">
         {blocked ? message : purpose}
       </p>
 
       {!blocked && (
-        <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
+        <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
           Your browser will ask permission next. Nothing is recorded and no
           picture leaves this device.
         </p>
@@ -53,7 +53,7 @@ export function CameraGate({
         <button
           onClick={onStart}
           disabled={status === "starting"}
-          className="min-h-[72px] rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
+          className="min-h-[72px] rounded-2xl bg-k-bolt font-serif text-xl font-bold text-k-ink disabled:opacity-40"
         >
           {status === "starting" ? "Asking…" : "Allow the camera"}
         </button>
@@ -62,7 +62,7 @@ export function CameraGate({
       {blocked && status !== "insecure" && (
         <button
           onClick={onStart}
-          className="min-h-[64px] rounded-2xl border-2 border-[#ffb100] font-serif text-lg font-bold text-[#ffb100]"
+          className="min-h-[64px] rounded-2xl border-2 border-k-bolt font-serif text-lg font-bold text-k-bolt-ink"
         >
           Try again
         </button>
@@ -71,7 +71,7 @@ export function CameraGate({
       {onCancel && (
         <button
           onClick={onCancel}
-          className="min-h-[56px] font-mono text-xs tracking-widest text-[#8b949e] uppercase"
+          className="min-h-[56px] font-mono text-xs tracking-widest text-k-sketch uppercase"
         >
           Not now
         </button>

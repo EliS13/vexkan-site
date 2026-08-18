@@ -57,7 +57,7 @@ export default async function AwardsPage() {
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-5">
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#ffb100] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
             Every badge, and how to get it
           </p>
           <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Badges</h1>
@@ -65,13 +65,13 @@ export default async function AwardsPage() {
         <div className="flex shrink-0 gap-2">
           <a
             href="/"
-            className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+            className="rounded-lg border-2 border-k-rule px-4 py-3 font-mono text-xs tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink"
           >
             Sign in
           </a>
           <a
             href="/board"
-            className="rounded-lg border-2 border-[#2e343b] px-4 py-3 font-mono text-xs tracking-widest text-[#8b949e] uppercase transition-colors hover:border-[#ffb100] hover:text-[#ffb100]"
+            className="rounded-lg border-2 border-k-rule px-4 py-3 font-mono text-xs tracking-widest text-k-sketch uppercase transition-colors hover:border-k-bolt hover:text-k-bolt-ink"
           >
             Leaderboard
           </a>
@@ -79,10 +79,10 @@ export default async function AwardsPage() {
       </header>
 
       <section className="mb-7">
-        <h2 className="mb-1 font-mono text-[11px] tracking-[0.18em] text-[#8b949e] uppercase">
+        <h2 className="mb-1 font-mono text-[11px] tracking-[0.18em] text-k-sketch uppercase">
           The club
         </h2>
-        <p className="mb-3 font-mono text-[11px] text-[#4a525b]">
+        <p className="mb-3 font-mono text-[11px] text-k-faint">
           Goals nobody earns alone. These belong to the club, not to a member.
         </p>
         <ul className="grid gap-2 sm:grid-cols-2">
@@ -91,11 +91,11 @@ export default async function AwardsPage() {
             return (
               <li
                 key={award.id}
-                className="relative flex items-center gap-3 overflow-hidden rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3"
+                className="relative flex items-center gap-3 overflow-hidden rounded-xl border-2 border-k-rule bg-k-card p-3"
               >
                 <div
                   aria-hidden
-                  className="absolute inset-y-0 left-0 bg-[#ffb100]/10"
+                  className="absolute inset-y-0 left-0 bg-k-bolt/10"
                   style={{ width: `${share}%` }}
                 />
                 <BadgeIcon
@@ -111,9 +111,9 @@ export default async function AwardsPage() {
                 />
                 <div className="relative min-w-0 flex-1">
                   <p className="truncate font-serif text-base font-semibold">{award.label}</p>
-                  <p className="font-mono text-[11px] text-[#8b949e]">{award.detail}</p>
+                  <p className="font-mono text-[11px] text-k-sketch">{award.detail}</p>
                 </div>
-                <span className="relative shrink-0 font-mono text-[11px] tabular-nums text-[#ffb100]">
+                <span className="relative shrink-0 font-mono text-[11px] tabular-nums text-k-bolt-ink">
                   {Math.round(share)}%
                 </span>
               </li>
@@ -125,7 +125,7 @@ export default async function AwardsPage() {
       <div className="flex flex-col gap-7">
         {BADGE_GUIDE.map((section) => (
           <section key={section.heading}>
-            <h2 className="mb-3 font-mono text-[11px] tracking-[0.18em] text-[#8b949e] uppercase">
+            <h2 className="mb-3 font-mono text-[11px] tracking-[0.18em] text-k-sketch uppercase">
               {section.heading}
             </h2>
             {(() => {
@@ -139,24 +139,24 @@ export default async function AwardsPage() {
                   <li
                     key={badge.id}
                     id={badge.id}
-                    className="flex scroll-mt-4 items-center gap-4 rounded-xl border-2 border-[#2e343b] bg-[#1d2126] p-3 target:border-[#ffb100]"
+                    className="flex scroll-mt-4 items-center gap-4 rounded-xl border-2 border-k-rule bg-k-card p-3 target:border-k-bolt"
                   >
                     {locked ? (
-                      <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-dashed border-[#4a525b] font-serif text-xl text-[#4a525b] sm:size-12">
+                      <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-dashed border-k-faint font-serif text-xl text-k-faint sm:size-12">
                         ?
                       </span>
                     ) : (
                       <BadgeIcon badge={badge} className="size-11 shrink-0 sm:size-12" />
                     )}
                     <div className="min-w-0 flex-1">
-                      <p className={`font-serif text-lg font-semibold ${locked ? "text-[#4a525b]" : ""}`}>
+                      <p className={`font-serif text-lg font-semibold ${locked ? "text-k-faint" : ""}`}>
                         {locked ? "Secret award" : badge.label}
                       </p>
-                      <p className="font-mono text-[11px] leading-relaxed text-[#8b949e]">
+                      <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
                         {locked ? "Nobody has found this one yet." : how}
                       </p>
                     </div>
-                    <span className="shrink-0 text-right font-mono text-[11px] text-[#8b949e]">
+                    <span className="shrink-0 text-right font-mono text-[11px] text-k-sketch">
                       {count === 0 ? "unclaimed" : `${count} hold${count === 1 ? "s" : ""} it`}
                     </span>
                   </li>
@@ -171,7 +171,7 @@ export default async function AwardsPage() {
                   {render(first)}
                   {rest.length > 0 && (
                     <details className="group mt-2">
-                      <summary className="cursor-pointer list-none rounded-lg border-2 border-[#2e343b] px-3 py-3 text-center font-mono text-[11px] tracking-widest text-[#8b949e] uppercase">
+                      <summary className="cursor-pointer list-none rounded-lg border-2 border-k-rule px-3 py-3 text-center font-mono text-[11px] tracking-widest text-k-sketch uppercase">
                         <span className="group-open:hidden">Show {rest.length} more</span>
                         <span className="hidden group-open:inline">Show fewer</span>
                       </summary>

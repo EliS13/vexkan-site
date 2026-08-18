@@ -49,11 +49,11 @@ export function VisitorGate() {
   return (
     <div className="grid min-h-dvh place-items-center p-6">
       <form onSubmit={submit} className="w-full max-w-sm">
-        <p className="font-mono text-[11px] tracking-[0.2em] text-[#ffb100] uppercase">
+        <p className="font-mono text-[11px] tracking-[0.2em] text-k-bolt-ink uppercase">
           VexKan sign in
         </p>
         <h1 className="mt-1 font-serif text-3xl font-bold">Who&rsquo;s looking?</h1>
-        <p className="mt-2 font-mono text-[11px] leading-relaxed text-[#8b949e]">
+        <p className="mt-2 font-mono text-[11px] leading-relaxed text-k-sketch">
           You are not on the club&rsquo;s wifi. Enter your name and the club code to see hours,
           badges and awards. Signing in and out only works in the room.
         </p>
@@ -64,7 +64,7 @@ export function VisitorGate() {
           placeholder="Your name"
           aria-label="Your name"
           autoComplete="name"
-          className="mt-5 min-h-[56px] w-full rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-4 font-serif text-lg"
+          className="mt-5 min-h-[56px] w-full rounded-xl border-2 border-k-rule bg-k-paper px-4 font-serif text-lg"
         />
         <input
           value={code}
@@ -73,11 +73,11 @@ export function VisitorGate() {
           aria-label="Club code"
           type="password"
           autoComplete="off"
-          className="mt-2 min-h-[56px] w-full rounded-xl border-2 border-[#2e343b] bg-[#14171a] px-4 font-mono text-lg tracking-widest"
+          className="mt-2 min-h-[56px] w-full rounded-xl border-2 border-k-rule bg-k-paper px-4 font-mono text-lg tracking-widest"
         />
 
         {error && (
-          <p role="alert" className="mt-3 font-mono text-[11px] text-[#e04f4f]">
+          <p role="alert" className="mt-3 font-mono text-[11px] text-k-berry-ink">
             {error}
           </p>
         )}
@@ -85,7 +85,7 @@ export function VisitorGate() {
         <button
           type="submit"
           disabled={busy || name.trim().length === 0 || code.trim().length === 0}
-          className="mt-3 min-h-[60px] w-full rounded-2xl bg-[#ffb100] font-serif text-xl font-bold text-[#14171a] disabled:opacity-40"
+          className="mt-3 min-h-[60px] w-full rounded-2xl bg-k-bolt font-serif text-xl font-bold text-k-ink disabled:opacity-40"
         >
           {busy ? "Checking…" : "Look around"}
         </button>
