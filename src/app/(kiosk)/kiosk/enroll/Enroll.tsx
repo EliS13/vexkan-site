@@ -117,7 +117,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
     }
   }, [shots, getVideo]);
 
-  const save = useCallback(async () => {
+  const save = useCallback(async (withPhoto: boolean) => {
     setBusy(true);
     setError(null);
     try {
@@ -130,8 +130,11 @@ export function Enroll({ initial }: { initial: KioskState }) {
            * taken of somebody smiling, and the first is the stiffest picture of
            * the five. The tile is the thing a member sees of themselves every
            * meeting; it may as well be the good one.
+           *
+           * Null when signing somebody up without one: they get initials on a
+           * coloured tile, and a photo whenever they want one.
            */
-          photoUrl: shots[shots.length - 1].photo,
+          photoUrl: withPhoto ? shots[shots.length - 1].photo : null,
           passcode,
         });
 
@@ -139,8 +142,11 @@ export function Enroll({ initial }: { initial: KioskState }) {
        * Templates are written to this iPad only, once the member row exists and
        * we have its id. They are never posted to the server: members.face_embedding
        * stays null until written parent consent is actually in place.
+       *
+       * Nothing to write without captures. That member signs in with the club
+       * code instead of their face until somebody photographs them.
        */
-      saveDescriptors(body.member, shots.map((s) => s.descriptor));
+      if (withPhoto) saveDescriptors(body.member, shots.map((s) => s.descriptor));
 
       setSaved(`${body.member.firstName} ${body.member.lastName}`);
       setRoster((n) => n + 1);
@@ -167,7 +173,8 @@ export function Enroll({ initial }: { initial: KioskState }) {
   }, [firstName, lastName, passcode, shots]);
 
   const complete = shots.length >= CAPTURES;
-  const canSave = complete && firstName.trim() && lastName.trim() && passcode.length > 0;
+  const named = Boolean(firstName.trim() && lastName.trim() && passcode.length > 0);
+  const canSave = complete && named;
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-5xl flex-col p-5">
@@ -280,12 +287,32 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </label>
 
           <button
-            onClick={save}
+            onClick={() => save(true)}
             disabled={!canSave || busy}
             className="min-h-[88px] rounded-2xl bg-k-grass font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
           >
             Save member
           </button>
+
+          {/*
+            * The way in for anybody the camera is not right for: no parental
+            * consent for a photograph, a visitor for one evening, or a night
+            * the camera will not open. Needs the same name and passcode as the
+            * photo route — it skips the camera, not the organizer.
+            */}
+          <button
+            onClick={() => save(false)}
+            disabled={!named || busy}
+            className="min-h-[64px] rounded-2xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase disabled:opacity-40"
+          >
+            Sign up without a photo
+          </button>
+
+          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
+            Without a photo they get their initials on a tile and sign in with the
+            club code rather than their face. A photo can be added any time from
+            the roster screen.
+          </p>
 
           <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
             Face templates stay on this iPad and are never uploaded. Clearing this

@@ -34,16 +34,27 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "A first and last name are required." }, { status: 400 });
   }
   /*
-   * Sign-up still insists on a photo — it is a camera flow, and a tile with no
-   * face cannot be found across a room. Imported members are allowed to have
-   * none, and get one later from the roster screen.
+   * A photo is optional.
+   *
+   * It was required because sign-up is a camera flow and a tile with no face is
+   * harder to find across a room. But that shut out the people most likely to
+   * need signing up quickly — somebody whose parents have not consented to a
+   * photograph, a visitor, or anybody on an evening the camera will not open.
+   * They get initials on a coloured tile, the same as the members imported from
+   * the old system, and a photo can be added later from the roster screen.
    */
-  if (typeof photoUrl !== "string" || !photoUrl.startsWith("data:image/")) {
-    return NextResponse.json({ error: "A photo is required." }, { status: 400 });
+  if (photoUrl !== null && photoUrl !== undefined) {
+    if (typeof photoUrl !== "string" || !photoUrl.startsWith("data:image/")) {
+      return NextResponse.json({ error: "That photo is not an image." }, { status: 400 });
+    }
   }
 
   try {
-    const member = await addMember({ firstName, lastName, photoUrl });
+    const member = await addMember({
+      firstName,
+      lastName,
+      photoUrl: typeof photoUrl === "string" ? photoUrl : null,
+    });
     // The new member only. The sign-up screen redirects to the kiosk, which
     // loads a fresh roster anyway.
     return NextResponse.json({ member });
