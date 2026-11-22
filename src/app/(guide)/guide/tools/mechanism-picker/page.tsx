@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { MechanismPicker } from "./MechanismPicker";
 
-export const metadata = { title: "Mechanism Picker — Built From the Ground Up" };
+export const metadata = { title: "Mechanism Picker — Built to Compete" };
 
 export default function MechanismPickerPage() {
   return (
@@ -11,19 +10,7 @@ export default function MechanismPickerPage() {
         Intake & Outtake Picker
       </h1>
       <p className="mt-3 max-w-2xl text-muted">
-        A shortlist to prototype, not a single answer. Ties into{" "}
-        <Link href="/guide/chapters/intakes" className="underline">
-          Chapter 6
-        </Link>
-        ,{" "}
-        <Link href="/guide/chapters/outtake-and-scoring" className="underline">
-          Chapter 7
-        </Link>
-        , and{" "}
-        <Link href="/guide/chapters/combining-mechanisms" className="underline">
-          Chapter 8
-        </Link>
-        .
+        A shortlist to prototype, not a single answer.
       </p>
 
       <div
@@ -35,7 +22,7 @@ export default function MechanismPickerPage() {
         </p>
         <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--ink-body)]">
           It is tempting to sort intakes by what the game element looks like, but rollers handle odd
-          shapes far better than people expect. 16688A ran roller intakes on donut-shaped rings one
+          shapes far better than people expect. We ran roller intakes on donut-shaped rings one
           season and on pins the next. What actually decides the mechanism is the job you need done
           and how much the element has to travel inside the robot.
         </p>

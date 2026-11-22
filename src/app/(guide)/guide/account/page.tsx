@@ -1,6 +1,6 @@
 import { AccountPanel } from "./AccountPanel";
 
-export const metadata = { title: "Account — Built From the Ground Up" };
+export const metadata = { title: "Account — Built to Compete" };
 
 export default function AccountPage() {
   return (

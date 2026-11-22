@@ -20,7 +20,7 @@ export function Button({
   size = "md",
   external = false,
 }: Props) {
-  const base = `inline-flex items-center justify-center rounded-xl font-semibold transition-opacity hover:opacity-90 ${SIZES[size]}`;
+  const base = `inline-flex items-center justify-center rounded-lg font-semibold transition-opacity hover:opacity-90 ${SIZES[size]}`;
 
   const style =
     variant === "primary"

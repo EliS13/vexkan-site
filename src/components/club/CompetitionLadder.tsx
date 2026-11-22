@@ -35,7 +35,7 @@ export function ProgramComparison() {
           <div className="flex flex-wrap items-baseline justify-between gap-3">
             <h3 className="text-lg font-semibold">{p.name}</h3>
             <span
-              className="eyebrow rounded-full px-2.5 py-1"
+              className="eyebrow rounded-lg px-2.5 py-1"
               style={{ background: "var(--teal-bg)", color: "var(--teal-text)" }}
             >
               {p.who}
@@ -65,7 +65,7 @@ export function ProgramComparison() {
 export function SpectatingNote() {
   return (
     <div
-      className="rounded-2xl px-5 py-4"
+      className="rounded-xl px-5 py-4"
       style={{ background: "var(--teal-bg)", border: "1px solid var(--teal)" }}
     >
       <p className="font-semibold text-[var(--teal-text)]">{spectating.headline}</p>

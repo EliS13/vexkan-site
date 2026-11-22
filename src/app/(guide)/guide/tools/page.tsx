@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { tools } from "@/content/tools";
 
-export const metadata = { title: "Tools — Built From the Ground Up" };
+export const metadata = { title: "Tools — Built to Compete" };
 
 const ACCENTS = {
   purple: { bg: "var(--purple-bg)", text: "var(--purple-text)" },
@@ -29,7 +29,7 @@ export default function ToolsPage() {
               style={{ borderColor: "var(--line)" }}
             >
               <span
-                className="inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
+                className="inline-block rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
                 style={{ background: accent.bg, color: accent.text }}
               >
                 Tool

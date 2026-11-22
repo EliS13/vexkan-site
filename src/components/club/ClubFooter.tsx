@@ -17,7 +17,7 @@ export function ClubFooter() {
           />
           <p className="mt-2 text-sm text-muted">{org.tagline}</p>
           <p className="mt-4 text-sm text-muted">
-            A nonprofit robotics club for {org.gradesLabel.toLowerCase()} in {org.city}.
+            A nonprofit society robotics club for {org.gradesLabel.toLowerCase()} in {org.city}.
           </p>
         </div>
 

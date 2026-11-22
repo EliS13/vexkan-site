@@ -29,6 +29,12 @@ const onLocalhost = [{ type: "host" as const, value: "localhost" }];
 
 const nextConfig: NextConfig = {
   /*
+   * Development only. The club site is served on 127.0.0.1 (localhost is the
+   * kiosk), and Next blocks its dev scripts on any host but localhost unless
+   * listed here, so without this the club pages render but never hydrate.
+   */
+  allowedDevOrigins: ["127.0.0.1"],
+  /*
    * The rewrites below map the subdomain onto /kiosk, but they do not hide the
    * real paths: without this, vexkan.ca/kiosk/admin would answer on the club
    * site too. Redirects run before rewrites, and only on the URL as requested,

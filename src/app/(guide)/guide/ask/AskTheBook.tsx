@@ -2,11 +2,8 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import Fuse from "fuse.js";
-import { buildSearchIndex, SearchDoc } from "@/lib/searchIndex";
-import { GUIDANCE, matchGuidance, tokenize } from "@/content/guidance";
+import { GUIDANCE, matchGuidance } from "@/content/guidance";
 import { sourcesFor, generalSourcesFor, Program, SourceKind } from "@/content/sources";
-import { getChapter } from "@/content/chapters";
 import { getStore } from "@/lib/stores";
 
 const questionStore = getStore("recentQuestions");
@@ -46,30 +43,7 @@ export function AskTheBook() {
     }
   }, [rawRecent]);
 
-  const fuse = useMemo(() => {
-    const docs = buildSearchIndex();
-    return new Fuse(docs, {
-      keys: [
-        { name: "text", weight: 0.7 },
-        { name: "heading", weight: 0.2 },
-        { name: "chapterTitle", weight: 0.1 },
-      ],
-      includeScore: true,
-      threshold: 0.4,
-      ignoreLocation: true,
-      minMatchCharLength: 2,
-      useExtendedSearch: true,
-    });
-  }, []);
-
   const guidance = useMemo(() => (submitted ? matchGuidance(submitted) : null), [submitted]);
-
-  const passages: SearchDoc[] = useMemo(() => {
-    if (!submitted.trim()) return [];
-    const terms = tokenize(submitted);
-    const pattern = terms.length ? terms.join(" | ") : submitted;
-    return fuse.search(pattern).slice(0, 2).map((r) => r.item);
-  }, [fuse, submitted]);
 
   function run(q: string) {
     setQuery(q);
@@ -89,7 +63,7 @@ export function AskTheBook() {
     setShowAll(false);
   }
 
-  const hasAnswer = guidance || passages.length > 0;
+  const hasAnswer = Boolean(guidance);
 
   // Everything tied to this topic, on-topic first and general references excluded.
   const topicSources = guidance
@@ -138,7 +112,7 @@ export function AskTheBook() {
           <button
             key={p}
             onClick={() => setProgram(p)}
-            className="rounded-full px-3 py-1.5 text-xs font-semibold transition-colors"
+            className="rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
             style={
               program === p
                 ? { background: "var(--purple)", color: "white" }
@@ -182,7 +156,7 @@ export function AskTheBook() {
           <button
             key={ex}
             onClick={() => run(ex)}
-            className="rounded-full border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-[#cdc6bf]"
+            className="rounded-lg border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-[#cdc6bf]"
             style={{ borderColor: "var(--line)" }}
           >
             {ex}
@@ -192,11 +166,7 @@ export function AskTheBook() {
 
       {submitted && !hasAnswer && (
         <p className="mt-8 text-sm text-muted">
-          Nothing matched that closely. Try different words, or browse the{" "}
-          <Link href="/guide/chapters" className="underline">
-            table of contents
-          </Link>
-          .
+          Nothing matched that closely. Try different words, or pick a topic from the list.
         </p>
       )}
 
@@ -246,30 +216,6 @@ export function AskTheBook() {
 
           <div className="rounded-xl border bg-surface p-5" style={{ borderColor: "var(--line)" }}>
             <p className="eyebrow text-[var(--muted)]">
-              Read it in the book
-            </p>
-            <ul className="mt-2.5 space-y-2.5">
-              {[...new Set(guidance.chapterSlugs)].map((slug) => {
-                const c = getChapter(slug);
-                if (!c) return null;
-                return (
-                  <li key={slug}>
-                    <Link
-                      href={`/guide/chapters/${slug}`}
-                      className="text-sm font-semibold underline"
-                      style={{ color: "var(--purple-text)" }}
-                    >
-                      Ch {c.number}: {c.title}
-                    </Link>
-                    <p className="text-[12px] leading-snug text-muted">{c.dek}</p>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-
-          <div className="rounded-xl border bg-surface p-5" style={{ borderColor: "var(--line)" }}>
-            <p className="eyebrow text-[var(--muted)]">
               Go deeper, off this site
             </p>
             <ul className="mt-2.5 space-y-2.5">
@@ -285,7 +231,7 @@ export function AskTheBook() {
                     {src.name} ↗
                   </a>
                   <span
-                    className="ml-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase"
+                    className="ml-1.5 rounded-lg px-1.5 py-0.5 text-[9px] font-bold uppercase"
                     style={{ background: KIND_STYLE[src.kind].bg, color: KIND_STYLE[src.kind].text }}
                   >
                     {KIND_STYLE[src.kind].label}
@@ -322,7 +268,7 @@ export function AskTheBook() {
                           {src.name} ↗
                         </a>
                         <span
-                          className="ml-1.5 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase"
+                          className="ml-1.5 rounded-lg px-1.5 py-0.5 text-[9px] font-bold uppercase"
                           style={{ background: KIND_STYLE[src.kind].bg, color: KIND_STYLE[src.kind].text }}
                         >
                           {KIND_STYLE[src.kind].label}
@@ -348,7 +294,7 @@ export function AskTheBook() {
               <button
                 key={r.id}
                 onClick={() => run(r.q)}
-                className="rounded-full border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-[#cdc6bf]"
+                className="rounded-lg border px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:border-[#cdc6bf]"
                 style={{ borderColor: "var(--line)" }}
               >
                 {r.q}
@@ -368,7 +314,7 @@ export function AskTheBook() {
               <button
                 key={g.id}
                 onClick={() => run(g.title)}
-                className="rounded-full px-3 py-1.5 text-xs font-medium transition-colors"
+                className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                 style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
               >
                 {g.title}
@@ -379,31 +325,6 @@ export function AskTheBook() {
             Outside links are filtered to the program you picked above, so a VEX IQ question never
             sends you to a V5RC part page. Nothing here overrides your season&apos;s game manual.
           </p>
-        </div>
-      )}
-
-      {passages.length > 0 && (
-        <div className="mt-6">
-          <p className="eyebrow text-[var(--muted)]">
-            Straight from the chapters
-          </p>
-          <ul className="mt-2.5 space-y-3">
-            {passages.map((p) => (
-              <li key={p.id} className="rounded-xl border bg-surface p-4" style={{ borderColor: "var(--line)" }}>
-                <p className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: "var(--amber-text)" }}>
-                  Ch {p.chapterNumber} · {p.heading}
-                </p>
-                <p className="mt-1.5 text-sm leading-relaxed text-[var(--ink-body)]">{p.text}</p>
-                <Link
-                  href={`/guide/chapters/${p.chapterSlug}`}
-                  className="mt-2 inline-block text-xs font-semibold underline"
-                  style={{ color: "var(--amber-text)" }}
-                >
-                  Read {p.chapterTitle} →
-                </Link>
-              </li>
-            ))}
-          </ul>
         </div>
       )}
 

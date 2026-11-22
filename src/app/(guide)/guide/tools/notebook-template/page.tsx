@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { NotebookTemplate } from "./NotebookTemplate";
 
-export const metadata = { title: "Notebook Template — Built From the Ground Up" };
+export const metadata = { title: "Notebook Template — Built to Compete" };
 
 export default function NotebookTemplatePage() {
   return (
@@ -11,11 +10,7 @@ export default function NotebookTemplatePage() {
         Engineering Notebook
       </h1>
       <p className="mt-3 max-w-2xl text-muted">
-        Builds on{" "}
-        <Link href="/guide/chapters/the-engineering-notebook" className="underline">
-          Chapter 11
-        </Link>
-        , structured around what the VEX notebook rubric actually scores: the design process from
+        Structured around what the VEX notebook rubric actually scores: the design process from
         identifying a problem through testing and refining it, plus teamwork and formatting. Every
         entry asks for the number behind the call, and for what you rejected.
       </p>

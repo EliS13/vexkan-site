@@ -124,12 +124,12 @@ export function AdminDashboard() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@vexkan.ca"
-          className="mt-4 w-full rounded-xl border px-3.5 py-2.5"
+          className="mt-4 w-full rounded-lg border px-3.5 py-2.5"
           style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         />
         <button
           type="submit"
-          className="mt-3 rounded-xl px-5 py-2.5 text-sm font-semibold text-white"
+          className="mt-3 rounded-lg px-5 py-2.5 text-sm font-semibold text-white"
           style={{ background: "var(--purple)" }}
         >
           Email me a sign-in link
@@ -158,7 +158,7 @@ export function AdminDashboard() {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="rounded-xl border px-3 py-2 text-sm"
+          className="rounded-lg border px-3 py-2 text-sm"
           style={{ borderColor: "var(--line)", background: "var(--surface)" }}
         >
           <option value="all">All ({rows.length})</option>
@@ -168,10 +168,10 @@ export function AdminDashboard() {
             </option>
           ))}
         </select>
-        <button onClick={exportCsv} className="rounded-xl border px-4 py-2 text-sm font-semibold" style={{ borderColor: "var(--line)" }}>
+        <button onClick={exportCsv} className="rounded-lg border px-4 py-2 text-sm font-semibold" style={{ borderColor: "var(--line)" }}>
           Export CSV
         </button>
-        <button onClick={() => void load()} className="rounded-xl border px-4 py-2 text-sm font-semibold" style={{ borderColor: "var(--line)" }}>
+        <button onClick={() => void load()} className="rounded-lg border px-4 py-2 text-sm font-semibold" style={{ borderColor: "var(--line)" }}>
           Refresh
         </button>
         <button onClick={signOut} className="ml-auto text-sm font-semibold underline">
@@ -182,7 +182,7 @@ export function AdminDashboard() {
       {error && (
         <p
           role="alert"
-          className="mt-5 rounded-xl px-4 py-3 text-sm"
+          className="mt-5 rounded-lg px-4 py-3 text-sm"
           style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
         >
           {error}{" "}
@@ -224,7 +224,7 @@ export function AdminDashboard() {
                     <select
                       value={r.status}
                       onChange={(e) => void setStatus(r.id, e.target.value)}
-                      className="rounded-lg border px-2 py-1 text-xs"
+                      className="rounded-xl border px-2 py-1 text-xs"
                       style={{ borderColor: "var(--line)", background: "var(--surface)" }}
                     >
                       {STATUSES.map((s) => (

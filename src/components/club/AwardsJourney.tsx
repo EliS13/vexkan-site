@@ -11,7 +11,7 @@ import {
   type Award,
   type Team,
 } from "@/content/club/events";
-import { teamAwardPhotos, type Photo } from "@/content/club/photos";
+import { photoForAward, teamAwardPhotos, type Photo } from "@/content/club/photos";
 import { TrophyIcon } from "./TrophyIcon";
 
 /**
@@ -98,7 +98,7 @@ export function AwardsJourney() {
 export function AwardsCount() {
   return (
     <div
-      className="lift rounded-3xl px-8 py-12 text-center sm:px-12 sm:py-16"
+      className="lift rounded-2xl px-8 py-12 text-center sm:px-12 sm:py-16"
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
     >
       <p className="score text-[clamp(3.5rem,12vw,7rem)] font-semibold leading-none text-[var(--purple-text)]">
@@ -137,6 +137,15 @@ function JourneyBlock({
   const [activeIndex, setActiveIndex] = useState(0);
   const active = won[activeIndex];
   const meaning = active ? awardMeanings[active.award] : undefined;
+
+  /*
+   * The selected award decides who the card is about. A team number outlives
+   * its name — 595C has been Croissants, BattleAce and Miscellaneous Sesame
+   * Cats — so the name, the season and the photograph follow the award rather
+   * than sitting fixed on the card.
+   */
+  const shownName = active?.teamName ?? team.name;
+  const shownPhoto = active ? photoForAward(active) : photo;
 
   useBeforePaint(() => {
     const el = ref.current;
@@ -197,7 +206,7 @@ function JourneyBlock({
       />
 
       <div
-        className="journey-card lift rounded-3xl p-7 sm:p-9"
+        className="journey-card lift rounded-2xl p-7 sm:p-9"
         style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
       >
         <div className="flex flex-wrap items-start justify-between gap-6">
@@ -207,22 +216,44 @@ function JourneyBlock({
                 {team.number}
               </span>
               <span
-                className="eyebrow rounded-full px-2.5 py-1"
+                className="eyebrow rounded-lg px-2.5 py-1"
                 style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
               >
                 {team.program}
               </span>
             </div>
-            <h3 className="mt-3 text-xl font-semibold">{team.name}</h3>
+            <h3 className="mt-3 text-xl font-semibold">{shownName}</h3>
             <p className="eyebrow mt-2 text-[var(--muted)]">
-              {team.seasons.length > 0 ? team.seasons.join(" · ") : "Seasons not recorded"}
+              {team.seasons.length > 0
+                ? team.seasons.map((season, i) => (
+                    <span key={season}>
+                      {i > 0 && " · "}
+                      <span
+                        style={
+                          active?.season === season
+                            ? { color: "var(--purple-text)", fontWeight: 700 }
+                            : undefined
+                        }
+                      >
+                        {season}
+                      </span>
+                    </span>
+                  ))
+                : "Seasons not recorded"}
             </p>
             <p className="mt-3 max-w-xl text-[15px] text-muted">{team.note}</p>
           </div>
 
-          {photo && (
-            <div className="relative hidden aspect-[4/3] w-44 shrink-0 overflow-hidden rounded-2xl sm:block lg:w-52">
-              <Image src={photo.src} alt={photo.alt} fill sizes="208px" className="object-cover" />
+          {shownPhoto && (
+            <div className="relative hidden aspect-[4/3] w-44 shrink-0 overflow-hidden rounded-xl sm:block lg:w-52">
+              <Image
+                key={shownPhoto.src}
+                src={shownPhoto.src}
+                alt={shownPhoto.alt}
+                fill
+                sizes="208px"
+                className="journey-photo object-cover"
+              />
             </div>
           )}
         </div>
@@ -245,7 +276,7 @@ function JourneyBlock({
                       onFocus={() => setActiveIndex(i)}
                       onClick={() => setActiveIndex(i)}
                       aria-pressed={isActive}
-                      className="journey-chip inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-left text-[13.5px] font-semibold"
+                      className="journey-chip inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-left text-[13.5px] font-semibold"
                       style={{
                         /*
                          * The chip's place in the run. The stylesheet turns it
@@ -275,11 +306,13 @@ function JourneyBlock({
              */}
             {active && (
               <div
-                className="mt-5 rounded-2xl px-5 py-4"
+                className="mt-5 rounded-xl px-5 py-4"
                 style={{ background: "var(--neutral-bg)", border: "1px solid var(--line)" }}
               >
                 <p className="text-[15px] font-semibold">{active.award}</p>
-                <p className="mt-1 text-[13px] text-muted">{active.event}</p>
+                <p className="mt-1 text-[13px] text-muted">
+                  {active.event} · {active.season} · {active.teamName}
+                </p>
                 {meaning && <p className="mt-3 text-[15px] text-[var(--ink-body)]">{meaning}</p>}
               </div>
             )}

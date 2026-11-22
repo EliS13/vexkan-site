@@ -64,7 +64,7 @@ export function Slideshow({
 
   return (
     <div
-      className="lift relative overflow-hidden rounded-3xl"
+      className="lift relative overflow-hidden rounded-2xl"
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -104,7 +104,7 @@ export function Slideshow({
                 type="button"
                 onClick={() => go(index + a.dir)}
                 aria-label={a.label}
-                className="absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-2xl leading-none transition-opacity hover:opacity-100"
+                className="absolute top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-lg text-2xl leading-none transition-opacity hover:opacity-100"
                 style={{
                   [a.side]: 12,
                   background: "rgba(255,255,255,0.9)",

@@ -34,7 +34,7 @@ export const teams: Team[] = [
   { number: "565D", name: "Future Builders", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2024–25"] },
   { number: "595A", name: "Unicorn Knight", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2025–26"] },
   { number: "595B", name: "RTD", program: "VEX IQ", grade: "ES", note: "Elementary VEX IQ.", seasons: ["2023–24", "2024–25", "2025–26"] },
-  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team.", seasons: ["2023–24", "2024–25", "2025–26"] },
+  { number: "595C", name: "BattleAce", program: "VEX IQ", grade: "MS", note: "Our most decorated VEX IQ team.", seasons: ["2023–24", "2024–25", "2025–26", "2026–27"] },
   { number: "595Y", name: "Croissants", program: "VEX IQ", grade: "MS", note: "Middle school VEX IQ.", seasons: ["2025–26"] },
   { number: "16688A", name: "Blue See 123", program: "V5RC", grade: "MS", note: "Inspire Award winners at the World Championship.", seasons: ["2025–26"] },
   { number: "16688K", name: "FoldX", program: "V5RC", grade: "HS", note: "Our high school V5 team.", seasons: ["2025–26"] },
@@ -148,6 +148,15 @@ export type Award = {
   team: string;
   award: string;
   event: string;
+  /** The season the event belongs to, from VEX's event dates. */
+  season: string;
+  /**
+   * What the team was called at that event. Team numbers stay with the club
+   * while names change every season (595C has been Croissants, BattleAce and
+   * Miscellaneous Sesame Cats), and VEX keeps each event's registration name,
+   * so this is read from the event rather than from the team's current name.
+   */
+  teamName: string;
 };
 
 /**
@@ -160,43 +169,46 @@ export const awards: Award[] = [
    * These two are missing from VEX's own record but are on the certificates in
    * the club's photographs, so they are recorded here from those.
    */
-  { team: "595B", award: "Energy Award", event: "VEX IQ Robotics Competition January Showdown" },
-  { team: "565A", award: "Think Award", event: "VEX IQ Robotics Competition January Showdown" },
+  { team: "595B", award: "Energy Award", event: "VEX IQ Robotics Competition January Showdown", season: "2024–25", teamName: "Bob The Builder" },
+  { team: "565A", award: "Think Award", event: "VEX IQ Robotics Competition January Showdown", season: "2024–25", teamName: "Arctic Foxes" },
   /*
    * Club-supplied, not from VEX's award records. The U.S. Open invitation is
    * something the club states about itself; everything below it was read from
    * the VEX Events API.
    */
-  { team: "16688A", award: "Invitation to the U.S. Open", event: "U.S. Open Robotics Championship" },
-  { team: "565A", award: "Sportsmanship Award", event: "Alberta VEX IQ Blended Provincial Championship" },
-  { team: "595B", award: "Innovate Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
-  { team: "595B", award: "Judges Award", event: "Alberta VIQRC ES Provincial Championship" },
-  { team: "595C", award: "Teamwork Champion Award", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)" },
-  { team: "595C", award: "Robot Skills Champion", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)" },
-  { team: "595C", award: "Build Award", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)" },
-  { team: "595C", award: "Robot Skills Champion", event: "VEX IQ Robotics Competition January Showdown" },
-  { team: "595C", award: "Teamwork Champion Award", event: "Alberta VEX IQ Blended Provincial Championship" },
-  { team: "595C", award: "Robot Skills Champion", event: "Alberta VEX IQ Blended Provincial Championship" },
-  { team: "595C", award: "Judges Award", event: "Alberta VEX IQ Blended Provincial Championship" },
-  { team: "595C", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
-  { team: "595C", award: "Robot Skills Champion", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
-  { team: "595C", award: "Design Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
-  { team: "595Y", award: "Design Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
-  { team: "595Y", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier" },
-  { team: "595Y", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
-  { team: "595Y", award: "Robot Skills Champion", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
-  { team: "595Y", award: "Innovate Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
-  { team: "595Y", award: "Excellence Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships" },
-  { team: "16688A", award: "Excellence Award", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
-  { team: "16688A", award: "Tournament Champions", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
-  { team: "16688A", award: "Robot Skills Champion", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
-  { team: "16688A", award: "Tournament Champions", event: "STEM Collegiate – V5RC Push Back" },
-  { team: "16688A", award: "Robot Skills Champion", event: "STEM Collegiate – V5RC Push Back" },
-  { team: "16688A", award: "Robot Skills Champion", event: "Alberta V5RC MS Provincial Championship" },
-  { team: "16688A", award: "Inspire Award", event: "2026 VEX Robotics World Championship" },
-  { team: "16688K", award: "Tournament Champions", event: "STEM Collegiate – V5RC Push Back" },
-  { team: "36467E", award: "Tournament Finalists", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)" },
-  { team: "36467E", award: "Judges Award", event: "Alberta VEX V5 Robotics Competition Provincial Championships (MS)" },
+  { team: "16688A", award: "Invitation to the U.S. Open", event: "U.S. Open Robotics Championship", season: "2025–26", teamName: "Blue See 123" },
+  { team: "565A", award: "Sportsmanship Award", event: "Alberta VEX IQ Blended Provincial Championship", season: "2024–25", teamName: "Arctic Foxes" },
+  { team: "595B", award: "Innovate Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier", season: "2025–26", teamName: "RTD" },
+  { team: "595B", award: "Judges Award", event: "Alberta VIQRC ES Provincial Championship", season: "2025–26", teamName: "RTD" },
+  { team: "595C", award: "Teamwork Champion Award", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Robot Skills Champion", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Build Award", event: "VEX IQ Robotics Competition Ten Ton Last Chance (MS)", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Robot Skills Champion", event: "VEX IQ Robotics Competition January Showdown", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Teamwork Champion Award", event: "Alberta VEX IQ Blended Provincial Championship", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Robot Skills Champion", event: "Alberta VEX IQ Blended Provincial Championship", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Judges Award", event: "Alberta VEX IQ Blended Provincial Championship", season: "2024–25", teamName: "Croissants" },
+  { team: "595C", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier", season: "2025–26", teamName: "BattleAce" },
+  { team: "595C", award: "Robot Skills Champion", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier", season: "2025–26", teamName: "BattleAce" },
+  { team: "595C", award: "Design Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships", season: "2025–26", teamName: "BattleAce" },
+  { team: "595C", award: "Teamwork Champion Award", event: "WestMech VEX IQ Level Up Early Season Qualifier: ES/MS blended", season: "2026–27", teamName: "Miscellaneous Sesame Cats" },
+  { team: "595C", award: "Robot Skills Champion", event: "WestMech VEX IQ Level Up Early Season Qualifier: ES/MS blended", season: "2026–27", teamName: "Miscellaneous Sesame Cats" },
+  { team: "595C", award: "Think Award", event: "WestMech VEX IQ Level Up Early Season Qualifier: ES/MS blended", season: "2026–27", teamName: "Miscellaneous Sesame Cats" },
+  { team: "595Y", award: "Design Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier", season: "2025–26", teamName: "Croissants" },
+  { team: "595Y", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match Open - December Blended Qualifier", season: "2025–26", teamName: "Croissants" },
+  { team: "595Y", award: "Teamwork Champion Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships", season: "2025–26", teamName: "Croissants" },
+  { team: "595Y", award: "Robot Skills Champion", event: "Alberta VIQRC Mix and Match MS Provincial Championships", season: "2025–26", teamName: "Croissants" },
+  { team: "595Y", award: "Innovate Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships", season: "2025–26", teamName: "Croissants" },
+  { team: "595Y", award: "Excellence Award", event: "Alberta VIQRC Mix and Match MS Provincial Championships", season: "2025–26", teamName: "Croissants" },
+  { team: "16688A", award: "Excellence Award", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688A", award: "Tournament Champions", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688A", award: "Robot Skills Champion", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688A", award: "Tournament Champions", event: "STEM Collegiate – V5RC Push Back", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688A", award: "Robot Skills Champion", event: "STEM Collegiate – V5RC Push Back", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688A", award: "Robot Skills Champion", event: "Alberta V5RC MS Provincial Championship", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688A", award: "Inspire Award", event: "2026 VEX Robotics World Championship", season: "2025–26", teamName: "Blue See 123" },
+  { team: "16688K", award: "Tournament Champions", event: "STEM Collegiate – V5RC Push Back", season: "2025–26", teamName: "FoldX" },
+  { team: "36467E", award: "Tournament Finalists", event: "STEM Innovation Academy VEX V5 Robotics Competition (MS)", season: "2024–25", teamName: "All Purpose Flour" },
+  { team: "36467E", award: "Judges Award", event: "Alberta VEX V5 Robotics Competition Provincial Championships (MS)", season: "2024–25", teamName: "All Purpose Flour" },
 ];
 
 /**

@@ -12,7 +12,7 @@ export function PersonCard({ person }: { person: Person }) {
          * fallback so adding a second person does not need a photo first.
          */}
         <span
-          className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl"
+          className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl"
           style={{ background: "var(--purple)" }}
         >
           {/*

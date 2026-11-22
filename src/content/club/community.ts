@@ -1,4 +1,3 @@
-import { readyChapters } from "@/content/chapters";
 import { tools } from "@/content/tools";
 import { org } from "./org";
 import { teams } from "./events";
@@ -72,12 +71,6 @@ export const pastWorkshops: PastWorkshop[] = [];
  * rather than rounded up.
  */
 export const impact = [
-  {
-    /* Readable chapters only. The array also holds outlines with no page. */
-    value: String(readyChapters().length),
-    label: "free guide chapters",
-    note: "No account, no email.",
-  },
   {
     value: String(tools.length),
     label: "free calculators and templates",

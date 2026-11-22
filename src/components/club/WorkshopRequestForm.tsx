@@ -18,7 +18,7 @@ import { org } from "@/content/club/org";
  */
 
 const FIELD_CLASS =
-  "mt-1.5 w-full rounded-xl px-3.5 py-2.5 text-base bg-[var(--surface)] border";
+  "mt-1.5 w-full rounded-lg px-3.5 py-2.5 text-base bg-[var(--surface)] border";
 
 type Request = {
   organisation: string;
@@ -172,7 +172,7 @@ export function WorkshopRequestForm() {
         <a
           href={ready ? href : undefined}
           aria-disabled={ready ? undefined : true}
-          className={`inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold text-white transition-opacity ${
+          className={`inline-flex items-center justify-center rounded-lg px-6 py-3 text-base font-semibold text-white transition-opacity ${
             ready ? "hover:opacity-90" : "pointer-events-none opacity-60"
           }`}
           style={{ background: "var(--purple)" }}
@@ -197,7 +197,7 @@ export function WorkshopRequestForm() {
 
       {showMessage && (
         <div
-          className="mt-6 rounded-2xl p-5"
+          className="mt-6 rounded-xl p-5"
           style={{ background: "var(--neutral-bg)", border: "1px solid var(--line)" }}
         >
           <p className="text-sm text-[var(--ink-body)]">

@@ -37,7 +37,7 @@ export function PhotoFrame({
 }: Props) {
   return (
     <figure
-      className={`lift overflow-hidden rounded-3xl ${className}`}
+      className={`lift overflow-hidden rounded-2xl ${className}`}
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
     >
       <div className={`relative ${RATIO[ratio]}`}>

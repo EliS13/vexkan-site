@@ -47,7 +47,7 @@ function ordinal(place: string): string {
 
 export function Scoreboard() {
   return (
-    <ul className="grid gap-px overflow-hidden rounded-2xl sm:grid-cols-3" style={{ background: "rgba(243,239,232,0.12)" }}>
+    <ul className="grid gap-px overflow-hidden rounded-xl sm:grid-cols-3" style={{ background: "rgba(243,239,232,0.12)" }}>
       {LINES.map((line) => (
         <li key={line.team} className="p-7" style={{ background: "var(--ink-deep)" }}>
           <div className="flex items-baseline gap-2">

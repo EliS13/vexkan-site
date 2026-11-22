@@ -237,20 +237,6 @@ export const teamAwardPhotos: Record<string, Photo> = {
 
 /** Awards. The only photographs on the site that carry a caption. */
 export const awardPhotos: Photo[] = [
-  /*
-   * Both certificates name their team and award outright, so these two are
-   * captioned from what is printed in the frame rather than from memory.
-   */
-  {
-    src: "/photos/all/vexkan-595c-teamwork-champion.jpg",
-    alt: "Three members of 595C in club shirts at the front of the room, the middle one holding up their Teamwork Champion certificate while a coach stands to one side.",
-    caption: "Teamwork Champion, 595C",
-  },
-  {
-    src: "/photos/all/vexkan-595b-innovate-award.jpg",
-    alt: "Three young members of 595B standing together in club shirts, the one in front holding their Innovate Award certificate, with the VEX IQ field in the foreground.",
-    caption: "Innovate Award, 595B",
-  },
   {
     src: "/photos/all/vexkan-robotics-club-edit-site-1.jpg",
     alt: "Three young clubbers holding up their certificates after a summer camp competition.",
@@ -540,21 +526,6 @@ export const clubSpacePhotos: Photo[] = [
  */
 export const certificatePhotos: Photo[] = [
   {
-    src: "/photos/all/img-3173.jpg",
-    alt: "Four young members of 595B at the January Showdown, one holding the Energy Award certificate, the match schedule on the screen behind them.",
-    caption: "Energy Award, 595B",
-  },
-  {
-    src: "/photos/all/img-3177.jpg",
-    alt: "Three members of 565A holding the Think Award certificate in front of the finals rankings screen at the January Showdown.",
-    caption: "Think Award, 565A",
-  },
-  {
-    src: "/photos/all/img-3390.jpg",
-    alt: "Three members of 595C with their VEX IQ trophies and a Teamwork Champion certificate lined up on the table in front of them.",
-    caption: "Teamwork Champion, 595C",
-  },
-  {
     src: "/photos/all/img-3858.jpg",
     alt: "Three young clubbers holding a VEX IQ Competition trophy in front of the Mecha Mayhem backdrop, a shelf of the event's other trophies above them.",
     caption: "Mecha Mayhem",
@@ -590,4 +561,69 @@ export const designAwardPhoto: Photo = {
   src: "/photos/all/provincials-595y-design-award.jpg",
   alt: "Three members of 595Y at the Alberta Mix and Match provincial championships, one holding the VEX IQ Design Award trophy and another holding the team's robot, the upcoming-matches screen projected on the wall behind them.",
   caption: "Design Award, Alberta provincial championships",
+};
+
+/**
+ * The photograph for one award, keyed by team and event.
+ *
+ * Each of these names its own event: the certificate or trophy plate in the
+ * frame reads the team, the team's name that season and the award, so it is
+ * matched to a row in `awards` from what is printed rather than from memory.
+ * They live here and not in the home page's awards slideshow, because the
+ * awards journey on the same page shows them, and a photograph appears once.
+ */
+const eventAwardPhotos: Record<string, Photo> = {
+  /* Plates read Ten Ton Last Chance, January 25, 2025; certificate "Team 595C Croissants". */
+  "595C|VEX IQ Robotics Competition Ten Ton Last Chance (MS)": {
+    src: "/photos/all/img-3390.jpg",
+    alt: "595C, then called Croissants, with their robot, the Teamwork Champion, Build and Robot Skills trophies from the Ten Ton Last Chance, and the Teamwork Champion certificate.",
+  },
+  /* Certificate reads Teamwork Champion, Team 595C BattleAce, Mix and Match Open. */
+  "595C|Alberta VIQRC Mix and Match Open - December Blended Qualifier": {
+    src: "/photos/all/vexkan-595c-teamwork-champion.jpg",
+    alt: "Three members of 595C BattleAce in club shirts at the front of the room, the middle one holding up their Teamwork Champion certificate while a coach stands to one side.",
+  },
+  "595C|Alberta VIQRC Mix and Match MS Provincial Championships": teamAwardPhotos["595C"],
+  "595B|VEX IQ Robotics Competition January Showdown": {
+    src: "/photos/all/img-3173.jpg",
+    alt: "Four young members of 595B at the January Showdown, one holding the Energy Award certificate, the match schedule on the screen behind them.",
+  },
+  "565A|VEX IQ Robotics Competition January Showdown": {
+    src: "/photos/all/img-3177.jpg",
+    alt: "Three members of 565A holding the Think Award certificate in front of the finals rankings screen at the January Showdown.",
+  },
+  /* 595B's only Innovate Award. */
+  "595B|Alberta VIQRC Mix and Match Open - December Blended Qualifier": {
+    src: "/photos/all/vexkan-595b-innovate-award.jpg",
+    alt: "Three young members of 595B standing together in club shirts, the one in front holding their Innovate Award certificate, with the VEX IQ field in the foreground.",
+  },
+  /* 595B's only Judges Award. */
+  "595B|Alberta VIQRC ES Provincial Championship": teamAwardPhotos["595B"],
+  "595Y|Alberta VIQRC Mix and Match MS Provincial Championships": teamAwardPhotos["595Y"],
+  "36467E|Alberta VEX V5 Robotics Competition Provincial Championships (MS)": teamAwardPhotos["36467E"],
+};
+
+/**
+ * The photograph to show beside an award: the one from that event when the
+ * club has it, otherwise the team's own photograph, otherwise none.
+ */
+export function photoForAward(award: { team: string; event: string; season: string }): Photo | undefined {
+  const exact = eventAwardPhotos[`${award.team}|${award.event}`];
+  if (exact) return exact;
+  /*
+   * The team photograph only stands in for an award from the same season.
+   * Otherwise a 2026-27 award would show the 2025-26 roster under the new
+   * team's name.
+   */
+  return teamPhotoSeasons[award.team] === award.season ? teamAwardPhotos[award.team] : undefined;
+}
+
+/** The season each photograph in `teamAwardPhotos` was taken in, from its award. */
+const teamPhotoSeasons: Record<string, string> = {
+  "16688A": "2025–26",
+  "565A": "2024–25",
+  "595B": "2025–26",
+  "595Y": "2025–26",
+  "595C": "2025–26",
+  "36467E": "2024–25",
 };

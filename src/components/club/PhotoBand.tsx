@@ -91,7 +91,7 @@ export function PhotoBand({ photo }: { photo: Photo }) {
     <div className="mx-auto max-w-6xl px-5">
       <div
         ref={frame}
-        className="photo-band lift relative h-[clamp(200px,30vw,340px)] overflow-hidden rounded-3xl"
+        className="photo-band lift relative h-[clamp(200px,30vw,340px)] overflow-hidden rounded-2xl"
         style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
       >
         <Image

@@ -87,7 +87,7 @@ function Stepper({
         <button
           onClick={() => onChange((v) => Math.max(0, v - step))}
           aria-label={`Remove ${step} ${label}`}
-          className="h-8 w-8 rounded-md border text-lg leading-none text-muted transition-colors hover:bg-[#efece7]"
+          className="h-8 w-8 rounded-lg border text-lg leading-none text-muted transition-colors hover:bg-[#efece7]"
           style={{ borderColor: "var(--line)" }}
         >
           &minus;
@@ -96,7 +96,7 @@ function Stepper({
         <button
           onClick={() => onChange((v) => Math.min(max, v + step))}
           aria-label={`Add ${step} ${label}`}
-          className="h-8 w-8 rounded-md border text-lg leading-none text-muted transition-colors hover:bg-[#efece7]"
+          className="h-8 w-8 rounded-lg border text-lg leading-none text-muted transition-colors hover:bg-[#efece7]"
           style={{ borderColor: "var(--line)" }}
         >
           +
@@ -481,7 +481,7 @@ export function GearRatioCalculator() {
               )}
             </div>
             <span
-              className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
+              className="shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
               style={{ background: speedNote.bg, color: speedNote.color }}
             >
               {speedNote.label}
@@ -503,7 +503,7 @@ export function GearRatioCalculator() {
               </p>
             </div>
             <span
-              className="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
+              className="shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
               style={
                 gripLimited
                   ? { background: "var(--amber-bg)", color: "var(--amber-text)" }

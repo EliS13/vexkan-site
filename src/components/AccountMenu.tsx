@@ -52,7 +52,7 @@ export function AccountMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label={session ? `Account, signed in as ${email}` : "Account"}
-        className="flex h-9 w-9 items-center justify-center rounded-full border transition-colors hover:bg-[#efece7]"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border transition-colors hover:bg-[#efece7]"
         style={
           session
             ? { background: "var(--purple)", borderColor: "var(--purple)", color: "white" }

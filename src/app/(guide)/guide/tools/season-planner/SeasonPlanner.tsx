@@ -134,7 +134,7 @@ export function SeasonPlanner() {
                   key={k.id}
                   onClick={() => setDraft((d) => ({ ...d, kind: k.id as EventKind }))}
                   aria-pressed={active}
-                  className="rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors"
+                  className="rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors"
                   style={active ? { background: c.text, color: "white" } : { background: c.bg, color: c.text }}
                 >
                   {k.label}
@@ -307,7 +307,7 @@ export function SeasonPlanner() {
                             <div className="min-w-0 flex-1">
                               <div className="flex flex-wrap items-center gap-2">
                                 <span
-                                  className="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                                  className="rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase"
                                   style={{ background: c.bg, color: c.text }}
                                 >
                                   {kindInfo(e.kind).label}

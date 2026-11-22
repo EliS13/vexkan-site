@@ -184,7 +184,7 @@ export function NotebookTemplate() {
                     key={s.id}
                     onClick={() => setDraft((d) => ({ ...d, stage: s.id as Stage }))}
                     aria-pressed={active}
-                    className="rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors"
+                    className="rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors"
                     style={active ? { background: c.text, color: "white" } : { background: c.bg, color: c.text }}
                   >
                     {s.label}

@@ -56,7 +56,7 @@ export default function CommunityPage() {
                    * without it, and nothing in this list costs money.
                    */}
                   <span
-                    className="eyebrow shrink-0 rounded-full px-2.5 py-1"
+                    className="eyebrow shrink-0 rounded-lg px-2.5 py-1"
                     style={{ background: "var(--teal-bg)", color: "var(--teal-text)" }}
                   >
                     Free
@@ -138,7 +138,7 @@ export default function CommunityPage() {
           <h2 className="mt-3 max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
             Free whether or not you ever meet us
           </h2>
-          <dl className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          <dl className="mt-10 grid gap-8 sm:grid-cols-3">
             {impact.map((stat) => (
               /*
                * Column-reverse so the number reads first but the markup stays
@@ -189,7 +189,7 @@ export default function CommunityPage() {
          */}
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           <div
-            className="rounded-2xl p-6"
+            className="rounded-xl p-6"
             style={{ background: "var(--teal-bg)", border: "1px solid var(--teal)" }}
           >
             <p className="eyebrow text-[var(--teal-text)]">Workshops</p>
@@ -201,7 +201,7 @@ export default function CommunityPage() {
           </div>
 
           <div
-            className="rounded-2xl p-6"
+            className="rounded-xl p-6"
             style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
           >
             <p className="eyebrow text-[var(--muted)]">Classes and competition teams</p>

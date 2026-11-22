@@ -33,7 +33,6 @@ import {
   ProgramComparison,
   SpectatingNote,
 } from "@/components/club/CompetitionLadder";
-import { readyChapters } from "@/content/chapters";
 import { EventsCalendar } from "@/components/club/EventsCalendar";
 import { fetchAlbertaEvents, fetchSignatureEvents } from "@/lib/vexEvents";
 
@@ -51,17 +50,13 @@ export const revalidate = 86400;
 
 /**
  * What a visitor can take away today, without asking anyone for anything. The
- * field guide is already written, so these are real links rather than promises.
+ * book and its tools are live, so these are real links rather than promises.
  */
 const RESOURCES = [
   {
-    href: "/guide/chapters",
-    title: "The field guide",
-    /*
-     * Counted rather than written out, so it cannot drift from the guide. Only
-     * the chapters that are actually readable — the array holds outlines too.
-     */
-    body: `${readyChapters().length} chapters on building, programming and competing, written from the pit rather than from a manual.`,
+    href: "/guide",
+    title: "Built to Compete",
+    body: "Our book by VexKan Robotics is now available, written from the pit rather than from a manual.",
   },
   {
     href: "/guide/tools/gear-ratio",
@@ -221,7 +216,7 @@ export default async function HomePage() {
            */}
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             {homeWorldsPhotos.map((photo) => (
-              <div key={photo.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+              <div key={photo.src} className="relative aspect-[4/3] overflow-hidden rounded-xl">
                 <Image
                   src={photo.src}
                   alt={photo.alt}
@@ -258,7 +253,7 @@ export default async function HomePage() {
           <p className="eyebrow mt-10" style={{ color: "rgba(243,239,232,0.5)" }}>
             {inspireAward.criteriaLabel}
           </p>
-          <ol className="mt-4 grid gap-px overflow-hidden rounded-2xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
+          <ol className="mt-4 grid gap-px overflow-hidden rounded-xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
             {inspireAward.criteria.map((c, i) => (
               <li key={c} className="flex gap-4 p-6" style={{ background: "var(--ink-deep)" }}>
                 <span className="readout shrink-0 text-sm" style={{ color: "var(--purple-on-dark)" }}>

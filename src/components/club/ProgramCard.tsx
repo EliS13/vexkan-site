@@ -14,7 +14,7 @@ export function ProgramCard({ program, photo }: { program: Program; photo?: Phot
   return (
     <Link href={`/programs/${program.slug}`} className="group block h-full">
       <article
-        className="lift lift-hover flex h-full flex-col overflow-hidden rounded-2xl"
+        className="lift lift-hover flex h-full flex-col overflow-hidden rounded-xl"
         style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
       >
         {photo && (
@@ -39,7 +39,7 @@ export function ProgramCard({ program, photo }: { program: Program; photo?: Phot
               {program.title}
             </h3>
             <span
-              className="eyebrow shrink-0 rounded-full px-2.5 py-1"
+              className="eyebrow shrink-0 rounded-lg px-2.5 py-1"
               style={{ background: "var(--purple-bg)", color: "var(--purple-text)" }}
             >
               {program.gradeLabel}

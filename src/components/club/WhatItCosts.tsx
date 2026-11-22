@@ -25,7 +25,7 @@ export function WhatItCosts({ cost, heading = "What it costs" }: { cost: Maybe<s
 
   return (
     <div
-      className="rounded-2xl p-6 sm:p-8"
+      className="rounded-xl p-6 sm:p-8"
       style={{ background: "var(--surface)", border: "1px solid var(--line)" }}
     >
       <h3 className="text-lg font-semibold">{heading}</h3>

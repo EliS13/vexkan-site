@@ -85,7 +85,7 @@ export function MonthCalendar({
           <button
             onClick={() => shift(-1)}
             aria-label="Previous month"
-            className="h-7 w-7 rounded-md border text-sm text-muted transition-colors hover:bg-[#efece7]"
+            className="h-7 w-7 rounded-lg border text-sm text-muted transition-colors hover:bg-[#efece7]"
             style={{ borderColor: "var(--line)" }}
           >
             ‹
@@ -95,7 +95,7 @@ export function MonthCalendar({
               userPaged.current = true;
               setView({ year: today.getFullYear(), month: today.getMonth() });
             }}
-            className="rounded-md border px-2.5 py-1 text-[11px] font-semibold text-muted transition-colors hover:bg-[#efece7]"
+            className="rounded-lg border px-2.5 py-1 text-[11px] font-semibold text-muted transition-colors hover:bg-[#efece7]"
             style={{ borderColor: "var(--line)" }}
           >
             Today
@@ -103,7 +103,7 @@ export function MonthCalendar({
           <button
             onClick={() => shift(1)}
             aria-label="Next month"
-            className="h-7 w-7 rounded-md border text-sm text-muted transition-colors hover:bg-[#efece7]"
+            className="h-7 w-7 rounded-lg border text-sm text-muted transition-colors hover:bg-[#efece7]"
             style={{ borderColor: "var(--line)" }}
           >
             ›
