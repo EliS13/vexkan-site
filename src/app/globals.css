@@ -480,3 +480,21 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .journey-photo { animation: none; }
 }
+
+/*
+ * The kiosk's shutter: a quick white flash over the frozen photo, so the
+ * moment the picture is taken reads as clearly as a phone camera's.
+ */
+.kiosk-shutter {
+  opacity: 0;
+  animation: kiosk-shutter 260ms ease-out;
+}
+
+@keyframes kiosk-shutter {
+  from { opacity: 0.75; }
+  to { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kiosk-shutter { animation: none; }
+}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { detectAll, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "./CameraGate";
 import { Spinner, WORKING_BUTTON } from "./Spinner";
-import { useTapGuard } from "@/lib/kiosk/tapGuard";
+import { nextPaint, useTapGuard } from "@/lib/kiosk/tapGuard";
 import { reconcile, adopt, saveDescriptors, descriptorsFor } from "@/lib/kiosk/faceStore";
 import { descriptorFromPhoto, planRecovery } from "@/lib/kiosk/faceRecovery";
 import {
@@ -19,22 +19,11 @@ import { postJson, type SignInReply } from "@/lib/kiosk/postJson";
 import type { KioskState, Member } from "@/lib/kiosk/types";
 
 /*
- * How many frames a shot samples, and how far apart.
- *
- * Was four frames a third of a second apart, which meant a second of standing
- * still before any work started and then four full detection passes. Two frames
- * close together catch a blink — the thing multi-frame sampling is actually for
- * — at roughly half the wait and half the inference.
+ * One photo per tap. Sampling several frames was insurance against a blink,
+ * but it made the button feel unresponsive. A single frame, frozen on screen
+ * the moment it is taken and read afterwards, is faster and legible: you can
+ * see exactly what the camera judged you on, and walk away while it decides.
  */
-/*
- * One photo. Sampling several frames was insurance against a blink, but it made
- * the button feel unresponsive: a wait with a live picture still moving, so it
- * was never clear the tap had registered. Taking a single frame, freezing it on
- * screen and reading that is both faster and legible — you can see exactly what
- * the camera judged you on.
- */
-const FRAMES = 1;
-const FRAME_GAP_MS = 0;
 
 type Mode = { kind: "group" } | { kind: "verify"; member: Member };
 
@@ -99,8 +88,14 @@ export function CameraSignIn({
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [passcode, setPasscode] = useState("");
-  /** The frozen photo being analysed, so the tap visibly did something. */
-  const [shot, setShot] = useState<string | null>(null);
+  /**
+   * The frozen photo being analysed, drawn straight from the captured frame
+   * onto a canvas so it is on screen the instant the tap lands — no encode in
+   * between. `shutter` counts captures, to replay the flash on each one.
+   */
+  const frozenRef = useRef<HTMLCanvasElement | null>(null);
+  const [frozen, setFrozen] = useState(false);
+  const [shutter, setShutter] = useState(0);
   /** Whether the code entry is showing instead of waiting on a face. */
   const [usingCode, setUsingCode] = useState(false);
   /**
@@ -160,33 +155,35 @@ export function CameraSignIn({
     return () => { cancelled = true; };
   }, [mode, camResume]);
 
-  /** Samples several frames so a blink or a turned head cannot decide anything. */
-  const sampleFrames = useCallback(async (): Promise<HTMLCanvasElement[]> => {
-    const frames: HTMLCanvasElement[] = [];
-    for (let i = 0; i < FRAMES; i++) {
-      const el = getVideo();
-      if (!el) break;
-      frames.push(grabFrame(el));
-      if (i < FRAMES - 1) await new Promise((r) => setTimeout(r, FRAME_GAP_MS));
-    }
-    /*
-     * toBlob rather than toDataURL: the encode runs off the main thread, so
-     * freezing the picture on screen no longer holds up the detection that
-     * follows it (toDataURL measured ~70ms of blocking on a laptop, and an
-     * iPad is slower).
-     */
-    frames[0]?.toBlob((blob) => {
-      if (blob) setShot(URL.createObjectURL(blob));
-    }, "image/jpeg", 0.8);
-    return frames;
-  }, [getVideo]);
+  /**
+   * Takes the photo, and only the photo.
+   *
+   * The frame is grabbed and frozen on screen before any recognition starts,
+   * with a shutter flash and a "you can step away", then a paint is awaited so
+   * all of that is actually visible. Identifying who is in the picture comes
+   * after, on the still frame — nobody has to hold their pose while the iPad
+   * thinks, which is what made standing at the camera feel awkward.
+   */
+  const capture = useCallback(async (done: string): Promise<HTMLCanvasElement[]> => {
+    const el = getVideo();
+    if (!el) return [];
+    const frame = grabFrame(el);
 
-  /* Each frozen picture is an object URL, so release the last one with it. */
-  useEffect(() => () => { if (shot) URL.revokeObjectURL(shot); }, [shot]);
+    const canvas = frozenRef.current;
+    if (canvas) {
+      canvas.width = frame.width;
+      canvas.height = frame.height;
+      canvas.getContext("2d")?.drawImage(frame, 0, 0);
+    }
+    setFrozen(true);
+    setShutter((n) => n + 1);
+    setStatus(done);
+    await nextPaint();
+    return [frame];
+  }, [getVideo]);
 
   const runGroup = useCallback(async () => {
     setBusy(true);
-    setStatus("Looking…");
     try {
       /*
        * Squared against the roster first. Templates keyed to a member id that
@@ -207,7 +204,7 @@ export function CameraSignIn({
         return;
       }
 
-      const frames = await sampleFrames();
+      const frames = await capture("Got it — you can step away.");
       /*
        * Votes are tallied per member rather than per face. Pairing the same
        * face across frames is fragile when people move; asking "did this member
@@ -265,7 +262,7 @@ export function CameraSignIn({
     } finally {
       setBusy(false);
     }
-  }, [memberById, sampleFrames, state.members]);
+  }, [capture, memberById, state.members]);
 
   /**
    * Puts stranded templates back on their owners, using the photograph each
@@ -365,7 +362,6 @@ export function CameraSignIn({
   const runVerify = useCallback(async () => {
     if (mode.kind !== "verify") return;
     setBusy(true);
-    setStatus("Checking…");
     try {
       /* Same repair as the group photo, so one tile is not stuck on a stale
          id while the group shot has already moved past it. */
@@ -376,7 +372,7 @@ export function CameraSignIn({
         return;
       }
 
-      const frames = await sampleFrames();
+      const frames = await capture(`Got it, ${mode.member.firstName} — you can step away.`);
       let hits = 0;
       let closest = Infinity;
       for (const frame of frames) {
@@ -411,7 +407,7 @@ export function CameraSignIn({
     } finally {
       setBusy(false);
     }
-  }, [mode, sampleFrames, state.members]);
+  }, [capture, mode, state.members]);
 
   /** Writes the sign-ins. Verified when a face decided it, organizer-gated when not. */
   const commit = useCallback(
@@ -446,7 +442,7 @@ export function CameraSignIn({
         <div className="flex gap-2">
           {flip && camStatus === "live" && (
             <button
-              onClick={() => { setShot(null); void flip(); }}
+              onClick={() => { setFrozen(false); void flip(); }}
               className="min-h-[56px] rounded-lg border-2 border-k-rule px-5 font-mono text-xs tracking-widest text-k-sketch uppercase"
             >
               {facing === "user" ? "Use back camera" : "Use front camera"}
@@ -499,13 +495,16 @@ export function CameraSignIn({
               camStatus === "live" ? "" : "hidden"
             }`}
           />
-          {shot && (
-            /* eslint-disable-next-line @next/next/no-img-element -- in-memory frame */
-            <img
-              src={shot}
-              alt=""
-              className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""}`}
-            />
+          {/* Always mounted, so a capture can draw into it synchronously. */}
+          <canvas
+            ref={frozenRef}
+            aria-hidden
+            className={`absolute inset-0 size-full object-cover ${facing === "user" ? "-scale-x-100" : ""} ${
+              frozen ? "" : "hidden"
+            }`}
+          />
+          {shutter > 0 && frozen && (
+            <div key={shutter} aria-hidden className="kiosk-shutter pointer-events-none absolute inset-0 bg-white" />
           )}
           {camStatus !== "live" && (
             <div className="absolute inset-0 grid place-items-center">
@@ -535,7 +534,7 @@ export function CameraSignIn({
               {busy || checking ? (
                 <>
                   <Spinner />
-                  {mode.kind === "group" ? "Looking…" : "Checking…"}
+                  {frozen ? (mode.kind === "group" ? "Finding faces…" : "Checking…") : "Taking photo…"}
                 </>
               ) : mode.kind === "group" ? "Take the photo" : "Check my face"}
             </button>
@@ -605,7 +604,7 @@ export function CameraSignIn({
             </form>
           )}
 
-          {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setShot(null); setStatus("Ready."); }} />}
+          {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setFrozen(false); setStatus("Ready."); }} />}
         </div>
       </div>
     </div>
