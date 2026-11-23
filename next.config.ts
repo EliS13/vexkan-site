@@ -41,6 +41,23 @@ const nextConfig: NextConfig = {
    * so this closes the door on every other host without touching the
    * subdomain's own internal rewrite to /kiosk.
    */
+  /*
+   * The face model weights are twelve megabytes that never change between
+   * deploys. Public files default to revalidating on every load, which on the
+   * kiosk's wifi meant six round trips before the camera could do anything.
+   * A week fresh, and served stale while revalidating after that.
+   */
+  async headers() {
+    return [
+      {
+        source: "/models/face/:file*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=604800, stale-while-revalidate=2592000" },
+        ],
+      },
+    ];
+  },
+
   async redirects() {
     return [
       {

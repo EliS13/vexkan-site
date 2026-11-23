@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "./Avatar";
 import { CameraSignIn } from "./CameraSignIn";
+import { preloadFaceEngine } from "@/lib/kiosk/face";
 import {
   countSignedIn,
   formatDuration,
@@ -98,6 +99,13 @@ export function Kiosk({
     }, 10_000);
     return () => clearInterval(id);
   }, []);
+
+  /*
+   * The face engine, fetched and warmed while nobody is at the camera. Without
+   * this the first "Camera sign in" of a meeting paid for the download and the
+   * GPU shader compile in one go — seconds of a frozen-looking sheet.
+   */
+  useEffect(() => preloadFaceEngine(), []);
 
   /*
    * Stay in step with the other devices.

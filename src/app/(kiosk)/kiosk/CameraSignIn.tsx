@@ -132,13 +132,17 @@ export function CameraSignIn({
    */
   useEffect(() => {
     let cancelled = false;
+    /*
+     * Already allowed on this device: skip the gate entirely. Started alongside
+     * the models rather than after them, so the preview is up while the engine
+     * finishes warming instead of the two waits running back to back.
+     */
+    void camResume();
     (async () => {
       try {
         setStatus("Loading the face models…");
         await loadFaceEngine();
         if (cancelled) return;
-        // Already allowed on this device: skip the gate entirely.
-        void camResume();
         setStatus(
           mode.kind === "group"
             ? "Get everyone in frame, then take the photo."
@@ -160,9 +164,20 @@ export function CameraSignIn({
       frames.push(grabFrame(el));
       if (i < FRAMES - 1) await new Promise((r) => setTimeout(r, FRAME_GAP_MS));
     }
-    if (frames[0]) setShot(frames[0].toDataURL("image/jpeg", 0.8));
+    /*
+     * toBlob rather than toDataURL: the encode runs off the main thread, so
+     * freezing the picture on screen no longer holds up the detection that
+     * follows it (toDataURL measured ~70ms of blocking on a laptop, and an
+     * iPad is slower).
+     */
+    frames[0]?.toBlob((blob) => {
+      if (blob) setShot(URL.createObjectURL(blob));
+    }, "image/jpeg", 0.8);
     return frames;
   }, [getVideo]);
+
+  /* Each frozen picture is an object URL, so release the last one with it. */
+  useEffect(() => () => { if (shot) URL.revokeObjectURL(shot); }, [shot]);
 
   const runGroup = useCallback(async () => {
     setBusy(true);
