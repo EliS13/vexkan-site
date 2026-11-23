@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { detectAll, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "./CameraGate";
+import { Spinner, WORKING_BUTTON } from "./Spinner";
+import { useTapGuard } from "@/lib/kiosk/tapGuard";
 import { reconcile, adopt, saveDescriptors, descriptorsFor } from "@/lib/kiosk/faceStore";
 import { descriptorFromPhoto, planRecovery } from "@/lib/kiosk/faceRecovery";
 import {
@@ -111,6 +113,9 @@ export function CameraSignIn({
    */
   const [stranded, setStranded] = useState(0);
   const [fromPhotos, setFromPhotos] = useState(0);
+
+  /* Greys the button the instant it is tapped and ignores taps until done. */
+  const { pending: checking, run: guarded } = useTapGuard();
 
   const memberById = useCallback(
     (id: string) => state.members.find((m) => m.id === id) ?? null,
@@ -522,11 +527,17 @@ export function CameraSignIn({
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto">
           {!outcome && camStatus === "live" && !usingCode && (
             <button
-              onClick={mode.kind === "group" ? runGroup : runVerify}
-              disabled={camStatus !== "live" || busy}
-              className="min-h-[88px] rounded-2xl bg-k-bolt px-6 font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
+              onClick={() => void guarded(mode.kind === "group" ? runGroup : runVerify)}
+              disabled={camStatus !== "live" || busy || checking}
+              aria-busy={busy || checking}
+              className={`flex min-h-[88px] items-center justify-center gap-3 rounded-2xl bg-k-bolt px-6 font-serif text-2xl font-bold text-k-ink ${WORKING_BUTTON}`}
             >
-              {busy ? "Working…" : mode.kind === "group" ? "Take the photo" : "Check my face"}
+              {busy || checking ? (
+                <>
+                  <Spinner />
+                  {mode.kind === "group" ? "Looking…" : "Checking…"}
+                </>
+              ) : mode.kind === "group" ? "Take the photo" : "Check my face"}
             </button>
           )}
 

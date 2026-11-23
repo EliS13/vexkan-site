@@ -14,6 +14,8 @@ import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "../CameraGate";
 import { CaptureStack } from "../CaptureStack";
+import { Spinner, WORKING_BUTTON } from "../Spinner";
+import { useTapGuard } from "@/lib/kiosk/tapGuard";
 import { postJson, type EnrollReply } from "@/lib/kiosk/postJson";
 import type { KioskState } from "@/lib/kiosk/types";
 
@@ -46,6 +48,8 @@ export function Enroll({ initial }: { initial: KioskState }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [roster, setRoster] = useState(initial.members.length);
+  /* One capture per tap, greyed out until it lands. */
+  const { pending: capturing, run: guarded } = useTapGuard();
 
   /*
    * Destructured at the call site. Held as one object, the React compiler infers
@@ -249,11 +253,17 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </div>
           <p className="font-serif text-2xl font-semibold">{status}</p>
           <button
-            onClick={capture}
-            disabled={camStatus !== "live" || busy || complete}
-            className="min-h-[88px] rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
+            onClick={() => void guarded(capture)}
+            disabled={camStatus !== "live" || busy || complete || capturing}
+            aria-busy={capturing}
+            className={`flex min-h-[88px] items-center justify-center gap-3 rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink ${WORKING_BUTTON}`}
           >
-            {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
+            {capturing ? (
+              <>
+                <Spinner />
+                Capturing…
+              </>
+            ) : complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
           </button>
         </div>
 
