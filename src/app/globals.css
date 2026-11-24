@@ -500,27 +500,54 @@ body {
 }
 
 /*
- * A press you can feel. Every kiosk button sinks a little (to 97%) under a finger and
- * springs back with a slight overshoot on release, so a tap registers even
- * before whatever it started has finished. The `scale` property rather than
- * `transform`, so it never fights a button's own positioning or mirroring,
- * and only `scale` transitions — a button turning grey stays instant.
- * Disabled buttons do not move: nothing is going to happen, so nothing should
- * look like it did.
+ * A press you can feel, on every site in this repo: the club site, the guide
+ * and the kiosk. A button sinks a little (to 97%) under a finger and springs
+ * back with a slight overshoot on release, so a tap registers even before
+ * whatever it started has finished.
+ *
+ * What counts as a button: every <button>, every link drawn as one (rounded
+ * with horizontal padding — the club Button, header and guide tabs), and on
+ * the kiosk any rounded link.
+ *
+ * The `scale` property rather than `transform`, so it never fights a button's
+ * own positioning, translate or mirroring. The transition lists every
+ * property Tailwind's colour and opacity transitions animate, at Tailwind's
+ * own 150ms, so hover fades keep working; `scale` alone gets the spring.
+ * A button that turns disabled leaves this rule at that moment, so a kiosk
+ * button going grey for "busy" still changes instantly. Disabled buttons do
+ * not move: nothing is going to happen, so nothing should look like it did.
+ *
+ * Touch: iOS Safari only applies :active when the page listens for touches,
+ * and React's root listener does that on every hydrated page here.
  */
-.kiosk-root :is(button, a[class*="rounded"]):not(:disabled) {
-  transition: scale 260ms cubic-bezier(0.34, 1.8, 0.64, 1);
+:root {
+  --press-scale: 0.97;
+  --press-spring: cubic-bezier(0.34, 1.8, 0.64, 1);
+  --press-ease: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.kiosk-root :is(button, a[class*="rounded"]):not(:disabled):active {
-  scale: 0.97;
-  transition: scale 70ms ease-out;
+:is(button, a[class*="rounded"][class*="px-"], .kiosk-root a[class*="rounded"]):not(:disabled) {
+  transition-property:
+    scale, color, background-color, border-color, text-decoration-color, fill, stroke, opacity,
+    box-shadow, transform, translate;
+  transition-duration: 260ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms;
+  transition-timing-function:
+    var(--press-spring), var(--press-ease), var(--press-ease), var(--press-ease), var(--press-ease),
+    var(--press-ease), var(--press-ease), var(--press-ease), var(--press-ease), var(--press-ease),
+    var(--press-ease);
+}
+
+:is(button, a[class*="rounded"][class*="px-"], .kiosk-root a[class*="rounded"]):not(:disabled):active {
+  scale: var(--press-scale);
+  transition-duration: 70ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms, 150ms;
+  transition-timing-function:
+    ease-out, var(--press-ease), var(--press-ease), var(--press-ease), var(--press-ease),
+    var(--press-ease), var(--press-ease), var(--press-ease), var(--press-ease), var(--press-ease),
+    var(--press-ease);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kiosk-root :is(button, a[class*="rounded"]):not(:disabled),
-  .kiosk-root :is(button, a[class*="rounded"]):not(:disabled):active {
+  :is(button, a[class*="rounded"][class*="px-"], .kiosk-root a[class*="rounded"]):not(:disabled):active {
     scale: none;
-    transition: none;
   }
 }
