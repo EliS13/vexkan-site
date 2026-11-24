@@ -15,7 +15,9 @@ export const org = {
 
   foundedYear: 2023,
   foundedBy: "Eli Seeliger",
-  studentCount: 20,
+  /** Clubbers this season, and everyone who has been a clubber since the founding. Floors, not exact counts. */
+  studentCount: "20+",
+  alumniCount: "50+",
   gradesLabel: "Grades 3–12",
   /** The range on its own, for stat tiles where the word "Grades" is the caption. */
   gradesShort: "3–12",

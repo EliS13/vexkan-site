@@ -73,6 +73,8 @@ export function Slideshow({
 
   if (photos.length === 0) return null;
 
+  const hasCaptions = photos.some((p) => p.caption);
+
   return (
     <div
       className="lift relative overflow-hidden rounded-2xl"
@@ -141,17 +143,7 @@ export function Slideshow({
           </>
         )}
 
-        {photos[index].caption && (
-          <p
-            className="absolute inset-x-0 bottom-0 px-6 pb-12 pt-10 text-sm font-medium text-white sm:text-base"
-            style={{ background: "linear-gradient(to top, rgba(23,21,15,0.78), transparent)" }}
-          >
-            {photos[index].caption}
-          </p>
-        )}
-      </div>
-
-      {photos.length > 1 && (
+        {photos.length > 1 && (
         <div className="absolute inset-x-0 bottom-4 flex items-center justify-center gap-2">
           {photos.map((p, i) => (
             <button
@@ -169,6 +161,15 @@ export function Slideshow({
             />
           ))}
         </div>
+        )}
+      </div>
+
+      {/*
+       * Under the photograph rather than over it. The line is kept even on a
+       * slide without a caption, so the box does not jump as slides change.
+       */}
+      {hasCaptions && (
+        <p className="px-5 py-3 text-sm text-[var(--ink-body)]">{photos[index].caption ?? "\u00a0"}</p>
       )}
     </div>
   );

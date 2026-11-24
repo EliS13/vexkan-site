@@ -188,15 +188,22 @@ export default async function HomePage() {
            */}
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             {homeWorldsPhotos.map((photo) => (
-              <div key={photo.src} className="relative aspect-[4/3] overflow-hidden rounded-xl">
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 33vw"
-                  className="object-cover"
-                />
-              </div>
+              <figure key={photo.src}>
+                <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
+                {photo.caption && (
+                  <figcaption className="mt-2.5 text-sm" style={{ color: "rgba(243,239,232,0.75)" }}>
+                    {photo.caption}
+                  </figcaption>
+                )}
+              </figure>
             ))}
           </div>
 
@@ -291,8 +298,12 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      {/* The live calendar, pulled from VEX rather than kept by hand. */}
-      <EventsCalendar live={live} signature={signature} />
+      <Section title="Ask us anything">
+        <div className="flex flex-wrap gap-3">
+          <Button href="/contact" size="lg">Contact us</Button>
+          <Button href="/community" size="lg" variant="secondary">Free workshops</Button>
+        </div>
+      </Section>
 
       {/*
        * Two photographs that each illustrate a specific paragraph, so they are
@@ -304,7 +315,7 @@ export default async function HomePage() {
        * markup keeps text before image so the reading order is right on a
        * phone, and only the wide layout swaps them.
        */}
-      <Section title="What competing looks like">
+      <Section tone="surface" title="What competing looks like">
         <div className="max-w-3xl">
           <PhotoFrame photo={pitPhoto} sizes="(max-width: 768px) 100vw, 768px" />
         </div>
@@ -337,12 +348,12 @@ export default async function HomePage() {
         </div>
       </Section>
 
-      <Section tone="surface" title="Ask us anything">
-        <div className="flex flex-wrap gap-3">
-          <Button href="/contact" size="lg">Contact us</Button>
-          <Button href="/community" size="lg" variant="secondary">Free workshops</Button>
-        </div>
-      </Section>
+      {/*
+       * The calendar closes the page: what competing is like comes first, then
+       * the competitions coming up in Alberta, then the Signature Events.
+       * Pulled live from VEX rather than kept by hand.
+       */}
+      <EventsCalendar live={live} signature={signature} />
     </>
   );
 }
