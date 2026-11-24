@@ -7,15 +7,18 @@ import { useState } from "react";
 import { org } from "@/content/club/org";
 
 /**
- * Four tabs, and none of them sells anything.
+ * Five tabs, and none of them sells anything.
+ *
+ * Home leads the row, so the home page has a filled chip like every other
+ * page instead of an empty bar.
  *
  * Resources sits last, after Contact, where the book and its tools close the
  * row rather than lead it. Programs and the competition record are
- * not tabs at all any more — they live on the home page, so the logo is the way
- * back to both. Joining is a conversation now rather than a form, which is why
+ * not tabs at all any more — they live on the home page. Joining is a conversation now rather than a form, which is why
  * there is no Join tab: Contact is the whole route in.
  */
 const NAV = [
+  { href: "/", label: "Home" },
   { href: "/community", label: "Services" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },

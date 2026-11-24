@@ -6,7 +6,7 @@ import {
   awards,
   clubAwards,
   teams,
-  teamsInJourneyOrder,
+  teamsByProgramAndAwards,
   type Award,
   type Team,
 } from "@/content/club/events";
@@ -14,12 +14,8 @@ import { photoForAward, teamAwardPhotos, type Photo } from "@/content/club/photo
 import { TrophyIcon } from "./TrophyIcon";
 
 /**
- * The club's teams in the order they happened, one block at a time.
- *
- * A relay rather than a trophy shelf: each team enters, hands its awards over,
- * and the next one arrives. That is the actual shape of the club — the V5 teams
- * exist because the elementary teams came first — and a grid of thirty tiles
- * cannot say it.
+ * The club's teams one block at a time: V5RC first, then VEX IQ, each with
+ * the team that has won the most awards at the top.
  *
  * Three rules this has to keep:
  *
@@ -60,7 +56,7 @@ const useBeforePaint = typeof window === "undefined" ? useEffect : useLayoutEffe
 type BlockState = "unknown" | "waiting" | "entered";
 
 export function AwardsJourney() {
-  const order = useMemo(() => teamsInJourneyOrder(), []);
+  const order = useMemo(() => teamsByProgramAndAwards(), []);
 
   const byTeam = useMemo(() => {
     const map = new Map<string, Award[]>(order.map((t) => [t.number, []]));

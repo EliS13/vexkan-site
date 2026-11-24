@@ -127,7 +127,7 @@ export default function CommunityPage() {
           <h2 className="max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
             Free whether or not you ever meet us
           </h2>
-          <dl className="mt-10 grid gap-8 sm:grid-cols-3">
+          <dl className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {impact.map((stat) => (
               /*
                * Column-reverse so the number reads first but the markup stays

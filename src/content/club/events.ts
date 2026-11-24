@@ -42,20 +42,20 @@ export const teams: Team[] = [
 ];
 
 /**
- * The teams in the order the club actually grew, oldest first.
- *
- * The journey on the home page reads as a relay, so it has to run forwards in
- * time rather than in team-number order — otherwise 16688A, which only exists
- * because the elementary teams came first, opens the story.
- *
- * Sorted on the earliest recorded season, with the team number breaking ties so
+ * The teams as the home page lists them: V5RC first, then VEX IQ, and within
+ * each program the team with the most awards first. Ties go by team number so
  * the order is stable rather than dependent on the array above.
  */
-export function teamsInJourneyOrder(): Team[] {
-  return [...teams].sort((a, b) => {
-    const first = (t: Team) => t.seasons[0] ?? "9999";
-    return first(a).localeCompare(first(b)) || a.number.localeCompare(b.number);
-  });
+export function teamsByProgramAndAwards(): Team[] {
+  const count = new Map<string, number>();
+  for (const a of awards) count.set(a.team, (count.get(a.team) ?? 0) + 1);
+  const programRank = (t: Team) => (t.program === "V5RC" ? 0 : 1);
+  return [...teams].sort(
+    (a, b) =>
+      programRank(a) - programRank(b) ||
+      (count.get(b.number) ?? 0) - (count.get(a.number) ?? 0) ||
+      a.number.localeCompare(b.number)
+  );
 }
 
 export type ClubEvent = {

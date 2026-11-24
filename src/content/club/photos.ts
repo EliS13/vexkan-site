@@ -2,10 +2,7 @@ export type Photo = {
   src: string;
   /** Describes what is actually in the frame. Written from the photograph. */
   alt: string;
-  /**
-   * Only where the picture cannot say it itself. An award photograph does not
-   * name the award, so those carry one; nothing else does.
-   */
+  /** A short, plain label shown under the photograph. A few words, not a sentence. */
   caption?: string;
 };
 
@@ -39,34 +36,37 @@ export const homeHeroPhotos: Photo[] = [
   {
     src: "/photos/all/image-from-vexkan-robotics-club.jpg",
     alt: "Nine clubbers in club shirts holding their VEX IQ robots and controllers at the provincial championships, the match schedule projected on the wall behind them.",
+    caption: "Provincial championships",
   },
   {
     src: "/photos/all/191786394009-pic.jpg",
     alt: "Four clubbers in club shirts standing behind their V5 robot at their pit, under the team's banner.",
+    caption: "16688A, Blue See 123",
   },
   {
     src: "/photos/all/heif-to-jpg-vexkan-robotics-club.jpg",
     alt: "Two students lifting a V5 robot onto a table in the bright atrium of a competition venue.",
+    caption: "Arriving at a competition",
   },
   {
     src: "/photos/all/101786393305-pic.jpg",
     alt: "A row of clubbers standing along the barrier at a competition, watching a VEX IQ match on the screen above the field.",
+    caption: "Watching a match",
   },
   {
     src: "/photos/all/iq-robot-home-practice-field.jpg",
     alt: "A VEX IQ competition robot built from black, blue and white beams on a practice field at home, orange pins standing on the tiles around it.",
-  },
-  /*
-   * These two arrived as small thumbnails (223 and 319 pixels wide), so they
-   * show soft at this size. Swap in the originals when they turn up.
-   */
-  {
-    src: "/photos/all/v5-robots-trophies-competition-floor.jpg",
-    alt: "Two of the club's V5 robots on the competition floor with a row of VEX trophies lined up between them.",
+    caption: "A VEX IQ robot at practice",
   },
   {
-    src: "/photos/all/v5-robot-trophies-in-snow.jpg",
-    alt: "A V5 robot standing in the snow at night between three VEX V5 Robotics Competition trophies.",
+    src: "/photos/all/16688a-alliance-trophies-field.jpg",
+    alt: "16688A's V5 robot and its alliance partner's robot on the field after the finals, five VEX trophies lined up between them, including Tournament Champion and Excellence Award.",
+    caption: "16688A and its alliance partner",
+  },
+  {
+    src: "/photos/all/16688a-trophies-in-snow.jpg",
+    alt: "16688A's V5 robot in the snow at night between its 2025–26 Tournament Champion, Excellence Award and Robot Skills Champion trophies.",
+    caption: "16688A and its trophies",
   },
 ];
 
@@ -86,14 +86,17 @@ export const homeClassPhotos: Photo[] = [
   {
     src: "/photos/all/vexkan-robotics-club-img-8014.jpg",
     alt: "Two young clubbers building at a table, with VEX IQ beams sorted into rows and a parts sheet open beside them.",
+    caption: "Building in a Foundation class",
   },
   {
     src: "/photos/all/image-from-vexkan-robotics-club-1.jpg",
     alt: "Clubbers standing together in a classroom holding their robot brains and controllers.",
+    caption: "VEX IQ clubbers",
   },
   {
     src: "/photos/all/181786393737-pic.jpg",
     alt: "A metal V5 robot on the pit table beside the team's VEX award, Canadian flags strung across the booth behind it.",
+    caption: "A V5 robot and its award",
   },
 ];
 
@@ -102,14 +105,17 @@ export const homeWorldsPhotos: Photo[] = [
   {
     src: "/photos/all/221786394014-pic.jpg",
     alt: "A group of clubbers standing together on the competition floor while someone photographs them, one holding the team's robot.",
+    caption: "Team photo at the World Championship",
   },
   {
     src: "/photos/all/121786393310-pic.jpg",
     alt: "The screen above a World Championship field during a VEX IQ qualification match.",
+    caption: "A qualification match",
   },
   {
     src: "/photos/all/231786394016-pic.jpg",
     alt: "The team's Blue See 123 banner hanging at the back of their pit, with Canadian flags strung across it.",
+    caption: "The 16688A pit",
   },
 ];
 
@@ -196,6 +202,7 @@ export const eventsHeroPhoto: Photo = {
 export const pitPhoto: Photo = {
   src: "/photos/all/211786394013-pic.jpg",
   alt: "The pit hall at the World Championship, a clubber working at the team's booth under the Engineering sign with team banners down the row.",
+  caption: "The pit hall at the World Championship",
 };
 
 /**
@@ -302,6 +309,7 @@ export const communityPhoto: Photo = {
 export const competePhoto: Photo = {
   src: "/photos/all/img-3550.jpg",
   alt: "Drivers from three teams lined up along the barrier of a V5 field, 36467E's robot on the tiles in front of them and their alliance partners' robots being set down alongside.",
+  caption: "Drivers at the barrier",
 };
 
 export const competePhotos: Photo[] = [

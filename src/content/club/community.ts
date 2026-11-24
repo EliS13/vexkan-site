@@ -65,10 +65,10 @@ export const pastWorkshops: PastWorkshop[] = [];
 /**
  * The impact strip: numbers, no adjectives.
  *
- * Every figure here is counted from something in this repository rather than
- * estimated, so it cannot drift from what the site actually offers. Anything
- * the club has not counted — outreach headcounts, workshops run — is absent
- * rather than rounded up.
+ * Every figure is counted from something in this repository, except the two
+ * clubber counts, which are floors the club gave. Anything the club has not
+ * counted — outreach headcounts, workshops run — is absent rather than
+ * rounded up.
  */
 export const impact = [
   {
@@ -77,13 +77,18 @@ export const impact = [
     note: "Gear ratios, notebooks, season plans.",
   },
   {
-    value: String(org.studentCount),
-    label: "clubbers",
+    value: org.studentCount,
+    label: "clubbers this season",
     note: `${org.gradesLabel} in ${org.city.split(",")[0]}.`,
   },
   {
     value: String(teams.length),
     label: "teams fielded and mentored",
     note: `Since ${org.foundedYear}.`,
+  },
+  {
+    value: org.alumniCount,
+    label: `clubbers since ${org.foundedYear}`,
+    note: "Everyone who has been part of the club.",
   },
 ] as const;
