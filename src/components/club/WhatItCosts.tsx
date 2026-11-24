@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { COST_ASSISTANCE, COST_COVERS } from "@/content/club/programs";
+import { COST_COVERS } from "@/content/club/programs";
 import { isTbd, type Maybe } from "@/content/club/types";
 import { org } from "@/content/club/org";
 
@@ -58,15 +57,6 @@ export function WhatItCosts({ cost, heading = "What it costs" }: { cost: Maybe<s
           </li>
         ))}
       </ul>
-
-      {/* The contact details are already above, so this only needs the offer. */}
-      <p className="mt-4 text-sm text-[var(--ink-body)]">
-        {COST_ASSISTANCE}{" "}
-        <Link href="/contact" className="font-semibold text-[var(--purple-text)] underline underline-offset-4">
-          Contact us
-        </Link>
-        .
-      </p>
     </div>
   );
 }

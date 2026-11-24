@@ -122,9 +122,6 @@ export function AskTheBook() {
             {p === "iq" ? "VEX IQ" : "V5RC"}
           </button>
         ))}
-        <span className="text-[11px] text-muted">
-          Outside links change with this, the two kits share almost no parts.
-        </span>
       </div>
 
       <form
@@ -166,7 +163,7 @@ export function AskTheBook() {
 
       {submitted && !hasAnswer && (
         <p className="mt-8 text-sm text-muted">
-          Nothing matched that closely. Try different words, or pick a topic from the list.
+          Nothing matched that closely.
         </p>
       )}
 
@@ -236,7 +233,6 @@ export function AskTheBook() {
                   >
                     {KIND_STYLE[src.kind].label}
                   </span>
-                  <p className="text-[11.5px] leading-snug text-muted">{src.what}</p>
                 </li>
               ))}
             </ul>
@@ -273,7 +269,6 @@ export function AskTheBook() {
                         >
                           {KIND_STYLE[src.kind].label}
                         </span>
-                        <p className="text-[11px] leading-snug text-muted">{src.what}</p>
                       </li>
                     ))}
                   </ul>
@@ -321,10 +316,6 @@ export function AskTheBook() {
               </button>
             ))}
           </div>
-          <p className="mt-4 text-[11.5px] leading-relaxed text-muted">
-            Outside links are filtered to the program you picked above, so a VEX IQ question never
-            sends you to a V5RC part page. Nothing here overrides your season&apos;s game manual.
-          </p>
         </div>
       )}
 
@@ -332,9 +323,6 @@ export function AskTheBook() {
         <div className="mt-10 border-t pt-5" style={{ borderColor: "var(--line)" }}>
           <p className="eyebrow text-[var(--muted)]">
             General {program === "iq" ? "VEX IQ" : "V5RC"} references
-          </p>
-          <p className="mt-1 text-[11.5px] leading-relaxed text-muted">
-            Not specific to this question, but worth having open all season.
           </p>
           <ul className="mt-2.5 grid gap-2 sm:grid-cols-2">
             {generalSourcesFor(program).map((src) => (
@@ -348,7 +336,6 @@ export function AskTheBook() {
                 >
                   {src.name} ↗
                 </a>
-                <p className="text-[11px] leading-snug text-muted">{src.what}</p>
               </li>
             ))}
           </ul>

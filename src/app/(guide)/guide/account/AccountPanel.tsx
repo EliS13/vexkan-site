@@ -169,10 +169,6 @@ export function AccountPanel() {
         {busy ? "Working..." : mode === "in" ? "Sign in" : "Make an account"}
       </button>
       {status && <p className="text-xs text-muted">{status}</p>}
-      <p className="text-[11px] leading-relaxed text-muted">
-        One account per team is usually easier than one per person, since a notebook belongs to the
-        team. Do not reuse a password from anywhere else.
-      </p>
     </form>
   );
 }

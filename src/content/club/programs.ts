@@ -55,14 +55,6 @@ export const COST_NOTE =
   "producing revenue, and the guides, calculators and community workshops stay free to everyone " +
   "whether or not anyone in your family ever joins.";
 
-/**
- * Financial assistance. The club has not published a policy, so the site does
- * not claim one either way — it says to ask, which is true and costs a family
- * nothing to act on.
- */
-export const COST_ASSISTANCE =
-  "If the fee is what is standing in the way, write to us before deciding against it.";
-
 export const TRACK_LABELS: Record<ProgramTrack, string> = {
   "iq-foundation": "VEX IQ Foundation Classes",
   "iq-competition": "VEX IQ Competition Teams",

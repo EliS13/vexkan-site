@@ -253,8 +253,7 @@ export function SeasonPlanner() {
             >
               <span className="font-semibold text-[var(--ink-body)]">{formatDateLong(selectedDay)}</span>
               <br />
-              Nothing scheduled yet. Working backwards from your next competition is usually the
-              easiest way to fill a season in.
+              Nothing scheduled yet.
               <br />
               <button
                 onClick={() => {
@@ -274,7 +273,7 @@ export function SeasonPlanner() {
               className="rounded-xl border border-dashed p-6 text-center text-sm text-muted"
               style={{ borderColor: "var(--line)" }}
             >
-              Nothing scheduled yet. Start with your next competition and work backwards.
+              Nothing scheduled yet.
             </div>
           ) : (
             <div className="space-y-4">

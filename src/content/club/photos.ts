@@ -34,7 +34,7 @@ export const founderPhoto: Photo = {
 
 /* ---------------------------------------------------------------- Home --- */
 
-/** Beside the headline. Five, so a visitor can actually reach the last one. */
+/** Beside the headline. Each shown whole, so nobody at the edge of a group is cut off. */
 export const homeHeroPhotos: Photo[] = [
   {
     src: "/photos/all/image-from-vexkan-robotics-club.jpg",
@@ -51,6 +51,22 @@ export const homeHeroPhotos: Photo[] = [
   {
     src: "/photos/all/101786393305-pic.jpg",
     alt: "A row of clubbers standing along the barrier at a competition, watching a VEX IQ match on the screen above the field.",
+  },
+  {
+    src: "/photos/all/iq-robot-home-practice-field.jpg",
+    alt: "A VEX IQ competition robot built from black, blue and white beams on a practice field at home, orange pins standing on the tiles around it.",
+  },
+  /*
+   * These two arrived as small thumbnails (223 and 319 pixels wide), so they
+   * show soft at this size. Swap in the originals when they turn up.
+   */
+  {
+    src: "/photos/all/v5-robots-trophies-competition-floor.jpg",
+    alt: "Two of the club's V5 robots on the competition floor with a row of VEX trophies lined up between them.",
+  },
+  {
+    src: "/photos/all/v5-robot-trophies-in-snow.jpg",
+    alt: "A V5 robot standing in the snow at night between three VEX V5 Robotics Competition trophies.",
   },
 ];
 
@@ -584,6 +600,15 @@ const eventAwardPhotos: Record<string, Photo> = {
     alt: "Three members of 595C BattleAce in club shirts at the front of the room, the middle one holding up their Teamwork Champion certificate while a coach stands to one side.",
   },
   "595C|Alberta VIQRC Mix and Match MS Provincial Championships": teamAwardPhotos["595C"],
+  /*
+   * 595C on the robot's plate, the WestMech finals rankings on the screen
+   * behind, and the three trophies read Think Award, Robot Skills Champion and
+   * Teamwork Champion — all three of 595C's awards from that event.
+   */
+  "595C|WestMech VEX IQ Level Up Early Season Qualifier: ES/MS blended": {
+    src: "/photos/all/westmech-595c-sesame-cats.jpg",
+    alt: "Four members of 595C, Miscellaneous Sesame Cats, in club shirts holding their Think Award, Robot Skills Champion and Teamwork Champion trophies and their VEX IQ robot, the WestMech finals rankings on the screen behind them.",
+  },
   "595B|VEX IQ Robotics Competition January Showdown": {
     src: "/photos/all/img-3173.jpg",
     alt: "Four young members of 595B at the January Showdown, one holding the Energy Award certificate, the match schedule on the screen behind them.",

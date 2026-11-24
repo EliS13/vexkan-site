@@ -150,7 +150,6 @@ export function WorkshopRequestForm() {
 
         <Field
           label="Anything else?"
-          hint="Optional."
         >
           <textarea
             rows={4}
