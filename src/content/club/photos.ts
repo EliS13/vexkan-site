@@ -564,10 +564,6 @@ export const eventFloorPhotos: Photo[] = [
     alt: "36467E's pit at Mecha Mayhem, the team's V5 robot up on the table with its toolkit open beside it.",
   },
   {
-    src: "/photos/all/vexkan-robotics-club-img-2120.jpg",
-    alt: "A V5 robot on the pit table, its drivetrain and intake visible from the side.",
-  },
-  {
     src: "/photos/all/img-3750.jpg",
     alt: "A clubber at the kitchen table building the lift on a V5 robot, an earlier robot on the shelf behind him.",
   },
