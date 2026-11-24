@@ -13,9 +13,6 @@ export function NotFoundContent() {
     <div className="mx-auto max-w-xl px-5 py-24 text-center">
       <p className="eyebrow text-[var(--muted)]">404</p>
       <h1 className="mt-2 text-3xl font-semibold">We couldn&apos;t find that page</h1>
-      <p className="club-lead mt-4">
-        The link may be out of date. Here&apos;s how to get back on track.
-      </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button href="/programs">Browse programs</Button>
         <Button href="/guide" variant="secondary">

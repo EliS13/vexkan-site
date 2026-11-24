@@ -45,8 +45,7 @@ export function ProgramCard({ program, photo }: { program: Program; photo?: Phot
               {program.gradeLabel}
             </span>
           </div>
-          <p className="mt-3 text-sm text-muted">{program.summary}</p>
-          <span className="mt-5 text-sm font-semibold text-[var(--purple-text)] group-hover:underline">
+          <span className="mt-auto pt-5 text-sm font-semibold text-[var(--purple-text)] group-hover:underline">
             Details
           </span>
         </div>

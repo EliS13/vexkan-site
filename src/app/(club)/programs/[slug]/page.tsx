@@ -61,7 +61,6 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
               {TRACK_LABELS[program.track]}
             </p>
             <h1 className="mt-3 text-3xl font-semibold sm:text-4xl">{program.title}</h1>
-            <p className="club-lead mt-4 max-w-2xl">{program.summary}</p>
             {/*
              * One button, and it starts a conversation. There is no signup form
              * on the site any more: a family joins by talking to us, so the

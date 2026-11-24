@@ -5,15 +5,9 @@ export const metadata = { title: "Account — Built to Compete" };
 export default function AccountPage() {
   return (
     <div className="mx-auto max-w-2xl px-5 py-12">
-      <p className="eyebrow text-[var(--muted)]">Account</p>
-      <h1 className="mt-2 font-serif text-3xl font-semibold text-foreground">
+      <h1 className="font-serif text-3xl font-semibold text-foreground">
         Sign in to keep your work
       </h1>
-      <p className="mt-3 text-muted">
-        Signing in saves your engineering notebook, season plan, and recent questions to your
-        account instead of just this browser, so you can pick the notebook back up on a school
-        computer and hand it to a judge from a different laptop.
-      </p>
 
       <div className="mt-8">
         <AccountPanel />

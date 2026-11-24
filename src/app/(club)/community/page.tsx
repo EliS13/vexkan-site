@@ -20,19 +20,12 @@ export default function CommunityPage() {
   return (
     <>
       <Section
-        eyebrow="Free, for any group"
         title="Workshops we run for schools and libraries"
         titleAs="h1"
-        lead="We bring the kit, run the session, and leave the guides behind. There is no charge for these, and your group does not need to own a single VEX part."
       >
         <div className="grid items-start gap-10 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <p className="club-lead">
-              This is separate from the club. Nobody has to join anything, and no student needs to
-              become a clubber afterwards. If a school in {org.city.split(",")[0]} wants an hour of
-              robotics for a class that has never seen a robot, that is the whole ask.
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button href="#request" size="lg">Request a workshop</Button>
               <Button href={org.guideHref} size="lg" variant="secondary">
                 Take the guides instead
@@ -62,7 +55,6 @@ export default function CommunityPage() {
                     Free
                   </span>
                 </div>
-                <p className="mt-3 text-sm text-muted">{w.summary}</p>
                 <dl className="mt-5 space-y-2 text-sm">
                   <div className="flex gap-3">
                     <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Date</dt>
@@ -96,8 +88,7 @@ export default function CommunityPage() {
            */
           <Card>
             <p className="club-lead">
-              Nothing is on the calendar right now. We book these directly with a school, a library
-              or a group rather than setting dates in advance, so the way to get one is to ask.
+              Nothing is on the calendar right now.
             </p>
             <div className="mt-6">
               <Button href="#request">Request a workshop</Button>
@@ -114,7 +105,6 @@ export default function CommunityPage() {
                 <Card className="h-full">
                   <h3 className="text-lg font-semibold">{w.title}</h3>
                   <p className="eyebrow mt-1 text-[var(--muted)]">{w.when}</p>
-                  <p className="mt-3 text-sm text-muted">{w.summary}</p>
                   {w.reached !== undefined && (
                     <p className="readout mt-4 text-sm text-[var(--purple-text)]">
                       {w.reached} students
@@ -134,8 +124,7 @@ export default function CommunityPage() {
        */}
       <div className="band-dark">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
-          <p className="eyebrow">What is actually out there</p>
-          <h2 className="mt-3 max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
+          <h2 className="max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
             Free whether or not you ever meet us
           </h2>
           <dl className="mt-10 grid gap-8 sm:grid-cols-3">
@@ -149,9 +138,6 @@ export default function CommunityPage() {
                 <dt>
                   <span className="mt-3 block text-[15px]" style={{ color: "rgba(243,239,232,0.88)" }}>
                     {stat.label}
-                  </span>
-                  <span className="mt-1 block text-[13px]" style={{ color: "rgba(243,239,232,0.55)" }}>
-                    {stat.note}
                   </span>
                 </dt>
                 <dd
@@ -174,30 +160,20 @@ export default function CommunityPage() {
        * written down rather than implying a workshop and a season are the same
        * offer.
        */}
-      <Section eyebrow="If you want more than a workshop" title="The programs we run">
-        <p className="club-lead max-w-2xl">
-          A workshop is one session. A program is a season — a class or a competition team that
-          meets all year. They are different things, and they are priced differently, so here is
-          the difference in full:
-        </p>
-
+      <Section title="The programs we run">
         {/*
          * The free/paid line, drawn once and in plain words rather than left
          * for a family to work out from context. Teal is the colour the free
          * resources use everywhere else on the site, so the side that costs
          * nothing is the side that looks like the guides.
          */}
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           <div
             className="rounded-xl p-6"
             style={{ background: "var(--teal-bg)", border: "1px solid var(--teal)" }}
           >
             <p className="eyebrow text-[var(--teal-text)]">Workshops</p>
             <p className="mt-2 text-2xl font-semibold text-[var(--teal-text)]">Free</p>
-            <p className="mt-3 text-sm text-[var(--ink-body)]">
-              One session, at your school, library or group. We bring the kit. Nothing to pay and
-              nothing to sign up for.
-            </p>
           </div>
 
           <div
@@ -206,18 +182,6 @@ export default function CommunityPage() {
           >
             <p className="eyebrow text-[var(--muted)]">Classes and competition teams</p>
             <p className="mt-2 text-2xl font-semibold">Member-supported</p>
-            <p className="mt-3 text-sm text-[var(--ink-body)]">
-              A full season, with parts, field elements and tournament entries behind it, so there
-              is a fee. Email{" "}
-              <a href={org.emailHref} className="font-semibold underline underline-offset-4">
-                {org.email}
-              </a>{" "}
-              or call{" "}
-              <a href={org.phoneHref} className="font-semibold underline underline-offset-4">
-                {org.phone}
-              </a>{" "}
-              for more details.
-            </p>
           </div>
         </div>
 
@@ -247,18 +211,12 @@ export default function CommunityPage() {
         id="request"
         tone="surface"
         title="Request a workshop for your school or library"
-        lead="Four fields and a rough date. We will come back to you with what we can actually run and when."
       >
         <WorkshopRequestForm />
       </Section>
 
       <Section title="Ask us anything">
-        <p className="club-lead max-w-2xl">
-          Questions about robotics are welcome even if your group never books anything. We are
-          students ourselves, so during build season and competition weekends replies can take a
-          while.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button href="/contact" size="lg">Contact us</Button>
           <Button href={org.guideHref} size="lg" variant="secondary">Read the free guides</Button>
         </div>
