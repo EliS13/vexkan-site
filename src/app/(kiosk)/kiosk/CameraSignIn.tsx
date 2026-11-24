@@ -140,14 +140,10 @@ export function CameraSignIn({
     void camResume();
     (async () => {
       try {
-        setStatus("Loading the face models…");
+        setStatus("Loading…");
         await loadFaceEngine();
         if (cancelled) return;
-        setStatus(
-          mode.kind === "group"
-            ? "Get everyone in frame, then take the photo."
-            : `Look at the camera, ${mode.member.firstName}.`,
-        );
+        setStatus("");
       } catch {
         setError("The face models could not load. Check the connection and try again.");
       }
@@ -351,7 +347,7 @@ export function CameraSignIn({
           ? `${leftovers.join(" and ")}, so ${leftovers.length === 1 && unphotographed === 1 ? "that member still needs" : "those members still need"} enrolling from their tiles.`
           : null,
       );
-      setStatus(`${done} ${done === 1 ? "member is" : "members are"} ready. Take the photo again.`);
+      setStatus(`${done} ${done === 1 ? "member" : "members"} ready.`);
     } catch (err) {
       setError(`Reading the sign-up photos failed — ${describeFailure(err)}`);
     } finally {
@@ -512,11 +508,6 @@ export function CameraSignIn({
               status={camStatus}
                 message={camMessage}
                 onStart={camStart}
-              purpose={
-                mode.kind === "group"
-                  ? "The camera reads faces to sign everyone in at once. It runs on this device only."
-                  : `The camera checks it is really ${mode.member.firstName} before signing them in. It runs on this device only.`
-              }
               onCancel={onClose}
             />
             </div>
@@ -565,11 +556,11 @@ export function CameraSignIn({
               }}
               className="flex flex-col gap-3 rounded-2xl border-2 border-k-rule p-4"
             >
-              <p className="font-serif text-lg font-semibold">
-                {mode.kind === "verify"
-                  ? `Sign ${mode.member.firstName} in with the organizer code`
-                  : "Pick people from the grid, then use the camera"}
-              </p>
+              {mode.kind === "verify" && (
+                <p className="font-serif text-lg font-semibold">
+                  {`Sign ${mode.member.firstName} in with the organizer code`}
+                </p>
+              )}
               {mode.kind === "verify" && (
                 <>
                   <input
@@ -588,10 +579,6 @@ export function CameraSignIn({
                   >
                     {busy ? "Signing in…" : "Sign in"}
                   </button>
-                  {/* Recorded unverified, so a coach can tell these apart later. */}
-                  <p className="font-mono text-[10px] leading-relaxed text-k-sketch">
-                    Recorded without a face match, and marked as such.
-                  </p>
                 </>
               )}
               <button
@@ -604,7 +591,7 @@ export function CameraSignIn({
             </form>
           )}
 
-          {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setFrozen(false); setStatus("Ready."); }} />}
+          {outcome && <Results outcome={outcome} onCommit={commit} busy={busy} passcode={passcode} setPasscode={setPasscode} onRetry={() => { setOutcome(null); setFrozen(false); setStatus(""); }} />}
         </div>
       </div>
     </div>
@@ -659,11 +646,10 @@ function Results({
           </h2>
           {ambiguous.length > 0 && (
             <p className="mb-2 text-sm text-k-sketch">
-              Too close to call for{" "}
+              Too close to call:{" "}
               <span className="text-k-ink">
                 {ambiguous.map((m) => `${m.firstName} ${m.lastName[0]}.`).join(", ")}
               </span>
-              . The camera would be guessing, so it did not.
             </p>
           )}
           {unknownFaces > 0 && (

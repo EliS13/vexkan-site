@@ -244,7 +244,6 @@ export function Enroll({ initial }: { initial: KioskState }) {
                 status={camStatus}
                 message={camMessage}
                 onStart={camStart}
-                purpose="Signing someone up needs five photos of their face, taken here. They stay on this device."
               />
               </div>
             )}
@@ -319,15 +318,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </button>
 
           <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-            Without a photo they get their initials on a tile and sign in with the
-            club code rather than their face. A photo can be added any time from
-            the roster screen.
-          </p>
-
-          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-            Face templates stay on this iPad and are never uploaded. Clearing this
-            site&rsquo;s data deletes them. Written parent consent is required before
-            enrolling a member under 18.
+            Parent consent required under 18.
           </p>
         </div>
       </div>

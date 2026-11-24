@@ -380,8 +380,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         <h2 className="mb-2 font-serif text-xl font-semibold">Roster</h2>
         {state.members.length === 0 && (
           <p className="mb-2 font-mono text-sm text-k-sketch">
-            Nobody signed up yet. Members are added from the kiosk&rsquo;s Sign up
-            screen, which captures the photo and the face templates.
+            Nobody signed up yet.
           </p>
         )}
         {state.members.length > 0 && (
@@ -577,11 +576,6 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
               </label>
             </div>
 
-            <p className="font-mono text-[10px] leading-relaxed text-k-sketch">
-              The kiosk opens on whichever group is meeting or about to. A group
-              with no days set never rises to the top.
-            </p>
-
             <div className="flex gap-2">
               <button
                 type="button"
@@ -684,10 +678,6 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         />
       )}
 
-      <p className="border-t border-k-rule pt-4 font-mono text-[11px] text-k-sketch">
-        Retiring a group and deactivating a member both keep every recorded hour.
-        Nothing here deletes session history.
-      </p>
       </>
       )}
     </div>

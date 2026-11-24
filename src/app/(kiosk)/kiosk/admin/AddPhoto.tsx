@@ -158,7 +158,6 @@ export function AddPhoto({
                   status={camStatus}
                   message={camMessage}
                   onStart={start}
-                  purpose={`Five photos of ${member.firstName}, taken here. They stay on this device.`}
                   onCancel={onClose}
                 />
               </div>
@@ -194,10 +193,6 @@ export function AddPhoto({
             {busy ? "Saving…" : "Save photo"}
           </button>
 
-          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-            The last of the five becomes {member.firstName}&rsquo;s tile photo. The face
-            templates stay on this iPad and are never uploaded.
-          </p>
         </div>
       </div>
     </div>
