@@ -160,10 +160,6 @@ export function NotebookTemplate() {
             style={{ borderColor: "var(--line)" }}
           />
         </div>
-        <p className="flex-[2] text-xs leading-relaxed text-muted">
-          Entries save in this browser only. Nothing is uploaded anywhere. Export whenever you want a
-          copy you can hand to a judge.
-        </p>
       </div>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
@@ -198,10 +194,6 @@ export function NotebookTemplate() {
             >
               <span className="font-bold">What judges look for: </span>
               {stage.rubric}
-            </p>
-            <p className="mt-1.5 text-[11px] text-muted">
-              The questions below change with the stage. Switching stage keeps anything you already
-              typed.
             </p>
           </div>
 
@@ -249,10 +241,6 @@ export function NotebookTemplate() {
 
           <div>
             <label className="text-xs font-semibold text-[var(--ink-body)]">Photos</label>
-            <p className="mt-0.5 text-[11px] leading-relaxed text-muted">
-              Photos are resized before saving and are placed beside the text on the slide, and
-              inline in the Google Doc.
-            </p>
             <input
               type="file"
               accept="image/*"
@@ -355,12 +343,6 @@ export function NotebookTemplate() {
                   Markdown
                 </button>
               </div>
-              <p className="mt-2.5 text-[11px] leading-relaxed text-muted">
-                The Doc paste is set in Times New Roman with a table of contents, numbered entries
-                and figure captions. For a PDF, paste into a Doc and use File, Download, PDF. The
-                deck is 8.5 by 11 inch portrait pages, the same page setup VEX&apos;s own digital
-                notebook templates use, and Google Slides opens it straight from Drive.
-              </p>
             </div>
           )}
 
@@ -386,15 +368,11 @@ export function NotebookTemplate() {
                 <input type="file" accept="application/json" onChange={importBackup} className="hidden" />
               </label>
             </div>
-            <p className="mt-2 text-[11px] leading-relaxed text-muted">
-              Entries live in this browser only, so clearing site data would wipe them. A backup file
-              restores everything, photos included, and moves it to another computer.
-            </p>
           </div>
 
           {entries.length === 0 ? (
             <div className="rounded-xl border border-dashed p-6 text-center text-sm text-muted" style={{ borderColor: "var(--line)" }}>
-              Nothing here yet. Add your first entry and it saves automatically in this browser.
+              Nothing here yet.
             </div>
           ) : (
             <ol className="space-y-3">

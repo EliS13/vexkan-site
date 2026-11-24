@@ -16,7 +16,16 @@ type Props = {
    */
   sizes?: string;
   priority?: boolean;
+  /**
+   * "contain" shows each photograph whole, over a blurred copy of itself, so
+   * nobody at the edge of a group photo is cropped out. "cover" fills the box.
+   */
+  fit?: "cover" | "contain";
+  /** The box's shape. 4:3 suits phone photographs, which most of these are. */
+  ratio?: "16/10" | "4/3";
 };
+
+const RATIO = { "16/10": "aspect-[16/10]", "4/3": "aspect-[4/3]" } as const;
 
 /**
  * A photo slideshow that does not hold the page hostage.
@@ -36,6 +45,8 @@ export function Slideshow({
   interval = 9000,
   sizes = "(max-width: 768px) 100vw, 50vw",
   priority = false,
+  fit = "cover",
+  ratio = "16/10",
 }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -74,20 +85,30 @@ export function Slideshow({
       aria-roledescription="carousel"
       aria-label="Photographs of the club"
     >
-      <div className="relative aspect-[16/10]">
+      <div className={`relative ${RATIO[ratio]}`}>
         {photos.map((p, i) => (
           <div
             key={p.src}
-            className="absolute inset-0 transition-opacity duration-700"
+            className="absolute inset-0 overflow-hidden transition-opacity duration-700"
             style={{ opacity: i === index ? 1 : 0 }}
             aria-hidden={i === index ? undefined : true}
           >
+            {fit === "contain" && (
+              <Image
+                src={p.src}
+                alt=""
+                aria-hidden="true"
+                fill
+                sizes={sizes}
+                className="scale-110 object-cover opacity-60 blur-2xl"
+              />
+            )}
             <Image
               src={p.src}
               alt={p.alt}
               fill
               sizes={sizes}
-              className="object-cover"
+              className={fit === "contain" ? "object-contain" : "object-cover"}
               priority={priority && i === 0}
             />
           </div>

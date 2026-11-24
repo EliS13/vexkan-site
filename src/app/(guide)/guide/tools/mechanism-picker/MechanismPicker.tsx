@@ -5,12 +5,12 @@ import { useState } from "react";
 import { MECHANISMS, recommend, Job, Volume, Travel, CLAW_NOTE, OUTTAKE_NOTE } from "@/content/mechanisms";
 import { sourcesFor, Program } from "@/content/sources";
 
-const JOBS: Array<{ id: Job; label: string; sub: string }> = [
-  { id: "floor", label: "Collect off the floor", sub: "Pick elements up as you drive" },
-  { id: "loader", label: "Take from a loader", sub: "A station hands it to you at a set height" },
-  { id: "feed", label: "Feed a scorer", sub: "Move elements through the robot" },
-  { id: "hold", label: "Hold one securely", sub: "Grab it and keep it while driving" },
-  { id: "descore", label: "Descore", sub: "Pull elements back out of a goal" },
+const JOBS: Array<{ id: Job; label: string }> = [
+  { id: "floor", label: "Collect off the floor" },
+  { id: "loader", label: "Take from a loader" },
+  { id: "feed", label: "Feed a scorer" },
+  { id: "hold", label: "Hold one securely" },
+  { id: "descore", label: "Descore" },
 ];
 
 function Question({ title, children }: { title: string; children: React.ReactNode }) {
@@ -151,7 +151,6 @@ export function MechanismPicker() {
               setProgram("iq");
               reset();
             }}
-            sub="Level Up this season"
             color="var(--purple)"
           >
             VEX IQ
@@ -162,7 +161,6 @@ export function MechanismPicker() {
               setProgram("v5");
               reset();
             }}
-            sub="Override this season"
             color="var(--purple)"
           >
             V5RC
@@ -171,7 +169,7 @@ export function MechanismPicker() {
 
         <Question title="What is the job?">
           {JOBS.map((j) => (
-            <Opt key={j.id} active={job === j.id} onClick={() => setJob(j.id)} sub={j.sub}>
+            <Opt key={j.id} active={job === j.id} onClick={() => setJob(j.id)}>
               {j.label}
             </Opt>
           ))}
@@ -179,10 +177,10 @@ export function MechanismPicker() {
 
         {job && (
           <Question title="One at a time, or a steady stream?">
-            <Opt active={volume === "one"} onClick={() => setVolume("one")} sub="Grab, score, come back">
+            <Opt active={volume === "one"} onClick={() => setVolume("one")}>
               One at a time
             </Opt>
-            <Opt active={volume === "stream"} onClick={() => setVolume("stream")} sub="Several without stopping">
+            <Opt active={volume === "stream"} onClick={() => setVolume("stream")}>
               A steady stream
             </Opt>
           </Question>
@@ -190,10 +188,10 @@ export function MechanismPicker() {
 
         {volume && (
           <Question title="Does the element need to travel upward inside the robot?">
-            <Opt active={travel === "flat"} onClick={() => setTravel("flat")} sub="Stays at about floor height">
+            <Opt active={travel === "flat"} onClick={() => setTravel("flat")}>
               No, it stays low
             </Opt>
-            <Opt active={travel === "lift"} onClick={() => setTravel("lift")} sub="Scoring point is up high">
+            <Opt active={travel === "lift"} onClick={() => setTravel("lift")}>
               Yes, it has to go up
             </Opt>
           </Question>
@@ -201,10 +199,10 @@ export function MechanismPicker() {
 
         {travel && (
           <Question title="Do you have pneumatics to spare this season?">
-            <Opt active={pneu === true} onClick={() => setPneu(true)} sub="Tank and a free solenoid">
+            <Opt active={pneu === true} onClick={() => setPneu(true)}>
               Yes
             </Opt>
-            <Opt active={pneu === false} onClick={() => setPneu(false)} sub="Motors only">
+            <Opt active={pneu === false} onClick={() => setPneu(false)}>
               No
             </Opt>
           </Question>

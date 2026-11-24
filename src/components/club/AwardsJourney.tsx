@@ -264,21 +264,19 @@ function JourneyBlock({
                   <li key={`${a.award}-${a.event}`}>
                     {/*
                      * A button, because it changes what the panel below says.
-                     * Hover for a mouse, focus for a keyboard, and a tap on a
-                     * phone all land on the same handler.
+                     * Click only, not hover: a pointer crossing the row would
+                     * otherwise swap the photograph on every chip it passed.
                      */}
                     <button
                       type="button"
-                      onMouseEnter={() => setActiveIndex(i)}
-                      onFocus={() => setActiveIndex(i)}
                       onClick={() => setActiveIndex(i)}
                       aria-pressed={isActive}
-                      className="journey-chip inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-left text-[13.5px] font-semibold"
+                      className="journey-chip inline-flex cursor-pointer items-center gap-2 rounded-lg px-3.5 py-2 text-left text-[13.5px] font-semibold"
                       style={{
                         /*
                          * The chip's place in the run. The stylesheet turns it
                          * into an animation-delay, so the stagger belongs to
-                         * the entrance only and never slows the hover state.
+                         * the entrance only and never slows the selected state.
                          */
                         ["--i" as string]: i,
                         background: isActive ? "var(--purple-bg)" : "var(--neutral-bg)",
@@ -294,15 +292,10 @@ function JourneyBlock({
               })}
             </ul>
 
-            {/*
-             * The description panel. `aria-live` is deliberately absent: the
-             * panel is driven by hover as well as focus, and announcing every
-             * chip a pointer crosses would make a screen reader unusable. The
-             * chips carry the award names themselves, which is the part that
-             * has to be readable.
-             */}
+            {/* The description panel. Only a click changes it, so it can be announced. */}
             {active && (
               <div
+                aria-live="polite"
                 className="mt-5 rounded-xl px-5 py-4"
                 style={{ background: "var(--neutral-bg)", border: "1px solid var(--line)" }}
               >

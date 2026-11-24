@@ -226,7 +226,7 @@ export function GearRatioCalculator() {
         </Field>
 
         {isIQ ? (
-          <Field label="Motors on the drivetrain" hint="The IQ Smart Motor runs at one fixed speed, 120 RPM.">
+          <Field label="Motors on the drivetrain">
             <Stepper
               value={iqMotors}
               onChange={setIqMotors}
@@ -239,7 +239,6 @@ export function GearRatioCalculator() {
           <>
             <Field
               label="Drivetrain motors"
-              hint="Mix motor types however you like. The 5.5W runs at a fixed 200 RPM and takes no cartridge."
             >
               <div className="space-y-2">
                 <Stepper
@@ -289,7 +288,7 @@ export function GearRatioCalculator() {
 
             <Field
               label="Cartridge (11W motors)"
-              hint={count11 === 0 ? "Add an 11W motor to choose a cartridge." : "The cartridge changes the motor's internal gearing, so speed and torque move in opposite directions."}
+              hint={count11 === 0 ? "Add an 11W motor to choose a cartridge." : undefined}
             >
               <div className="flex flex-wrap gap-2">
                 {V5_CARTRIDGES.map((c) => (
@@ -361,12 +360,6 @@ export function GearRatioCalculator() {
               sub={`grip about ${MU_TRACTION} on foam`}
             />
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted">
-            Wheels go on in left and right pairs, so these move in twos. Odd numbers would leave one
-            side grippier than the other and the robot would pull. Omni wheels roll sideways, which
-            is what makes turning easy, but they give up grip. Swap a pair for traction and your
-            pushing power goes up.
-          </p>
 
           <div className="mt-3">
             <label className="text-xs font-medium text-muted" htmlFor={weightId}>
@@ -382,26 +375,12 @@ export function GearRatioCalculator() {
               className={`${selectClass} mt-1`}
               style={{ borderColor: "var(--line)" }}
             />
-            <p className="mt-1 text-xs leading-relaxed text-muted">
-              Grip depends on weight pressing the wheels into the tiles, so a heavier robot can
-              actually push harder, right up until the motors run out.
-            </p>
           </div>
             </>
           )}
-          {isIQ && (
-            <p className="mt-2 text-xs leading-relaxed text-muted">
-              IQ drivetrains are almost always four wheels, and IQ is not a pushing game, so wheel
-              counts and grip are left out here. Omni versus traction in IQ is about how easily the
-              robot turns, not about winning a shoving match.
-            </p>
-          )}
         </Field>
 
-        <Field
-          label="External gear ratio"
-          hint={`Only tooth counts VEX actually sells for ${isIQ ? "IQ" : "V5"}, so every ratio here is one you can really build.`}
-        >
+        <Field label="External gear ratio">
           <div className="flex items-end gap-2">
             <div className="flex-1">
               <p className="mb-1 text-xs font-medium text-muted">Driving (on motor)</p>
@@ -536,11 +515,6 @@ export function GearRatioCalculator() {
               </p>
             </div>
           </div>
-          <p className="mt-2 text-xs leading-relaxed text-muted">
-            Average grip across your wheels is about {muEffective.toFixed(2)}. Stall torque at the
-            wheels is {driveTorque.toFixed(2)}&nbsp;N&middot;m. These assume weight sits evenly on every
-            wheel, which is never quite true.
-          </p>
         </div>
         )}
 

@@ -85,7 +85,7 @@ export default async function HomePage() {
               "radial-gradient(80% 60% at 22% 18%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.35) 45%, rgba(244,242,239,0) 75%)",
           }}
         />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:py-28 lg:grid-cols-[1.05fr_1fr]">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 py-20 sm:py-24 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
             <h1 className="text-[clamp(2.75rem,7vw,4.5rem)] font-bold leading-[0.98] tracking-[-0.035em]">
               {org.tagline}
@@ -96,11 +96,17 @@ export default async function HomePage() {
             </div>
           </div>
           {/*
-           * Five, not the whole archive. A carousel only ever shows a visitor
+           * A handful, not the whole archive. A carousel only ever shows a visitor
            * its first slide or two, so the rest of the photographs are placed
            * down the page and across the site instead of stacked in here.
            */}
-          <Slideshow photos={homeHeroPhotos} priority />
+          <Slideshow
+            photos={homeHeroPhotos}
+            fit="contain"
+            ratio="4/3"
+            sizes="(max-width: 1024px) 100vw, 760px"
+            priority
+          />
         </div>
       </div>
 
@@ -125,17 +131,6 @@ export default async function HomePage() {
         </div>
         <div className="mt-8 flex flex-wrap items-center gap-5">
           <Button href="/guide" variant="secondary">Browse everything</Button>
-          {/*
-           * The other free thing, and the only one that involves us turning up
-           * in person. It belongs beside the guides rather than beside the
-           * programs, because neither costs a family anything.
-           */}
-          <Link
-            href="/community"
-            className="text-sm font-semibold text-[var(--purple-text)] underline underline-offset-4"
-          >
-            Or have us run a free workshop for your school
-          </Link>
         </div>
       </Section>
 
@@ -231,20 +226,6 @@ export default async function HomePage() {
               </li>
             ))}
           </ol>
-
-          <p className="mt-6 text-sm" style={{ color: "rgba(243,239,232,0.6)" }}>
-            Criteria summarised from the{" "}
-            <a
-              href={inspireAward.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline underline-offset-4"
-              style={{ color: "var(--purple-on-dark)" }}
-            >
-              {inspireAward.sourceLabel}
-            </a>
-            .
-          </p>
         </div>
       </div>
 
@@ -269,6 +250,7 @@ export default async function HomePage() {
          */}
         <div className="mt-12">
           <Slideshow
+            fit="contain"
             photos={[...awardPhotos, designAwardPhoto, ...certificatePhotos]}
             sizes="(max-width: 1152px) 100vw, 1100px"
           />
@@ -305,7 +287,7 @@ export default async function HomePage() {
          */}
         <h3 className="mt-14 text-xl font-semibold">A competition weekend</h3>
         <div className="mt-8">
-          <Slideshow photos={competePhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
+          <Slideshow fit="contain" photos={competePhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
         </div>
       </Section>
 
@@ -335,6 +317,7 @@ export default async function HomePage() {
         <h3 className="mt-16 text-xl font-semibold">A competition day, in order</h3>
         <div className="mt-8">
           <Slideshow
+            fit="contain"
             photos={[...competitionDayPhotos, ...eventFloorPhotos]}
             sizes="(max-width: 1152px) 100vw, 1100px"
           />
@@ -347,6 +330,7 @@ export default async function HomePage() {
         <h3 className="mt-16 text-xl font-semibold">And the rest of the season</h3>
         <div className="mt-8">
           <Slideshow
+            fit="contain"
             photos={[...practicePhotos, ...clubSpacePhotos]}
             sizes="(max-width: 1152px) 100vw, 1100px"
           />
