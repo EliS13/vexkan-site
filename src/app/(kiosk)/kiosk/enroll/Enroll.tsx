@@ -14,6 +14,8 @@ import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "../CameraGate";
 import { CaptureStack } from "../CaptureStack";
+import { Spinner, WORKING_BUTTON } from "../Spinner";
+import { useTapGuard } from "@/lib/kiosk/tapGuard";
 import { postJson, type EnrollReply } from "@/lib/kiosk/postJson";
 import type { KioskState } from "@/lib/kiosk/types";
 
@@ -46,6 +48,8 @@ export function Enroll({ initial }: { initial: KioskState }) {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
   const [roster, setRoster] = useState(initial.members.length);
+  /* One capture per tap, greyed out until it lands. */
+  const { pending: capturing, run: guarded } = useTapGuard();
 
   /*
    * Destructured at the call site. Held as one object, the React compiler infers
@@ -240,7 +244,6 @@ export function Enroll({ initial }: { initial: KioskState }) {
                 status={camStatus}
                 message={camMessage}
                 onStart={camStart}
-                purpose="Signing someone up needs five photos of their face, taken here. They stay on this device."
               />
               </div>
             )}
@@ -249,11 +252,17 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </div>
           <p className="font-serif text-2xl font-semibold">{status}</p>
           <button
-            onClick={capture}
-            disabled={camStatus !== "live" || busy || complete}
-            className="min-h-[88px] rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
+            onClick={() => void guarded(capture)}
+            disabled={camStatus !== "live" || busy || complete || capturing}
+            aria-busy={capturing}
+            className={`flex min-h-[88px] items-center justify-center gap-3 rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink ${WORKING_BUTTON}`}
           >
-            {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
+            {capturing ? (
+              <>
+                <Spinner />
+                Capturing…
+              </>
+            ) : complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
           </button>
         </div>
 
@@ -309,15 +318,7 @@ export function Enroll({ initial }: { initial: KioskState }) {
           </button>
 
           <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-            Without a photo they get their initials on a tile and sign in with the
-            club code rather than their face. A photo can be added any time from
-            the roster screen.
-          </p>
-
-          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-            Face templates stay on this iPad and are never uploaded. Clearing this
-            site&rsquo;s data deletes them. Written parent consent is required before
-            enrolling a member under 18.
+            Parent consent required under 18.
           </p>
         </div>
       </div>

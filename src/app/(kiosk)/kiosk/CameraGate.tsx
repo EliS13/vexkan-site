@@ -14,13 +14,11 @@ export function CameraGate({
   status,
   message,
   onStart,
-  purpose,
   onCancel,
 }: {
   status: CameraStatus;
   message: string | null;
   onStart: () => void;
-  purpose: string;
   onCancel?: () => void;
 }) {
   const blocked = status === "denied" || status === "unavailable" || status === "insecure";
@@ -38,15 +36,8 @@ export function CameraGate({
         {blocked ? "The camera is not available" : "Turn on the camera"}
       </h2>
 
-      <p className="text-[15px] leading-relaxed text-k-sketch">
-        {blocked ? message : purpose}
-      </p>
-
-      {!blocked && (
-        <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-          Your browser will ask permission next. Nothing is recorded and no
-          picture leaves this device.
-        </p>
+      {blocked && message && (
+        <p className="text-[15px] leading-relaxed text-k-sketch">{message}</p>
       )}
 
       {!blocked && (

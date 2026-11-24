@@ -2,10 +2,12 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { cropFace, detectOne, grabFrame, loadFaceEngine } from "@/lib/kiosk/face";
+import { useTapGuard } from "@/lib/kiosk/tapGuard";
 import { saveDescriptors } from "@/lib/kiosk/faceStore";
 import { useCamera } from "@/lib/kiosk/useCamera";
 import { CameraGate } from "../CameraGate";
 import { CaptureStack } from "../CaptureStack";
+import { Spinner, WORKING_BUTTON } from "../Spinner";
 import type { Member } from "@/lib/kiosk/types";
 
 /** Same five angles sign-up uses; matching is only as good as its enrollment. */
@@ -44,6 +46,8 @@ export function AddPhoto({
   const [shots, setShots] = useState<{ descriptor: number[]; photo: string }[]>([]);
   const [note, setNote] = useState("Loading the face models…");
   const [error, setError] = useState<string | null>(null);
+  /* One capture per tap, greyed out until it lands. */
+  const { pending: capturing, run: guarded } = useTapGuard();
 
   useEffect(() => {
     let cancelled = false;
@@ -154,7 +158,6 @@ export function AddPhoto({
                   status={camStatus}
                   message={camMessage}
                   onStart={start}
-                  purpose={`Five photos of ${member.firstName}, taken here. They stay on this device.`}
                   onCancel={onClose}
                 />
               </div>
@@ -165,11 +168,17 @@ export function AddPhoto({
           <p className="font-serif text-2xl font-semibold">{note}</p>
 
           <button
-            onClick={capture}
-            disabled={camStatus !== "live" || complete || busy}
-            className="min-h-[88px] rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink disabled:opacity-40"
+            onClick={() => void guarded(capture)}
+            disabled={camStatus !== "live" || complete || busy || capturing}
+            aria-busy={capturing}
+            className={`flex min-h-[88px] items-center justify-center gap-3 rounded-2xl bg-k-bolt font-serif text-2xl font-bold text-k-ink ${WORKING_BUTTON}`}
           >
-            {complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
+            {capturing ? (
+              <>
+                <Spinner />
+                Capturing…
+              </>
+            ) : complete ? "Got all five" : `Capture ${shots.length + 1} of ${CAPTURES}`}
           </button>
         </div>
 
@@ -184,10 +193,6 @@ export function AddPhoto({
             {busy ? "Saving…" : "Save photo"}
           </button>
 
-          <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-            The last of the five becomes {member.firstName}&rsquo;s tile photo. The face
-            templates stay on this iPad and are never uploaded.
-          </p>
         </div>
       </div>
     </div>

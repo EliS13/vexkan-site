@@ -57,9 +57,6 @@ export default async function AwardsPage() {
     <div className="mx-auto flex min-h-dvh max-w-3xl flex-col p-5">
       <header className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-k-bolt-ink uppercase">
-            Every badge, and how to get it
-          </p>
           <h1 className="font-serif text-3xl leading-tight font-bold sm:text-4xl">Badges</h1>
         </div>
         <div className="flex shrink-0 gap-2">
@@ -82,9 +79,6 @@ export default async function AwardsPage() {
         <h2 className="mb-1 font-mono text-[11px] tracking-[0.18em] text-k-sketch uppercase">
           The club
         </h2>
-        <p className="mb-3 font-mono text-[11px] text-k-faint">
-          Goals nobody earns alone. These belong to the club, not to a member.
-        </p>
         <ul className="grid gap-2 sm:grid-cols-2">
           {club.map((award) => {
             const share = Math.min(100, (award.current / award.target) * 100);
@@ -152,9 +146,9 @@ export default async function AwardsPage() {
                       <p className={`font-serif text-lg font-semibold ${locked ? "text-k-faint" : ""}`}>
                         {locked ? "Secret award" : badge.label}
                       </p>
-                      <p className="font-mono text-[11px] leading-relaxed text-k-sketch">
-                        {locked ? "Nobody has found this one yet." : how}
-                      </p>
+                      {!locked && (
+                        <p className="font-mono text-[11px] leading-relaxed text-k-sketch">{how}</p>
+                      )}
                     </div>
                     <span className="shrink-0 text-right font-mono text-[11px] text-k-sketch">
                       {count === 0 ? "unclaimed" : `${count} hold${count === 1 ? "s" : ""} it`}

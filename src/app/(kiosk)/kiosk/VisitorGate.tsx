@@ -53,10 +53,6 @@ export function VisitorGate() {
           VexKan sign in
         </p>
         <h1 className="mt-1 font-serif text-3xl font-bold">Who&rsquo;s looking?</h1>
-        <p className="mt-2 font-mono text-[11px] leading-relaxed text-k-sketch">
-          You are not on the club&rsquo;s wifi. Enter your name and the club code to see hours,
-          badges and awards. Signing in and out only works in the room.
-        </p>
 
         <input
           value={name}

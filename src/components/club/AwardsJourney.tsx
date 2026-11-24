@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
-  awardMeanings,
   awards,
   clubAwards,
   teams,
@@ -136,7 +135,6 @@ function JourneyBlock({
    */
   const [activeIndex, setActiveIndex] = useState(0);
   const active = won[activeIndex];
-  const meaning = active ? awardMeanings[active.award] : undefined;
 
   /*
    * The selected award decides who the card is about. A team number outlives
@@ -241,7 +239,6 @@ function JourneyBlock({
                   ))
                 : "Seasons not recorded"}
             </p>
-            <p className="mt-3 max-w-xl text-[15px] text-muted">{team.note}</p>
           </div>
 
           {shownPhoto && (
@@ -313,7 +310,6 @@ function JourneyBlock({
                 <p className="mt-1 text-[13px] text-muted">
                   {active.event} · {active.season} · {active.teamName}
                 </p>
-                {meaning && <p className="mt-3 text-[15px] text-[var(--ink-body)]">{meaning}</p>}
               </div>
             )}
           </>

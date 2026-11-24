@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Badge } from "@/lib/kiosk/badges";
 import type { TeamAward } from "@/lib/kiosk/vexAwards";
 import { awardKind } from "@/lib/kiosk/badges";
-import { ALONGSIDE, formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
+import { formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
 import type { Member, Session } from "@/lib/kiosk/types";
 import { teamsFor } from "@/lib/kiosk/teams";
@@ -17,8 +17,6 @@ import { BadgeIcon } from "./BadgeIcon";
  * leaderboard links to, which is read-only. Two copies of this would drift the
  * first time a badge was added.
  */
-/* Who the alongside line is about. One entry today; read from the same map. */
-const ALONGSIDE_LABEL = Object.values(ALONGSIDE)[0]?.join(" and ") ?? "others";
 
 /* Five fit without the visits below being pushed off a phone screen. */
 const AWARDS_AT_FIRST = 5;
@@ -119,10 +117,7 @@ export function MemberProfile({
         */}
       {alongside > 0 && (
         <p className="rounded-xl border-2 border-dashed border-k-rule px-3 py-2 font-mono text-[11px] leading-relaxed text-k-sketch">
-          <span className="text-k-bolt-ink">+{formatHours(alongside)}h alongside</span> — as team
-          leader, in the room whenever {ALONGSIDE_LABEL} were, without signing in separately. Not
-          counted in the hours above, the leaderboard, or any club total. A floor rather than a
-          total: build time, management and course prep were never signed in at all.
+          <span className="text-k-bolt-ink">+{formatHours(alongside)}h alongside</span>
         </p>
       )}
 
@@ -132,12 +127,7 @@ export function MemberProfile({
         <h3 className="mb-2 font-mono text-[10px] tracking-[0.18em] text-k-sketch uppercase">
           {badges.length === 0 ? "No badges yet" : `Badges · ${badges.length}`}
         </h3>
-        {badges.length === 0 ? (
-          <p className="font-mono text-[11px] text-k-sketch">
-            Badges arrive with hours, visits and turning up. See the awards screen for the full
-            list.
-          </p>
-        ) : (
+        {badges.length === 0 ? null : (
           <ul className="flex flex-col gap-2">
             {badges.slice(0, SHOWN_AT_FIRST).map((badge) => (
               <li key={badge.id}>
@@ -213,11 +203,6 @@ export function MemberProfile({
               </li>
             ))}
           </ul>
-          {teams.some((t) => t.worlds) && (
-            <p className="mt-1.5 font-mono text-[10px] text-k-bolt-ink">
-              Gold marks a team that competed at the World Championship.
-            </p>
-          )}
           {/*
             * Marked per team, never per season. Qualification was individual —
             * the 2024-25 squad came from several teams — so colouring every

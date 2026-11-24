@@ -31,7 +31,6 @@ import { AwardsCount, AwardsJourney } from "@/components/club/AwardsJourney";
 import {
   CompetitionLadder,
   ProgramComparison,
-  SpectatingNote,
 } from "@/components/club/CompetitionLadder";
 import { EventsCalendar } from "@/components/club/EventsCalendar";
 import { fetchAlbertaEvents, fetchSignatureEvents } from "@/lib/vexEvents";
@@ -56,22 +55,18 @@ const RESOURCES = [
   {
     href: "/guide",
     title: "Built to Compete",
-    body: "Our book by VexKan Robotics is now available, written from the pit rather than from a manual.",
   },
   {
     href: "/guide/tools/gear-ratio",
     title: "Gear ratio calculator",
-    body: "Work out speed against torque before you commit to a drivetrain, instead of after.",
   },
   {
     href: "/guide/tools/notebook-template",
     title: "Engineering notebook template",
-    body: "The entry structure judges actually look for, with an export you can hand in.",
   },
   {
     href: "/guide/tools/season-planner",
     title: "Season planner",
-    body: "Lay a season out across the months you really have, so build does not eat all of it.",
   },
 ];
 
@@ -92,17 +87,9 @@ export default async function HomePage() {
         />
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:py-28 lg:grid-cols-[1.05fr_1fr]">
           <div>
-            <p className="eyebrow text-[var(--purple-text)]">
-              Nonprofit robotics · {org.city}
-            </p>
-            <h1 className="mt-4 text-[clamp(2.75rem,7vw,4.5rem)] font-bold leading-[0.98] tracking-[-0.035em]">
+            <h1 className="text-[clamp(2.75rem,7vw,4.5rem)] font-bold leading-[0.98] tracking-[-0.035em]">
               {org.tagline}
             </h1>
-            <p className="club-lead mt-6 max-w-xl text-[1.2rem]">
-              We are a student-run robotics club in Calgary. Everything we have worked out, the
-              guides, the calculators, the notebook templates, is free here for any team to use,
-              whether you are in our club or not.
-            </p>
             <div className="mt-9 flex flex-wrap gap-3">
               <Button href="/guide" size="lg">Start with the free guides</Button>
               <Button href="#what-we-run" size="lg" variant="secondary">See what we run</Button>
@@ -123,9 +110,7 @@ export default async function HomePage() {
        */}
       <Section
         tone="surface"
-        eyebrow="Free, no signup"
         title="Need some help?"
-        lead="We write all of this for our own teams, and then leave it open for anyone. No account, no email, no form in the way."
       >
         <div className="grid gap-5 sm:grid-cols-2">
           {RESOURCES.map((r) => (
@@ -134,7 +119,6 @@ export default async function HomePage() {
                 <h3 className="text-lg font-semibold group-hover:text-[var(--purple-text)]">
                   {r.title}
                 </h3>
-                <p className="mt-2 text-sm text-muted">{r.body}</p>
               </Card>
             </Link>
           ))}
@@ -160,7 +144,6 @@ export default async function HomePage() {
       <Section
         id="what-we-run"
         title="Classes and competition teams"
-        lead="Foundation classes teach the basics hands on. Competition teams are picked from those classes and represent the club against other schools."
       >
         <div className="grid gap-5 sm:grid-cols-3">
           {TRACK_ORDER.map((track) => (
@@ -189,11 +172,6 @@ export default async function HomePage() {
             <PhotoFrame key={photo.src} photo={photo} sizes="(max-width: 640px) 100vw, 33vw" />
           ))}
         </div>
-
-        <p className="mt-8 text-sm text-muted">
-          Each program page says what a student actually does, and what it costs, before anything
-          asks for a name.
-        </p>
       </Section>
 
       {/*
@@ -202,8 +180,7 @@ export default async function HomePage() {
        */}
       <div className="band-dark">
         <div className="mx-auto max-w-6xl px-5 py-16 sm:py-20">
-          <p className="eyebrow">Teams from our club</p>
-          <h2 className="mt-3 max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
+          <h2 className="max-w-2xl text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
             How our teams have done at the World Championship
           </h2>
           <div className="mt-8">
@@ -241,19 +218,10 @@ export default async function HomePage() {
             className="mt-16 border-0"
             style={{ borderTop: "1px solid rgba(243,239,232,0.14)" }}
           />
-
-          <p className="eyebrow mt-16">Judged award · {inspireAward.event}</p>
-          <h2 className="mt-3 text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
-            Team {inspireAward.team} won the {inspireAward.name}
+          <h2 className="mt-16 text-2xl font-semibold sm:text-3xl" style={{ color: "#f3efe8" }}>
+            Team {inspireAward.team} won the {inspireAward.name} at the {inspireAward.event}
           </h2>
-          <p className="club-lead mt-5 max-w-2xl" style={{ color: "rgba(243,239,232,0.78)" }}>
-            {inspireAward.summary} {inspireAward.meaning}
-          </p>
-
-          <p className="eyebrow mt-10" style={{ color: "rgba(243,239,232,0.5)" }}>
-            {inspireAward.criteriaLabel}
-          </p>
-          <ol className="mt-4 grid gap-px overflow-hidden rounded-xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
+          <ol className="mt-8 grid gap-px overflow-hidden rounded-xl sm:grid-cols-2" style={{ background: "rgba(243,239,232,0.12)" }}>
             {inspireAward.criteria.map((c, i) => (
               <li key={c} className="flex gap-4 p-6" style={{ background: "var(--ink-deep)" }}>
                 <span className="readout shrink-0 text-sm" style={{ color: "var(--purple-on-dark)" }}>
@@ -265,7 +233,7 @@ export default async function HomePage() {
           </ol>
 
           <p className="mt-6 text-sm" style={{ color: "rgba(243,239,232,0.6)" }}>
-            {inspireAward.note} Criteria summarised from the{" "}
+            Criteria summarised from the{" "}
             <a
               href={inspireAward.sourceUrl}
               target="_blank"
@@ -317,22 +285,16 @@ export default async function HomePage() {
         id="where-we-compete"
         tone="surface"
         title="Where we compete"
-        lead="Qualifying tournaments across Alberta, then the provincial championship, then the World Championship. Qualification rules shift a little each season and differ by program, so each step says what usually earns the next rather than promising it."
       >
         <CompetitionLadder />
 
         <h3 className="mt-14 text-xl font-semibold">Which one is my child in?</h3>
-        <p className="club-lead mt-3 max-w-2xl">
-          Two separate competitions, with different kit and different matches. The grades overlap in
-          middle school, where a student could be in either.
-        </p>
         <div className="mt-7">
           <ProgramComparison />
         </div>
 
-        <div className="mt-10 grid items-start gap-8 lg:grid-cols-[1fr_1fr]">
-          <SpectatingNote />
-          <PhotoFrame photo={competePhoto} sizes="(max-width: 1024px) 100vw, 45vw" />
+        <div className="mt-10 max-w-3xl">
+          <PhotoFrame photo={competePhoto} sizes="(max-width: 768px) 100vw, 768px" />
         </div>
 
         {/*
@@ -342,10 +304,6 @@ export default async function HomePage() {
          * a time and large enough to actually read.
          */}
         <h3 className="mt-14 text-xl font-semibold">A competition weekend</h3>
-        <p className="club-lead mt-3 max-w-2xl">
-          Mostly this, at a school or a convention centre in Calgary: the pit, the queue for the
-          field, and a few hundred students from other clubs doing exactly the same thing.
-        </p>
         <div className="mt-8">
           <Slideshow photos={competePhotos} sizes="(max-width: 1152px) 100vw, 1100px" />
         </div>
@@ -365,19 +323,8 @@ export default async function HomePage() {
        * phone, and only the wide layout swaps them.
        */}
       <Section title="What competing looks like">
-        <div className="grid items-center gap-8 lg:grid-cols-2">
-          <div>
-            <p className="club-lead">
-              Most of a competition happens away from the field: fixing what broke in the last
-              match, talking through a strategy with an alliance partner, and explaining a design
-              choice to a judge.
-            </p>
-            <p className="club-lead mt-5">
-              That last one decides the judged awards: a team, its notebook, and two judges asking
-              how the robot got that way.
-            </p>
-          </div>
-          <PhotoFrame photo={pitPhoto} sizes="(max-width: 1024px) 100vw, 45vw" />
+        <div className="max-w-3xl">
+          <PhotoFrame photo={pitPhoto} sizes="(max-width: 768px) 100vw, 768px" />
         </div>
 
         {/*
@@ -386,10 +333,6 @@ export default async function HomePage() {
          * can say which part of the day it is.
          */}
         <h3 className="mt-16 text-xl font-semibold">A competition day, in order</h3>
-        <p className="club-lead mt-3 max-w-2xl">
-          Inspection first, because a robot that fails it does not play. Then a long wait at the
-          barrier, and about a minute of the thing you came for.
-        </p>
         <div className="mt-8">
           <Slideshow
             photos={[...competitionDayPhotos, ...eventFloorPhotos]}
@@ -402,10 +345,6 @@ export default async function HomePage() {
          * about any one of them, so: slideshow.
          */}
         <h3 className="mt-16 text-xl font-semibold">And the rest of the season</h3>
-        <p className="club-lead mt-3 max-w-2xl">
-          A competition is two days. The other few hundred hours are a field on the floor, a robot
-          half apart, and the same mechanism tried again.
-        </p>
         <div className="mt-8">
           <Slideshow
             photos={[...practicePhotos, ...clubSpacePhotos]}
@@ -415,11 +354,7 @@ export default async function HomePage() {
       </Section>
 
       <Section tone="surface" title="Ask us anything">
-        <p className="club-lead max-w-2xl">
-          Questions about robotics are welcome even if your child never joins. We are students
-          ourselves, so during build season and competition weekends replies can take a while.
-        </p>
-        <div className="mt-7 flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3">
           <Button href="/contact" size="lg">Contact us</Button>
           <Button href="/community" size="lg" variant="secondary">Free workshops</Button>
         </div>

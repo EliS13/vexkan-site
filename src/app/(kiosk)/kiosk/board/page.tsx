@@ -191,10 +191,6 @@ export default async function BoardPage({
         </p>
       )}
 
-      <p className="mt-6 border-t border-k-rule pt-4 font-mono text-[11px] text-k-sketch">
-        Totals include the visit in progress.
-        {!allTime && ` A season runs from the first of May, so this is ${seasonLabel(season)} only.`}
-      </p>
     </div>
   );
 }

@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "./Avatar";
 import { CameraSignIn } from "./CameraSignIn";
+import { preloadFaceEngine } from "@/lib/kiosk/face";
 import {
   countSignedIn,
   formatDuration,
@@ -98,6 +99,13 @@ export function Kiosk({
     }, 10_000);
     return () => clearInterval(id);
   }, []);
+
+  /*
+   * The face engine, fetched and warmed while nobody is at the camera. Without
+   * this the first "Camera sign in" of a meeting paid for the download and the
+   * GPU shader compile in one go — seconds of a frozen-looking sheet.
+   */
+  useEffect(() => preloadFaceEngine(), []);
 
   /*
    * Stay in step with the other devices.
@@ -374,11 +382,6 @@ export function Kiosk({
               ? "Nobody is signed up yet."
               : "Nobody in this group yet."}
           </p>
-          <p className="max-w-sm font-mono text-xs text-k-sketch">
-            {state.members.length === 0
-              ? "Sign up takes a photo and five face captures, one person at a time."
-              : "Add members to this group from the admin screen."}
-          </p>
         </div>
       )}
 
@@ -457,12 +460,6 @@ export function Kiosk({
         ))}
       </div>
 
-      {!maySign && (
-        <p className="mt-3 rounded-2xl border-2 border-dashed border-k-rule px-4 py-3 text-center font-mono text-[11px] text-k-sketch">
-          Read-only — you are not on the club&rsquo;s wifi. Tap anyone to see their hours, badges
-          and awards.
-        </p>
-      )}
 
       {/*
         * Pinned to the bottom of the screen rather than the end of the roster.
@@ -745,9 +742,6 @@ function SignedOutBoard({
           <p className="font-serif text-2xl font-bold sm:text-3xl">
             {place === null ? "Welcome to the club" : `${ordinal(place)} place this season`}
           </p>
-          <p className="font-mono text-[11px] tracking-[0.15em] uppercase opacity-70">
-            Season since May 1
-          </p>
         </footer>
       </div>
     </div>
@@ -809,12 +803,7 @@ function Profile({
           alongside={alongside}
           vexAwards={vexAwards}
           action={
-            !maySign ? (
-              <p className="rounded-2xl border-2 border-dashed border-k-rule px-4 py-3 text-center font-mono text-[11px] leading-relaxed text-k-sketch">
-                Signing in and out only works on the club&rsquo;s wifi. Everything else here —
-                hours, badges, awards — reads the same from anywhere.
-              </p>
-            ) : (
+            !maySign ? null : (
             <button
               onClick={() => onAction()}
               disabled={busy}

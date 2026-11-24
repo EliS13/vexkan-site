@@ -18,7 +18,6 @@ export function CompetitionLadder() {
               {rung.step}
             </span>
             <h3 className="mt-3 text-lg font-semibold">{rung.title}</h3>
-            <p className="mt-3 text-sm text-muted">{rung.what}</p>
           </Card>
         </li>
       ))}

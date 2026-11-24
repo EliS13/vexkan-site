@@ -38,7 +38,7 @@ export const viewport = {
 
 export default function KioskLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main id="main" className="min-h-dvh flex-1 bg-k-paper text-k-ink">
+    <main id="main" className="kiosk-root min-h-dvh flex-1 bg-k-paper text-k-ink">
       {/*
        * The tap confirmation is the only animation in the kiosk. Both keyframes
        * are applied through motion-safe: variants, so `prefers-reduced-motion`

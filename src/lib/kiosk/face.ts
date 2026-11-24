@@ -1,8 +1,9 @@
 /**
  * The camera side of the kiosk. Browser only.
  *
- * face-api and its ~12MB of weights are pulled in by dynamic import, so a
- * member signing out by tapping their tile never downloads any of it.
+ * face-api and its ~12MB of weights are pulled in by dynamic import, so the
+ * roster's first paint never waits on them. The kiosk then fetches and warms
+ * them in idle time (preloadFaceEngine) so the camera is ready when tapped.
  *
  * No frame, descriptor or crop produced here is sent anywhere. Descriptors are
  * held on the iPad (see faceStore.ts) and the `face_embedding` column stays
@@ -18,7 +19,18 @@ type Api = typeof FaceApi;
 let api: Api | null = null;
 let loading: Promise<Api> | null = null;
 
-/** Loads the library and weights once, and returns the same instance after. */
+/**
+ * Loads the library and weights once, warms them, and returns the same
+ * instance after.
+ *
+ * "Warm" matters more than "loaded". WebGL compiles a shader program for every
+ * op the first time each net runs, and that compile is what made the first tap
+ * of "Take the photo" take seconds — measured at about six seconds for the
+ * first face against 50–80ms for every face after it, with the weights already
+ * in memory. Running each net once on a blank frame here moves that wait to
+ * when the sheet opens, while the camera is still starting, instead of while
+ * somebody stands there wondering whether the tap registered.
+ */
 export function loadFaceEngine(): Promise<Api> {
   if (api) return Promise.resolve(api);
   if (loading) return loading;
@@ -30,11 +42,70 @@ export function loadFaceEngine(): Promise<Api> {
       faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
       faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
     ]);
+    await warm(faceapi);
     api = faceapi;
     return faceapi;
   })();
+  // A failed load (a dropped connection) must be retryable, not cached.
+  loading.catch(() => { loading = null; });
 
   return loading;
+}
+
+/**
+ * One pass of each net on a blank picture, so the GPU programs exist before a
+ * real face needs them.
+ *
+ * The detector is given a frame the shape the camera produces (960x540
+ * downscaled to DETECT_WIDTH), so its input resize compiles for the size it
+ * will actually see. A blank frame holds no face, which means the landmark and
+ * recognition nets would never run from detection alone — so they are called
+ * directly on a small crop. Results are thrown away; nothing here can reach the
+ * matcher.
+ */
+async function warm(faceapi: Api): Promise<void> {
+  const frame = document.createElement("canvas");
+  frame.width = DETECT_WIDTH;
+  frame.height = Math.round((DETECT_WIDTH * 9) / 16);
+  const ctx = frame.getContext("2d");
+  if (!ctx) return;
+  ctx.fillStyle = "#808080";
+  ctx.fillRect(0, 0, frame.width, frame.height);
+
+  const crop = document.createElement("canvas");
+  crop.width = 120;
+  crop.height = 120;
+  crop.getContext("2d")?.drawImage(frame, 0, 0);
+
+  try {
+    await faceapi.detectAllFaces(frame, new faceapi.SsdMobilenetv1Options({ minConfidence: 0.5 }));
+    await faceapi.nets.faceLandmark68Net.detectLandmarks(crop);
+    await faceapi.nets.faceRecognitionNet.computeFaceDescriptor(crop);
+  } catch {
+    // Warming is an optimisation. The first real detection compiles instead.
+  }
+}
+
+/**
+ * Starts loading and warming the engine when the device is otherwise idle.
+ *
+ * The kiosk sits open for an entire meeting, so the first camera sign-in of
+ * the evening should not be the one that pays for downloading twelve
+ * megabytes and compiling every shader. Deferred to idle time, after the
+ * roster has rendered, so the grid's first paint never waits on it.
+ */
+export function preloadFaceEngine(delayMs = 1500): () => void {
+  if (typeof window === "undefined") return () => {};
+  let idle: number | null = null;
+  const timer = window.setTimeout(() => {
+    const run = () => { void loadFaceEngine().catch(() => {}); };
+    if ("requestIdleCallback" in window) idle = window.requestIdleCallback(run, { timeout: 5000 });
+    else run();
+  }, delayMs);
+  return () => {
+    window.clearTimeout(timer);
+    if (idle !== null && "cancelIdleCallback" in window) window.cancelIdleCallback(idle);
+  };
 }
 
 export type DetectedFace = {

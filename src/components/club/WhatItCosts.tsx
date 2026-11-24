@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { COST_ASSISTANCE, COST_COVERS, COST_NOTE } from "@/content/club/programs";
+import { COST_ASSISTANCE, COST_COVERS } from "@/content/club/programs";
 import { isTbd, type Maybe } from "@/content/club/types";
 import { org } from "@/content/club/org";
 
@@ -41,8 +41,7 @@ export function WhatItCosts({ cost, heading = "What it costs" }: { cost: Maybe<s
           or call{" "}
           <a href={org.phoneHref} className="font-semibold underline underline-offset-4">
             {org.phone}
-          </a>{" "}
-          for more details. The guides and the community workshops stay free either way.
+          </a>.
         </p>
       )}
 
@@ -59,8 +58,6 @@ export function WhatItCosts({ cost, heading = "What it costs" }: { cost: Maybe<s
           </li>
         ))}
       </ul>
-
-      <p className="mt-6 text-sm text-muted">{COST_NOTE}</p>
 
       {/* The contact details are already above, so this only needs the offer. */}
       <p className="mt-4 text-sm text-[var(--ink-body)]">

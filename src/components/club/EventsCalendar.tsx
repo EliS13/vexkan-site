@@ -65,7 +65,6 @@ export function EventsCalendar({
       <Section
         id="calendar"
         title="Competitions in Alberta"
-        lead="VEX sets the calendar each season and it changes from year to year. The full list, including events we have not listed here, is on events.vex.com."
       >
         {live.ok ? (
           <>
@@ -104,13 +103,9 @@ export function EventsCalendar({
             </div>
             {live.events.length === 0 && (
               <p className="text-muted">
-                VEX lists no upcoming Alberta competitions right now. New events appear here as soon
-                as they are published.
+                No upcoming Alberta competitions.
               </p>
             )}
-            <p className="mt-8 text-sm text-muted">
-              Pulled from events.vex.com and refreshed daily.
-            </p>
           </>
         ) : (
           <>
@@ -123,7 +118,6 @@ export function EventsCalendar({
               {competitions.map((e) => (
                 <Card key={e.slug} className="lift-hover h-full">
                   <h3 className="text-lg font-semibold">{e.name}</h3>
-                  <p className="mt-3 text-sm text-muted">{e.summary}</p>
                   <dl className="mt-5 space-y-2 text-sm">
                     <div className="flex gap-3">
                       <dt className="eyebrow w-20 shrink-0 pt-0.5 text-[var(--muted)]">Date</dt>
@@ -171,9 +165,7 @@ export function EventsCalendar({
         return (
           <Section
             tone="surface"
-            eyebrow="Worth travelling for"
             title="Signature Events"
-            lead="Invitational-scale events run by VEX around the world. These are the ones coming up."
           >
             <div className="grid gap-5 sm:grid-cols-2">
               {featured.map((e) => (

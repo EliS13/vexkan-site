@@ -130,7 +130,7 @@ export function WorkshopRequestForm() {
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Grade level" hint="For example, Grades 4 to 6.">
+          <Field label="Grade level">
             <input
               className={FIELD_CLASS}
               style={{ borderColor: "var(--line)" }}
@@ -138,7 +138,7 @@ export function WorkshopRequestForm() {
               onChange={(e) => set("grades", e.target.value)}
             />
           </Field>
-          <Field label="Rough date" hint="A month is enough. We'll work out the rest.">
+          <Field label="Rough date">
             <input
               className={FIELD_CLASS}
               style={{ borderColor: "var(--line)" }}
@@ -150,7 +150,7 @@ export function WorkshopRequestForm() {
 
         <Field
           label="Anything else?"
-          hint="Optional. Group size, room, whether you already have kit."
+          hint="Optional."
         >
           <textarea
             rows={4}
