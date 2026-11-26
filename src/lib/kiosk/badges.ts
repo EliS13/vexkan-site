@@ -1,5 +1,5 @@
 import { CLUB_TIMEZONE } from "./schedule";
-import { sessionMs } from "./hours";
+import { sessionEnd, sessionMs } from "./hours";
 import { teamsFor, worldsFor } from "./teams";
 import type { Member, Session } from "./types";
 
@@ -54,6 +54,15 @@ const DAY_FORMAT = new Intl.DateTimeFormat("en-CA", {
 const dayCache = new Map<string, string>();
 
 /** The club-local calendar day of an instant, as YYYY-MM-DD. */
+/**
+ * When a closed session counts as having ended, as an ISO stamp. A forgotten
+ * sign-out ends at its credited length rather than days later, so it cannot
+ * earn a badge for leaving late that nobody actually stayed for.
+ */
+function endIso(s: Session, now: number): string {
+  return new Date(sessionEnd(s, now)).toISOString();
+}
+
 export function clubDay(iso: string): string {
   const hit = dayCache.get(iso);
   if (hit !== undefined) return hit;
@@ -233,7 +242,7 @@ const SECRETS: Secret[] = [
     shape: "moon",
     weight: 44,
     test: (_m, ctx) =>
-      ctx.mine.some((s) => s.signedOutAt && clubDay(s.signedOutAt) !== clubDay(s.signedInAt))
+      ctx.mine.some((s) => s.signedOutAt && clubDay(endIso(s, ctx.now)) !== clubDay(s.signedInAt))
         ? "Signed out on a different day to signing in"
         : null,
   },
@@ -355,7 +364,7 @@ const SECRETS: Secret[] = [
     shape: "moon",
     weight: 38,
     test: (_m, ctx) =>
-      ctx.mine.some((s) => s.signedOutAt && clubParts(s.signedOutAt).minutes >= 23 * 60)
+      ctx.mine.some((s) => s.signedOutAt && clubParts(endIso(s, ctx.now)).minutes >= 23 * 60)
         ? "Still here after 11pm"
         : null,
   },
@@ -495,7 +504,7 @@ const SECRETS: Secret[] = [
         (s) =>
           s.signedOutAt &&
           clubParts(s.signedInAt).minutes <= 9 * 60 &&
-          clubParts(s.signedOutAt).minutes >= 18 * 60,
+          clubParts(endIso(s, ctx.now)).minutes >= 18 * 60,
       )
         ? "One visit running from morning to evening"
         : null,
@@ -1075,7 +1084,7 @@ export function badgeBook(
       firstInByDay.set(day, s.memberId);
     }
     if (s.signedOutAt) {
-      const outAt = Date.parse(s.signedOutAt);
+      const outAt = sessionEnd(s, now);
       if (!latest.has(day) || outAt > latest.get(day)!) {
         latest.set(day, outAt);
         lastOutByDay.set(day, s.memberId);

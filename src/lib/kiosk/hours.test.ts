@@ -15,7 +15,12 @@ import {
   rosterOrder,
   seasonLeaderboard,
   seasonStart,
+  FORGOTTEN_AFTER_MS,
+  FORGOTTEN_CREDIT_MS,
+  isForgotten,
+  sessionEnd,
   sessionMs,
+  standingFor,
   totalMsFor,
 } from "./hours";
 import type { Member, Session } from "./types";
@@ -56,23 +61,23 @@ function session(
 describe("presence", () => {
   it("reads a member with an open session as signed in", () => {
     const s = [session("s1", "m1", "2026-08-16T17:00:00.000Z")];
-    expect(isSignedIn(s, "m1")).toBe(true);
-    expect(openSessionFor(s, "m1")?.id).toBe("s1");
+    expect(isSignedIn(s, "m1", NOW)).toBe(true);
+    expect(openSessionFor(s, "m1", NOW)?.id).toBe("s1");
   });
 
   it("reads a member whose sessions are all closed as signed out", () => {
     const s = [session("s1", "m1", "2026-08-16T15:00:00.000Z", "2026-08-16T17:00:00.000Z")];
-    expect(isSignedIn(s, "m1")).toBe(false);
-    expect(openSessionFor(s, "m1")).toBeUndefined();
+    expect(isSignedIn(s, "m1", NOW)).toBe(false);
+    expect(openSessionFor(s, "m1", NOW)).toBeUndefined();
   });
 
   it("reads a member with no sessions at all as signed out", () => {
-    expect(isSignedIn([], "m1")).toBe(false);
+    expect(isSignedIn([], "m1", NOW)).toBe(false);
   });
 
   it("does not let one member's open session mark another present", () => {
     const s = [session("s1", "m1", "2026-08-16T17:00:00.000Z")];
-    expect(isSignedIn(s, "m2")).toBe(false);
+    expect(isSignedIn(s, "m2", NOW)).toBe(false);
   });
 });
 
@@ -213,7 +218,7 @@ describe("countSignedIn", () => {
       session("s2", "m3", "2026-08-16T18:00:00.000Z"),
       session("s3", "m2", "2026-08-10T15:00:00.000Z", "2026-08-10T17:00:00.000Z"),
     ];
-    expect(countSignedIn(members, s)).toBe(1);
+    expect(countSignedIn(members, s, NOW)).toBe(1);
   });
 });
 
@@ -429,5 +434,53 @@ describe("alongsideMs", () => {
   it("leaves the club total untouched", () => {
     const s = [session("s1", "m1", "2026-06-01T18:00:00.000Z", "2026-06-01T20:00:00.000Z")];
     expect(clubTotals(roster, s, NOW).totalMs).toBe(2 * HOUR);
+  });
+});
+
+describe("forgotten sign-outs", () => {
+  it("counts a visit closed days later as the two-hour credit", () => {
+    const s = session("s1", "m1", "2026-08-10T21:00:00.000Z", "2026-08-14T18:00:00.000Z");
+    expect(isForgotten(s, NOW)).toBe(true);
+    expect(sessionMs(s, NOW)).toBe(FORGOTTEN_CREDIT_MS);
+    expect(FORGOTTEN_CREDIT_MS).toBe(2 * HOUR);
+  });
+
+  it("counts a real long day in full, right up to the limit", () => {
+    const twelve = session("s1", "m1", "2026-08-15T15:00:00.000Z", "2026-08-16T03:00:00.000Z");
+    expect(isForgotten(twelve, NOW)).toBe(false);
+    expect(sessionMs(twelve, NOW)).toBe(12 * HOUR);
+
+    const atLimit = session(
+      "s2",
+      "m1",
+      "2026-08-15T00:00:00.000Z",
+      new Date(Date.parse("2026-08-15T00:00:00.000Z") + FORGOTTEN_AFTER_MS).toISOString(),
+    );
+    expect(sessionMs(atLimit, NOW)).toBe(FORGOTTEN_AFTER_MS);
+  });
+
+  it("treats a session open past the limit as not in the room", () => {
+    const members = [member("m1", "A", "A")];
+    const stale = [session("s1", "m1", "2026-08-14T19:00:00.000Z")];
+    expect(isSignedIn(stale, "m1", NOW)).toBe(false);
+    expect(openSessionFor(stale, "m1", NOW)).toBeUndefined();
+    expect(countSignedIn(members, stale, NOW)).toBe(0);
+    const standing = standingFor(members[0], stale, NOW);
+    expect(standing.signedIn).toBe(false);
+    expect(standing.currentMs).toBeNull();
+    expect(standing.totalMs).toBe(FORGOTTEN_CREDIT_MS);
+  });
+
+  it("caps member totals, so one forgotten visit cannot swamp the leaderboard", () => {
+    const s = [
+      session("s1", "m1", "2026-08-01T22:00:00.000Z", "2026-08-02T01:00:00.000Z"),
+      session("s2", "m1", "2026-08-05T21:00:00.000Z", "2026-08-09T18:00:00.000Z"),
+    ];
+    expect(totalMsFor(s, "m1", NOW)).toBe(3 * HOUR + FORGOTTEN_CREDIT_MS);
+  });
+
+  it("ends a forgotten visit at its credited length, not days later", () => {
+    const s = session("s1", "m1", "2026-08-10T21:00:00.000Z", "2026-08-14T18:00:00.000Z");
+    expect(sessionEnd(s, NOW)).toBe(Date.parse("2026-08-10T23:00:00.000Z"));
   });
 });

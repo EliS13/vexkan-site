@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import type { Badge } from "@/lib/kiosk/badges";
 import type { TeamAward } from "@/lib/kiosk/vexAwards";
 import { awardKind } from "@/lib/kiosk/badges";
-import { formatDuration, formatElapsed, formatHours, sessionMs } from "@/lib/kiosk/hours";
+import { formatDuration, formatElapsed, formatHours, isForgotten, sessionMs } from "@/lib/kiosk/hours";
 import { CLUB_TIMEZONE } from "@/lib/kiosk/schedule";
 import type { Member, Session } from "@/lib/kiosk/types";
 import { teamsFor } from "@/lib/kiosk/teams";
@@ -280,7 +280,8 @@ export function MemberProfile({
           </h3>
           <ul className="flex flex-col gap-px overflow-hidden rounded-xl border-2 border-k-rule bg-k-paper">
             {recent.map((sessionRow) => {
-              const open = sessionRow.signedOutAt === null;
+              const forgotten = isForgotten(sessionRow, now);
+              const open = sessionRow.signedOutAt === null && !forgotten;
               return (
                 <li key={sessionRow.id} className="flex items-baseline gap-3 px-3 py-2">
                   <span className="w-28 shrink-0 font-mono text-[11px] text-k-sketch">
@@ -304,7 +305,7 @@ export function MemberProfile({
                     }`}
                   >
                     {open ? "here now" : formatDuration(sessionMs(sessionRow, now))}
-                    {sessionRow.autoClosed && !open && (
+                    {(sessionRow.autoClosed || forgotten) && !open && (
                       <span className="text-k-bolt-ink" title="Closed by rule, not a real sign-out">
                         {" "}
                         est

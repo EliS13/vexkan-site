@@ -191,8 +191,8 @@ export function Kiosk({
     [state.members],
   );
   const inRoom = useMemo(
-    () => countSignedIn(state.members, state.sessions),
-    [state.members, state.sessions],
+    () => countSignedIn(state.members, state.sessions, now),
+    [state.members, state.sessions, now],
   );
 
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -505,7 +505,7 @@ export function Kiosk({
       {profileFor && (
         <Profile
           member={profileFor}
-          signedIn={isSignedIn(state.sessions, profileFor.id)}
+          signedIn={isSignedIn(state.sessions, profileFor.id, now)}
           standing={roster.find((r) => r.member.id === profileFor.id)}
           badges={book.get(profileFor.id) ?? []}
           recent={recentVisits(state.sessions, profileFor.id)}
@@ -517,7 +517,7 @@ export function Kiosk({
           onClose={() => setProfileFor(null)}
           onAction={() => {
             const member = profileFor;
-            const signedIn = isSignedIn(state.sessions, member.id);
+            const signedIn = isSignedIn(state.sessions, member.id, now);
             setProfileFor(null);
             void tap(member, signedIn);
           }}
