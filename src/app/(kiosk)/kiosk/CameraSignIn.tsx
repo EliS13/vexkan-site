@@ -95,6 +95,8 @@ export function CameraSignIn({
    */
   const frozenRef = useRef<HTMLCanvasElement | null>(null);
   const [frozen, setFrozen] = useState(false);
+  /* The face engine is loaded and warmed; until then the photo button waits. */
+  const [engineReady, setEngineReady] = useState(false);
   const [shutter, setShutter] = useState(0);
   /** Whether the code entry is showing instead of waiting on a face. */
   const [usingCode, setUsingCode] = useState(false);
@@ -143,6 +145,7 @@ export function CameraSignIn({
         setStatus("Loading…");
         await loadFaceEngine();
         if (cancelled) return;
+        setEngineReady(true);
         setStatus("");
       } catch {
         setError("The face models could not load. Check the connection and try again.");
@@ -518,11 +521,16 @@ export function CameraSignIn({
           {!outcome && camStatus === "live" && !usingCode && (
             <button
               onClick={() => void guarded(mode.kind === "group" ? runGroup : runVerify)}
-              disabled={camStatus !== "live" || busy || checking}
-              aria-busy={busy || checking}
+              disabled={camStatus !== "live" || busy || checking || !engineReady}
+              aria-busy={busy || checking || !engineReady}
               className={`flex min-h-[88px] items-center justify-center gap-3 rounded-2xl bg-k-bolt px-6 font-serif text-2xl font-bold text-k-ink ${WORKING_BUTTON}`}
             >
-              {busy || checking ? (
+              {!engineReady ? (
+                <>
+                  <Spinner />
+                  Loading…
+                </>
+              ) : busy || checking ? (
                 <>
                   <Spinner />
                   {frozen ? (mode.kind === "group" ? "Finding faces…" : "Checking…") : "Taking photo…"}
