@@ -17,6 +17,9 @@ import {
   seasonStart,
   FORGOTTEN_AFTER_MS,
   FORGOTTEN_CREDIT_MS,
+  forgottenCreditMs,
+  LONG_STAY_CREDIT_MS,
+  LONG_STAY_MEMBER_IDS,
   isForgotten,
   sessionEnd,
   sessionMs,
@@ -482,5 +485,15 @@ describe("forgotten sign-outs", () => {
   it("ends a forgotten visit at its credited length, not days later", () => {
     const s = session("s1", "m1", "2026-08-10T21:00:00.000Z", "2026-08-14T18:00:00.000Z");
     expect(sessionEnd(s, NOW)).toBe(Date.parse("2026-08-10T23:00:00.000Z"));
+  });
+
+  it("credits the long-stay members three hours instead of two", () => {
+    for (const id of LONG_STAY_MEMBER_IDS) {
+      const s = session("s1", id, "2026-08-10T21:00:00.000Z", "2026-08-14T18:00:00.000Z");
+      expect(sessionMs(s, NOW)).toBe(3 * HOUR);
+      expect(forgottenCreditMs(id)).toBe(LONG_STAY_CREDIT_MS);
+    }
+    expect(LONG_STAY_MEMBER_IDS.size).toBe(4);
+    expect(forgottenCreditMs("m1")).toBe(2 * HOUR);
   });
 });

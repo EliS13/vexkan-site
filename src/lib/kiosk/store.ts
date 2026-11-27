@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { Group, KioskState, Member, ToggleResult } from "./types";
 import { seedState } from "./seed";
-import { FORGOTTEN_CREDIT_MS, isForgotten, openSessionFor } from "./hours";
+import { forgottenCreditMs, isForgotten, openSessionFor } from "./hours";
 import * as db from "./supabaseStore";
 
 /**
@@ -218,9 +218,9 @@ export function signInMembers(
        */
       const open = state.sessions.filter((s) => s.memberId === memberId && s.signedOutAt === null);
       for (const stale of open.filter((s) => isForgotten(s, now.getTime()))) {
-        stale.signedOutAt = new Date(Date.parse(stale.signedInAt) + FORGOTTEN_CREDIT_MS).toISOString();
+        stale.signedOutAt = new Date(Date.parse(stale.signedInAt) + forgottenCreditMs(stale.memberId)).toISOString();
         stale.autoClosed = true;
-        stale.note = "Closed automatically: forgot to sign out, counted as 2 hours.";
+        stale.note = `Closed automatically: forgot to sign out, counted as ${forgottenCreditMs(stale.memberId) / 3_600_000} hours.`;
         changed = true;
       }
       if (open.some((s) => s.signedOutAt === null)) {

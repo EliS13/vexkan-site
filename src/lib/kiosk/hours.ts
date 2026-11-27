@@ -25,6 +25,24 @@ export const FORGOTTEN_AFTER_MS = 16 * 60 * 60 * 1000;
  */
 export const FORGOTTEN_CREDIT_MS = 2 * 60 * 60 * 1000;
 
+/**
+ * Members whose forgotten sign-outs count for three hours instead of two:
+ * Eli Seeliger (two roster records), Evia Seeliger and Zhizhi Gao, who stay
+ * for longer sessions than most.
+ */
+export const LONG_STAY_MEMBER_IDS: ReadonlySet<string> = new Set([
+  "1b104059-1787-461d-a83e-0f0c1c623d5b", // Eli Seeliger
+  "a95bc7bc-edee-42fe-b3ed-cdd99b3df279", // Eli Seeliger
+  "d9e0d3e3-2c60-4144-a0e5-0abc0e76a541", // Evia Seeliger
+  "2c000526-e873-4757-bebe-972a9daaec9b", // Zhizhi Gao
+]);
+export const LONG_STAY_CREDIT_MS = 3 * 60 * 60 * 1000;
+
+/** What one member's forgotten sign-out is credited with. */
+export function forgottenCreditMs(memberId: string): number {
+  return LONG_STAY_MEMBER_IDS.has(memberId) ? LONG_STAY_CREDIT_MS : FORGOTTEN_CREDIT_MS;
+}
+
 /** Wall-clock length of a session as recorded, before any rule applies. */
 function recordedMs(session: Session, now: number): number {
   const start = Date.parse(session.signedInAt);
@@ -69,14 +87,14 @@ export function isSignedIn(sessions: Session[], memberId: string, now: number): 
  * behind the server's, and a negative slice would quietly eat real hours out of
  * a member's total rather than showing up as an obvious error.
  *
- * A forgotten sign-out counts as FORGOTTEN_CREDIT_MS rather than the days it
+ * A forgotten sign-out counts as forgottenCreditMs rather than the days it
  * was left open. Applied here, where every total, ranking and badge reads its
  * hours from, so the rows themselves are never rewritten and the limit can be
  * changed later without touching the record.
  */
 export function sessionMs(session: Session, now: number): number {
   const ms = recordedMs(session, now);
-  return ms > FORGOTTEN_AFTER_MS ? FORGOTTEN_CREDIT_MS : ms;
+  return ms > FORGOTTEN_AFTER_MS ? forgottenCreditMs(session.memberId) : ms;
 }
 
 /**

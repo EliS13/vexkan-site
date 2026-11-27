@@ -1,5 +1,5 @@
 import type { Group, KioskState, Member, Session } from "./types";
-import { FORGOTTEN_CREDIT_MS, isForgotten } from "./hours";
+import { forgottenCreditMs, isForgotten } from "./hours";
 
 /**
  * Postgres-backed storage, via Supabase's REST endpoint.
@@ -204,9 +204,9 @@ export async function signInMembers(
       await rest(`kiosk_sessions?id=eq.${q(row.id)}`, {
         method: "PATCH",
         body: JSON.stringify({
-          signed_out_at: new Date(Date.parse(row.signed_in_at) + FORGOTTEN_CREDIT_MS).toISOString(),
+          signed_out_at: new Date(Date.parse(row.signed_in_at) + forgottenCreditMs(row.member_id)).toISOString(),
           auto_closed: true,
-          note: "Closed automatically: forgot to sign out, counted as 2 hours.",
+          note: `Closed automatically: forgot to sign out, counted as ${forgottenCreditMs(row.member_id) / 3_600_000} hours.`,
         }),
       });
     }
