@@ -1,5 +1,4 @@
 import type { Group, KioskState, Member, Session } from "./types";
-import { MERGED_NOTE, mergedFields } from "./merge";
 
 /**
  * Postgres-backed storage, via Supabase's REST endpoint.
@@ -16,6 +15,8 @@ import { MERGED_NOTE, mergedFields } from "./merge";
  * the REST shape is stable and easier to see the intent of than a query builder
  * would be here.
  */
+
+import { MERGED_NOTE, mergedFields } from "./merge";
 
 function config(): { url: string; key: string } | null {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
