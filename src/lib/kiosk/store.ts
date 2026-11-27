@@ -3,7 +3,7 @@ import path from "node:path";
 import { randomUUID } from "node:crypto";
 import type { Group, KioskState, Member, ToggleResult } from "./types";
 import { seedState } from "./seed";
-import { openSessionFor } from "./hours";
+import { forgottenCreditMs, isForgotten, openSessionFor } from "./hours";
 import * as db from "./supabaseStore";
 import { MERGED_NOTE, mergedFields } from "./merge";
 
@@ -206,12 +206,25 @@ export function signInMembers(
     const stamp = now.toISOString();
     const signedIn: Member[] = [];
     const alreadyIn: Member[] = [];
+    let changed = false;
 
     for (const memberId of new Set(memberIds)) {
       const member = state.members.find((m) => m.id === memberId);
       if (!member || !member.active) continue;
 
-      if (state.sessions.some((s) => s.memberId === memberId && s.signedOutAt === null)) {
+      /*
+       * A visit left open past the forgotten limit is closed at its credited
+       * length first, so the member starts a fresh visit instead of being told
+       * they are already in the room from days ago.
+       */
+      const open = state.sessions.filter((s) => s.memberId === memberId && s.signedOutAt === null);
+      for (const stale of open.filter((s) => isForgotten(s, now.getTime()))) {
+        stale.signedOutAt = new Date(Date.parse(stale.signedInAt) + forgottenCreditMs(stale.memberId)).toISOString();
+        stale.autoClosed = true;
+        stale.note = `Closed automatically: forgot to sign out, counted as ${forgottenCreditMs(stale.memberId) / 3_600_000} hours.`;
+        changed = true;
+      }
+      if (open.some((s) => s.signedOutAt === null)) {
         alreadyIn.push(member);
         continue;
       }
@@ -227,7 +240,7 @@ export function signInMembers(
       signedIn.push(member);
     }
 
-    if (signedIn.length > 0) await writeState(state);
+    if (signedIn.length > 0 || changed) await writeState(state);
     return { signedIn, alreadyIn };
   });
 }

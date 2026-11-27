@@ -17,6 +17,7 @@ import {
   formatHours,
   isSignedIn,
   recentVisits,
+  isForgotten,
   sessionMs,
   totalMsFor,
 } from "@/lib/kiosk/hours";
@@ -406,7 +407,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         <ul className="flex flex-col gap-2">
           {matching
             .map((member) => {
-              const here = isSignedIn(state.sessions, member.id);
+              const here = isSignedIn(state.sessions, member.id, initialNow);
               return (
                 <li
                   key={member.id}
@@ -735,7 +736,8 @@ function Visits({
   return (
     <ul className="flex flex-col gap-px overflow-hidden rounded-lg bg-k-paper">
       {visits.map((visit) => {
-        const open = visit.signedOutAt === null;
+        const forgotten = isForgotten(visit, now);
+        const open = visit.signedOutAt === null && !forgotten;
         return (
           <li key={visit.id} className="flex items-baseline gap-3 px-3 py-2">
             <span className="w-28 shrink-0 font-mono text-[11px] text-k-sketch">
@@ -759,7 +761,7 @@ function Visits({
               }`}
             >
               {open ? "here now" : formatDuration(sessionMs(visit, now))}
-              {visit.autoClosed && !open && <span className="text-k-bolt-ink"> ·est</span>}
+              {(visit.autoClosed || forgotten) && !open && <span className="text-k-bolt-ink"> ·est</span>}
             </span>
           </li>
         );

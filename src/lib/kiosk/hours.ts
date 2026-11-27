@@ -8,27 +8,102 @@ import type { Member, Session } from "./types";
  * same answer on the server and in the browser.
  */
 
-/** The one open session for a member, if they are in the room. */
-export function openSessionFor(sessions: Session[], memberId: string): Session | undefined {
-  return sessions.find((s) => s.memberId === memberId && s.signedOutAt === null);
-}
-
-export function isSignedIn(sessions: Session[], memberId: string): boolean {
-  return openSessionFor(sessions, memberId) !== undefined;
-}
+/**
+ * A visit longer than this was a forgotten sign-out, not a long day.
+ *
+ * Chosen from the record: real visits top out at a little over eleven hours
+ * (a full Saturday into the evening), and forgotten ones start at nearly
+ * twenty-three, because the next sign-out is the following day or later.
+ * Nothing at all fell between the two, so sixteen hours sits in the gap with
+ * room either side — a genuinely long competition day still counts in full.
+ */
+export const FORGOTTEN_AFTER_MS = 16 * 60 * 60 * 1000;
 
 /**
- * How long one session lasted. An open session is measured to `now`.
- *
- * Clamped at zero: a session can read as negative when an iPad's clock is
- * behind the server's, and a negative slice would quietly eat real hours out of
- * a member's total rather than showing up as an obvious error.
+ * What a forgotten sign-out is credited with instead. A typical club visit,
+ * rather than nothing: they did come, they just never tapped out.
  */
-export function sessionMs(session: Session, now: number): number {
+export const FORGOTTEN_CREDIT_MS = 2 * 60 * 60 * 1000;
+
+/**
+ * Members whose forgotten sign-outs count for three hours instead of two:
+ * Eli Seeliger (two roster records), Evia Seeliger and Zhizhi Gao, who stay
+ * for longer sessions than most.
+ */
+export const LONG_STAY_MEMBER_IDS: ReadonlySet<string> = new Set([
+  "1b104059-1787-461d-a83e-0f0c1c623d5b", // Eli Seeliger
+  "a95bc7bc-edee-42fe-b3ed-cdd99b3df279", // Eli Seeliger
+  "d9e0d3e3-2c60-4144-a0e5-0abc0e76a541", // Evia Seeliger
+  "2c000526-e873-4757-bebe-972a9daaec9b", // Zhizhi Gao
+]);
+export const LONG_STAY_CREDIT_MS = 3 * 60 * 60 * 1000;
+
+/** What one member's forgotten sign-out is credited with. */
+export function forgottenCreditMs(memberId: string): number {
+  return LONG_STAY_MEMBER_IDS.has(memberId) ? LONG_STAY_CREDIT_MS : FORGOTTEN_CREDIT_MS;
+}
+
+/** Wall-clock length of a session as recorded, before any rule applies. */
+function recordedMs(session: Session, now: number): number {
   const start = Date.parse(session.signedInAt);
   const end = session.signedOutAt === null ? now : Date.parse(session.signedOutAt);
   if (Number.isNaN(start) || Number.isNaN(end)) return 0;
   return Math.max(0, end - start);
+}
+
+/**
+ * Whether a session ran past the forgotten-sign-out limit — closed that late,
+ * or still open that long after it started.
+ */
+export function isForgotten(session: Session, now: number): boolean {
+  return recordedMs(session, now) > FORGOTTEN_AFTER_MS;
+}
+
+/**
+ * The one open session for a member, if they are in the room.
+ *
+ * A session left open past the forgotten limit does not count: nobody has
+ * been in the room for sixteen hours, so their tile shows them out and their
+ * next sign-in starts a fresh visit rather than closing a four-day one.
+ */
+export function openSessionFor(
+  sessions: Session[],
+  memberId: string,
+  now: number,
+): Session | undefined {
+  return sessions.find(
+    (s) => s.memberId === memberId && s.signedOutAt === null && !isForgotten(s, now),
+  );
+}
+
+export function isSignedIn(sessions: Session[], memberId: string, now: number): boolean {
+  return openSessionFor(sessions, memberId, now) !== undefined;
+}
+
+/**
+ * How long one session counts for. An open session is measured to `now`.
+ *
+ * Clamped at zero: a session can read as negative when an iPad's clock is
+ * behind the server's, and a negative slice would quietly eat real hours out of
+ * a member's total rather than showing up as an obvious error.
+ *
+ * A forgotten sign-out counts as forgottenCreditMs rather than the days it
+ * was left open. Applied here, where every total, ranking and badge reads its
+ * hours from, so the rows themselves are never rewritten and the limit can be
+ * changed later without touching the record.
+ */
+export function sessionMs(session: Session, now: number): number {
+  const ms = recordedMs(session, now);
+  return ms > FORGOTTEN_AFTER_MS ? forgottenCreditMs(session.memberId) : ms;
+}
+
+/**
+ * When a session counts as having ended, as a timestamp. The real sign-out
+ * for an ordinary visit; for a forgotten one, the credited length after it
+ * started — so a visit left open over a weekend never reads as an all-nighter.
+ */
+export function sessionEnd(session: Session, now: number): number {
+  return Date.parse(session.signedInAt) + sessionMs(session, now);
 }
 
 /*
@@ -73,10 +148,7 @@ export function alongsideMs(
   );
   if (theirIds.size === 0) return 0;
 
-  const span = (s: Session): [number, number] => [
-    Date.parse(s.signedInAt),
-    s.signedOutAt === null ? now : Date.parse(s.signedOutAt),
-  ];
+  const span = (s: Session): [number, number] => [Date.parse(s.signedInAt), sessionEnd(s, now)];
 
   const theirs = sessions
     .filter((s) => theirIds.has(s.memberId))
@@ -132,7 +204,7 @@ export function standingFor(
   sessions: Session[],
   now: number,
 ): MemberStanding {
-  const open = openSessionFor(sessions, member.id);
+  const open = openSessionFor(sessions, member.id, now);
   return {
     member,
     totalMs: totalMsFor(sessions, member.id, now),
@@ -168,7 +240,7 @@ function standingFrom(member: Member, mine: Session[], now: number): MemberStand
   let open: Session | undefined;
   for (const session of mine) {
     totalMs += sessionMs(session, now);
-    if (session.signedOutAt === null) open = session;
+    if (session.signedOutAt === null && !isForgotten(session, now)) open = session;
   }
   return {
     member,
@@ -300,10 +372,10 @@ export function recentVisits(sessions: Session[], memberId: string, limit = 5): 
     .slice(0, limit);
 }
 
-export function countSignedIn(members: Member[], sessions: Session[]): number {
+export function countSignedIn(members: Member[], sessions: Session[], now: number): number {
   // One pass over the open sessions instead of a scan per member.
   const open = new Set<string>();
-  for (const s of sessions) if (s.signedOutAt === null) open.add(s.memberId);
+  for (const s of sessions) if (s.signedOutAt === null && !isForgotten(s, now)) open.add(s.memberId);
   return members.filter((m) => m.active && open.has(m.id)).length;
 }
 
@@ -373,7 +445,7 @@ export function clubTotals(
     attendees: attended.size,
     neverAttended: members.filter((m) => !attended.has(m.id)).length,
     sessions: sessions.length,
-    openSessions: sessions.filter((s) => s.signedOutAt === null).length,
+    openSessions: sessions.filter((s) => s.signedOutAt === null && !isForgotten(s, now)).length,
     autoClosed: sessions.filter((s) => s.autoClosed).length,
     averageSessionMs: sessions.length === 0 ? 0 : Math.round(totalMs / sessions.length),
   };

@@ -1,4 +1,5 @@
 import type { Group, KioskState, Member, Session } from "./types";
+import { forgottenCreditMs, isForgotten } from "./hours";
 
 /**
  * Postgres-backed storage, via Supabase's REST endpoint.
@@ -195,7 +196,23 @@ export async function signInMembers(
     const open = (await rest(
       `kiosk_sessions?member_id=eq.${q(memberId)}&signed_out_at=is.null`,
     )) as SessionRow[];
-    if (open.length > 0) {
+    /*
+     * A visit left open past the forgotten limit is closed at its credited
+     * length first, so the member starts a fresh visit instead of being told
+     * they are already in the room from days ago.
+     */
+    const stale = open.filter((row) => isForgotten(toSession(row), now.getTime()));
+    for (const row of stale) {
+      await rest(`kiosk_sessions?id=eq.${q(row.id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+          signed_out_at: new Date(Date.parse(row.signed_in_at) + forgottenCreditMs(row.member_id)).toISOString(),
+          auto_closed: true,
+          note: `Closed automatically: forgot to sign out, counted as ${forgottenCreditMs(row.member_id) / 3_600_000} hours.`,
+        }),
+      });
+    }
+    if (open.length > stale.length) {
       alreadyIn.push(toMember(members[0]));
       continue;
     }
