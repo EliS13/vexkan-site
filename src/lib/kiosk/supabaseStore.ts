@@ -16,6 +16,8 @@ import type { Group, KioskState, Member, Session } from "./types";
  * would be here.
  */
 
+import { MERGED_NOTE, mergedFields } from "./merge";
+
 function config(): { url: string; key: string } | null {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -336,4 +338,49 @@ export async function closeAllOpen(now = new Date()): Promise<number> {
     }),
   });
   return open.length;
+}
+
+/**
+ * Moves every visit of `foldId` onto `keepId`, gives the kept record anything
+ * it lacks, and deactivates the folded one. If both are signed in right now,
+ * the folded record's open visit is closed first so the merged member is not
+ * in the room twice.
+ */
+export async function mergeMembers(keepId: string, foldId: string, now = new Date()): Promise<number> {
+  if (keepId === foldId) throw new Error("Pick two different members.");
+  const rows = (await rest(`kiosk_members?id=in.(${q(keepId)},${q(foldId)})`)) as MemberRow[];
+  const keep = rows.find((r) => r.id === keepId);
+  const fold = rows.find((r) => r.id === foldId);
+  if (!keep || !fold) throw new Error("No such member.");
+
+  const keepOpen = (await rest(
+    `kiosk_sessions?member_id=eq.${q(keepId)}&signed_out_at=is.null&select=id`,
+  )) as { id: string }[];
+  if (keepOpen.length > 0) {
+    await rest(`kiosk_sessions?member_id=eq.${q(foldId)}&signed_out_at=is.null`, {
+      method: "PATCH",
+      body: JSON.stringify({ signed_out_at: now.toISOString(), auto_closed: true, note: MERGED_NOTE }),
+    });
+  }
+
+  const moved = (await rest(`kiosk_sessions?member_id=eq.${q(foldId)}`, {
+    method: "PATCH",
+    headers: { Prefer: "return=representation" },
+    body: JSON.stringify({ member_id: keepId }),
+  })) as SessionRow[];
+
+  const fields = mergedFields(toMember(keep), toMember(fold));
+  await rest(`kiosk_members?id=eq.${q(keepId)}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      photo_url: fields.photoUrl,
+      face_embedding: fields.faceEmbedding,
+      group_ids: fields.groupIds,
+    }),
+  });
+  await rest(`kiosk_members?id=eq.${q(foldId)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ active: false }),
+  });
+  return moved.length;
 }

@@ -5,6 +5,7 @@ import type { Group, KioskState, Member, ToggleResult } from "./types";
 import { seedState } from "./seed";
 import { openSessionFor } from "./hours";
 import * as db from "./supabaseStore";
+import { MERGED_NOTE, mergedFields } from "./merge";
 
 /**
  * Development storage: one JSON file on disk.
@@ -392,6 +393,39 @@ export function setMemberActive(
     }
     await writeState(state);
     return member;
+  });
+}
+
+/**
+ * Folds one roster record into another: every visit moves onto `keepId`, which
+ * also picks up a photo, face scan or groups it lacks, and `foldId` is
+ * deactivated. Returns how many visits moved.
+ */
+export function mergeMembers(keepId: string, foldId: string, now: Date = new Date()): Promise<number> {
+  if (writesToDatabase()) return db.mergeMembers(keepId, foldId, now);
+  return serialise(async () => {
+    if (keepId === foldId) throw new Error("Pick two different members.");
+    const state = await readState();
+    const keep = state.members.find((m) => m.id === keepId);
+    const fold = state.members.find((m) => m.id === foldId);
+    if (!keep || !fold) throw new Error("No such member.");
+
+    const keepIsIn = state.sessions.some((s) => s.memberId === keepId && s.signedOutAt === null);
+    let moved = 0;
+    for (const session of state.sessions) {
+      if (session.memberId !== foldId) continue;
+      if (keepIsIn && session.signedOutAt === null) {
+        session.signedOutAt = now.toISOString();
+        session.autoClosed = true;
+        session.note = MERGED_NOTE;
+      }
+      session.memberId = keepId;
+      moved++;
+    }
+    Object.assign(keep, mergedFields(keep, fold));
+    fold.active = false;
+    await writeState(state);
+    return moved;
   });
 }
 
