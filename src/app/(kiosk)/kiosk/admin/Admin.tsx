@@ -18,7 +18,9 @@ import {
   isSignedIn,
   recentVisits,
   sessionMs,
+  totalMsFor,
 } from "@/lib/kiosk/hours";
+import { chooseMergeTarget } from "@/lib/kiosk/merge";
 import { postJson, type AdminReply } from "@/lib/kiosk/postJson";
 import { AddPhoto } from "./AddPhoto";
 import type { Group, KioskState, Member } from "@/lib/kiosk/types";
@@ -45,6 +47,7 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
   /** The group whose membership is being edited, if any. */
   const [membersOf, setMembersOf] = useState<Group | null>(null);
   const [renaming, setRenaming] = useState<Member | null>(null);
+  const [mergingFrom, setMergingFrom] = useState<Member | null>(null);
   const [groupMenuFor, setGroupMenuFor] = useState<string | null>(null);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [gName, setGName] = useState("");
@@ -464,6 +467,13 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
                             Rename
                           </button>
                           <button
+                            onClick={() => { setMergingFrom(member); setMenuFor(null); }}
+                            disabled={!member.active}
+                            className="block w-full border-t border-k-rule px-4 py-3 text-left font-serif text-sm hover:bg-k-tint disabled:opacity-40"
+                          >
+                            Merge with…
+                          </button>
+                          <button
                             onClick={() => {
                               send({ action: "setMemberActive", memberId: member.id, active: !member.active });
                               setMenuFor(null);
@@ -649,6 +659,20 @@ export function Admin({ initial, initialNow }: { initial: KioskState; initialNow
         </div>
       )}
 
+      {mergingFrom && (
+        <MergeMembers
+          member={mergingFrom}
+          state={state}
+          now={initialNow}
+          busy={busy}
+          onClose={() => setMergingFrom(null)}
+          onMerge={(other) => {
+            send({ action: "mergeMembers", memberId: mergingFrom.id, otherId: other.id });
+            setMergingFrom(null);
+          }}
+        />
+      )}
+
       {photoFor && (
         <AddPhoto
           member={photoFor}
@@ -821,6 +845,121 @@ function GroupMembers({
         {shown.length === 0 && (
           <li className="font-mono text-sm text-k-sketch">Nobody matches that.</li>
         )}
+      </ul>
+    </div>
+  );
+}
+
+/**
+ * Merging a duplicate record. Pick the other record, then confirm: the screen
+ * says which one is kept (the one with more hours) and how many visits move,
+ * because this is the one admin action that cannot be undone with a tap.
+ */
+function MergeMembers({
+  member,
+  state,
+  now,
+  busy,
+  onClose,
+  onMerge,
+}: {
+  member: Member;
+  state: KioskState;
+  now: number;
+  busy: boolean;
+  onClose: () => void;
+  onMerge: (other: Member) => void;
+}) {
+  const [search, setSearch] = useState("");
+  const [other, setOther] = useState<Member | null>(null);
+  const needle = search.trim().toLowerCase();
+  const sameName = (m: Member) =>
+    m.firstName.toLowerCase() === member.firstName.toLowerCase() &&
+    m.lastName.toLowerCase() === member.lastName.toLowerCase();
+  const shown = state.members
+    .filter((m) => m.active && m.id !== member.id)
+    .filter((m) => needle === "" || `${m.firstName} ${m.lastName}`.toLowerCase().includes(needle))
+    .sort((a, b) => Number(sameName(b)) - Number(sameName(a)) || a.firstName.localeCompare(b.firstName));
+  const visits = (m: Member) => state.sessions.filter((s) => s.memberId === m.id).length;
+  const plural = (n: number) => `${n} visit${n === 1 ? "" : "s"}`;
+  const hours = (m: Member) => `${formatHours(totalMsFor(state.sessions, m.id, now))} h`;
+  const since = (m: Member) => new Date(m.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+
+  if (other) {
+    const { keep, fold } = chooseMergeTarget(member, other, state.sessions, now);
+    return (
+      <div className="fixed inset-0 z-50 grid place-items-center bg-k-paper/90 p-6">
+        <div className="flex w-full max-w-sm flex-col gap-3 rounded-2xl border-2 border-k-rule bg-k-card p-5">
+          <p className="font-mono text-[11px] tracking-widest text-k-bolt-ink uppercase">Merge</p>
+          {[keep, fold].map((m) => (
+            <div key={m.id} className="rounded-lg border-2 border-k-rule p-3">
+              <p className="font-mono text-[11px] tracking-widest text-k-sketch uppercase">
+                {m === keep ? "Keep" : "Fold in, then deactivate"}
+              </p>
+              <p className="font-serif text-lg font-semibold">{m.firstName} {m.lastName}</p>
+              <p className="font-mono text-[11px] text-k-sketch">
+                {hours(m)} · {plural(visits(m))} · added {since(m)}
+              </p>
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setOther(null)}
+              className="min-h-[56px] flex-1 rounded-xl border-2 border-k-rule font-mono text-xs tracking-widest text-k-sketch uppercase"
+            >
+              Back
+            </button>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => onMerge(other)}
+              className="min-h-[56px] flex-1 rounded-xl bg-k-bolt font-serif font-bold text-k-ink disabled:opacity-40"
+            >
+              Merge {plural(visits(fold))}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col bg-k-paper/95 p-4 sm:p-8">
+      <header className="mx-auto flex w-full max-w-lg shrink-0 items-center gap-3 pb-3">
+        <h2 className="min-w-0 flex-1 truncate font-serif text-xl font-semibold">
+          Merge {member.firstName} {member.lastName} with…
+        </h2>
+        <button
+          onClick={onClose}
+          className="min-h-[44px] shrink-0 rounded-lg border-2 border-k-rule px-4 font-mono text-xs tracking-widest text-k-sketch uppercase"
+        >
+          Cancel
+        </button>
+      </header>
+      <input
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        type="search"
+        placeholder="Search"
+        aria-label="Search members"
+        className="mx-auto mb-2 min-h-[48px] w-full max-w-lg shrink-0 rounded-lg border-2 border-k-rule bg-k-paper px-4 font-serif text-base"
+      />
+      <ul className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-1 overflow-y-auto">
+        {shown.map((m) => (
+          <li key={m.id}>
+            <button
+              onClick={() => setOther(m)}
+              className={`flex min-h-[52px] w-full items-center gap-3 rounded-lg border-2 px-3 text-left ${
+                sameName(m) ? "border-k-bolt text-k-ink" : "border-k-rule text-k-sketch"
+              }`}
+            >
+              <span className="min-w-0 flex-1 truncate font-serif text-base">{m.firstName} {m.lastName}</span>
+              <span className="shrink-0 font-mono text-[11px]">{hours(m)} · added {since(m)}</span>
+            </button>
+          </li>
+        ))}
+        {shown.length === 0 && <li className="font-mono text-sm text-k-sketch">Nobody matches that.</li>}
       </ul>
     </div>
   );

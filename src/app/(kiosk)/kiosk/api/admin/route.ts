@@ -3,12 +3,14 @@ import {
   createGroup,
   deleteGroup,
   getState,
+  mergeMembers,
   setMemberActive,
   setMemberGroups,
   setMemberPhoto,
   renameMember,
   updateGroup,
 } from "@/lib/kiosk/store";
+import { chooseMergeTarget } from "@/lib/kiosk/merge";
 import { checkPasscode, isAdminGateConfigured } from "@/lib/kiosk/admin";
 
 export const dynamic = "force-dynamic";
@@ -99,6 +101,19 @@ export async function POST(request: Request) {
       case "setMemberActive": {
         if (typeof body.memberId !== "string") throw new Error("Which member?");
         await setMemberActive(body.memberId, body.active === true);
+        break;
+      }
+      case "mergeMembers": {
+        if (typeof body.memberId !== "string" || typeof body.otherId !== "string") {
+          throw new Error("Pick the two records to merge.");
+        }
+        // Whichever has more hours is kept; the client's order is not trusted.
+        const state = await getState();
+        const a = state.members.find((m) => m.id === body.memberId);
+        const b = state.members.find((m) => m.id === body.otherId);
+        if (!a || !b) throw new Error("No such member.");
+        const { keep, fold } = chooseMergeTarget(a, b, state.sessions, state.now);
+        await mergeMembers(keep.id, fold.id);
         break;
       }
       default:
